@@ -1,0 +1,239 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import com.dgs.dapc.itemDB.javafx.nullComboBox.NullCombo?>
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.ScrollPane?>
+<?import javafx.scene.control.SplitPane?>
+<?import javafx.scene.control.TableColumn?>
+<?import javafx.scene.control.TableView?>
+<?import javafx.scene.control.TextArea?>
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.control.TitledPane?>
+<?import javafx.scene.control.ToggleButton?>
+<?import javafx.scene.control.TreeTableColumn?>
+<?import javafx.scene.control.TreeTableView?>
+<?import javafx.scene.image.ImageView?>
+<?import javafx.scene.layout.BorderPane?>
+<?import javafx.scene.layout.ColumnConstraints?>
+<?import javafx.scene.layout.GridPane?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.RowConstraints?>
+<?import javafx.scene.layout.VBox?>
+
+<BorderPane maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" prefHeight="750.0" prefWidth="1000.0" xmlns="http://javafx.com/javafx/8.0.172-ea" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.dgs.dapc.itemDB.javafx.main.editor.itemEditor.ItemEditorController">
+   <left>
+      <ScrollPane fitToHeight="true" fitToWidth="true" prefWidth="300.0" BorderPane.alignment="CENTER">
+         <content>
+            <VBox prefWidth="300.0" spacing="4.0">
+               <children>
+                  <HBox spacing="4.0">
+                     <children>
+                        <ToggleButton fx:id="pinToggle" maxHeight="1.7976931348623157E308" mnemonicParsing="false" text="📌" />
+                        <GridPane hgap="4.0" maxWidth="1.7976931348623157E308" minHeight="-Infinity" vgap="4.0" HBox.hgrow="SOMETIMES">
+                           <columnConstraints>
+                              <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" />
+                              <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" />
+                           </columnConstraints>
+                           <rowConstraints>
+                              <RowConstraints minHeight="10.0" vgrow="SOMETIMES" />
+                              <RowConstraints minHeight="10.0" vgrow="SOMETIMES" />
+                           </rowConstraints>
+                           <children>
+                              <Button fx:id="saveButton" contentDisplay="RIGHT" defaultButton="true" maxWidth="1.7976931348623157E308" mnemonicParsing="false" onAction="#save" text="Save Item" />
+                              <Button fx:id="showQR" maxWidth="1.7976931348623157E308" mnemonicParsing="false" onAction="#show" text="Show QR" GridPane.rowIndex="1" />
+                              <Button fx:id="printQR" maxWidth="1.7976931348623157E308" mnemonicParsing="false" onAction="#print" text="Print QR" GridPane.columnIndex="1" GridPane.rowIndex="1" />
+                              <Button fx:id="saveAndCloseButton" maxWidth="1.7976931348623157E308" mnemonicParsing="false" text="Save And Close" GridPane.columnIndex="1" />
+                           </children>
+                        </GridPane>
+                     </children>
+                  </HBox>
+                  <TextField fx:id="nameInput" promptText="Name And Model" VBox.vgrow="NEVER" />
+                  <Button maxWidth="1.7976931348623157E308" mnemonicParsing="false" onAction="#setImage" text="Set Image From File" />
+                  <TextField fx:id="imageInput" promptText="Image URL" />
+                  <TextArea fx:id="detailsInput" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" prefHeight="337.0" prefWidth="133.0" promptText="Details/Description/Notes" VBox.vgrow="ALWAYS" />
+               </children>
+               <padding>
+                  <Insets bottom="2.0" left="2.0" right="2.0" top="2.0" />
+               </padding>
+            </VBox>
+         </content>
+      </ScrollPane>
+   </left>
+   <center>
+      <ScrollPane fx:id="imageScroll" fitToHeight="true" fitToWidth="true" BorderPane.alignment="CENTER">
+         <content>
+            <BorderPane fx:id="imageBorder">
+               <center>
+                  <ImageView fx:id="imageView" fitHeight="366.0" fitWidth="323.0" pickOnBounds="true" preserveRatio="true" />
+               </center>
+            </BorderPane>
+         </content>
+      </ScrollPane>
+   </center>
+   <right>
+      <ScrollPane fitToHeight="true" fitToWidth="true" prefWidth="300.0" BorderPane.alignment="CENTER">
+         <content>
+            <TitledPane collapsible="false" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" text="Manufacturers">
+               <content>
+                  <VBox prefHeight="300.0" prefWidth="100.0" spacing="4.0">
+                     <children>
+                        <HBox spacing="4.0">
+                           <children>
+                              <Button fx:id="manufacturerClear" maxWidth="1.7976931348623157E308" minWidth="-Infinity" mnemonicParsing="false" onAction="#manufacturerClear" text="Clear" HBox.hgrow="ALWAYS" />
+                              <Button fx:id="manufacturerRemove" maxWidth="1.7976931348623157E308" minWidth="-Infinity" mnemonicParsing="false" onAction="#manufacturerRemove" text="Del" HBox.hgrow="ALWAYS" />
+                              <Button fx:id="manufacturerAdd" maxWidth="1.7976931348623157E308" minWidth="-Infinity" mnemonicParsing="false" onAction="#manufacturerAdd" text="Add" HBox.hgrow="ALWAYS" />
+                           </children>
+                        </HBox>
+                        <HBox spacing="4.0">
+                           <children>
+                              <NullCombo fx:id="manufacturerSelect" maxWidth="1.7976931348623157E308" promptText="Select Manufacturer" HBox.hgrow="SOMETIMES" />
+                           </children>
+                        </HBox>
+                        <ScrollPane fitToHeight="true" fitToWidth="true">
+                           <content>
+                              <TableView fx:id="manufacturersList" maxHeight="1.7976931348623157E308" prefWidth="200.0" tableMenuButtonVisible="true">
+                                <columns>
+                                  <TableColumn fx:id="manufacturersNameColumn" prefWidth="128.0" text="Name" />
+                                    <TableColumn fx:id="manufacturersDetailsColumn" prefWidth="128.0" text="Details" visible="false" />
+                                  <TableColumn fx:id="manufacturersURLColumn" prefWidth="92.0" text="URL" />
+                                </columns>
+                              </TableView>
+                           </content>
+                        </ScrollPane>
+                     </children>
+                     <padding>
+                        <Insets bottom="2.0" left="2.0" right="2.0" top="2.0" />
+                     </padding>
+                  </VBox>
+               </content>
+               <padding>
+                  <Insets bottom="2.0" left="2.0" right="2.0" top="2.0" />
+               </padding>
+            </TitledPane>
+         </content>
+      </ScrollPane>
+   </right>
+   <bottom>
+      <SplitPane dividerPositions="0.25, 0.75">
+         <items>
+            <TitledPane collapsible="false" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" text="Tags">
+               <content>
+                  <VBox spacing="4.0">
+                     <children>
+                        <HBox spacing="4.0">
+                           <children>
+                              <Button fx:id="tagClear" maxWidth="1.7976931348623157E308" minWidth="-Infinity" mnemonicParsing="false" onAction="#tagClear" text="Clear" HBox.hgrow="ALWAYS" />
+                              <Button fx:id="tagRemove" maxWidth="1.7976931348623157E308" minWidth="-Infinity" mnemonicParsing="false" onAction="#tagRemove" text="Del" HBox.hgrow="ALWAYS" />
+                              <Button fx:id="tagAdd" maxWidth="1.7976931348623157E308" minWidth="-Infinity" mnemonicParsing="false" onAction="#tagAdd" text="Add" HBox.hgrow="ALWAYS" />
+                           </children>
+                        </HBox>
+                        <NullCombo fx:id="tagSelect" maxWidth="1.7976931348623157E308" promptText="Select Tag" />
+                        <ScrollPane fitToHeight="true" fitToWidth="true" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" VBox.vgrow="ALWAYS">
+                           <content>
+                              <TableView fx:id="tagsList" editable="true" prefWidth="150.0" tableMenuButtonVisible="true">
+                                <columns>
+                                  <TableColumn fx:id="tagsNameColumn" editable="false" prefWidth="75.0" text="Name" />
+                                  <TableColumn fx:id="tagsValueColumn" prefWidth="145.0" text="Value" />
+                                </columns>
+                              </TableView>
+                           </content>
+                           <VBox.margin>
+                              <Insets />
+                           </VBox.margin>
+                        </ScrollPane>
+                     </children>
+                     <padding>
+                        <Insets bottom="2.0" left="2.0" right="2.0" top="2.0" />
+                     </padding>
+                  </VBox>
+               </content>
+               <padding>
+                  <Insets bottom="2.0" left="2.0" right="2.0" top="2.0" />
+               </padding>
+            </TitledPane>
+            <TitledPane collapsible="false" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" text="Placements / Products / Positions">
+               <content>
+                  <VBox spacing="4.0">
+                     <children>
+                        <HBox spacing="4.0">
+                           <children>
+                              <Button fx:id="placementClear" maxWidth="1.7976931348623157E308" minWidth="-Infinity" mnemonicParsing="false" onAction="#placementClear" text="Clear" HBox.hgrow="ALWAYS" />
+                              <Button fx:id="placementRemove" maxWidth="1.7976931348623157E308" minWidth="-Infinity" mnemonicParsing="false" onAction="#placementRemove" text="Del" HBox.hgrow="ALWAYS" />
+                              <Button fx:id="placementAdd" maxWidth="1.7976931348623157E308" minWidth="-Infinity" mnemonicParsing="false" onAction="#placementAdd" text="Add" HBox.hgrow="ALWAYS" />
+                              <Button fx:id="placementBasedOn" maxWidth="1.7976931348623157E308" minWidth="-Infinity" mnemonicParsing="false" onAction="#placementBasedOn" text="New Based On" HBox.hgrow="ALWAYS" />
+                           </children>
+                        </HBox>
+                        <ScrollPane fitToHeight="true" fitToWidth="true" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" VBox.vgrow="ALWAYS">
+                           <content>
+                              <TreeTableView fx:id="placementsTree" editable="true" prefWidth="200.0" tableMenuButtonVisible="true">
+                                <columns>
+                                  <TreeTableColumn fx:id="placementsNameColumn" prefWidth="75.0" text="Name" />
+                                    <TreeTableColumn editable="false" prefWidth="75.0" text="Placement">
+                                       <columns>
+                                          <TreeTableColumn fx:id="placementsLocationColumn" editable="false" prefWidth="75.0" text="Location" />
+                                          <TreeTableColumn fx:id="placementsCoordinatesColumn" editable="false" prefWidth="75.0" text="Row, Col, ..." />
+                                       </columns>
+                                    </TreeTableColumn>
+                                    <TreeTableColumn editable="false" prefWidth="75.0" text="Count">
+                                       <columns>
+                                          <TreeTableColumn fx:id="placementsQuantityColumn" prefWidth="35.0" text="Qty" />
+                                          <TreeTableColumn fx:id="placementsMinimalColumn" prefWidth="35.0" text="Min." />
+                                          <TreeTableColumn fx:id="placementsPurchasedColumn" prefWidth="35.0" text="Pur." />
+                                       </columns>
+                                    </TreeTableColumn>
+                                    <TreeTableColumn fx:id="placementsSerialColumn" prefWidth="75.0" text="Serial No." />
+                                    <TreeTableColumn fx:id="placementsDesignationsColumn" editable="false" prefWidth="75.0" text="Designations" />
+                                  <TreeTableColumn fx:id="placementsDetailsColumn" prefWidth="75.0" text="Details" visible="false" />
+                                </columns>
+                              </TreeTableView>
+                           </content>
+                        </ScrollPane>
+                     </children>
+                     <padding>
+                        <Insets bottom="2.0" left="2.0" right="2.0" top="2.0" />
+                     </padding>
+                  </VBox>
+               </content>
+               <padding>
+                  <Insets bottom="2.0" left="2.0" right="2.0" top="2.0" />
+               </padding>
+            </TitledPane>
+            <TitledPane collapsible="false" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" text="Sources">
+               <content>
+                  <VBox spacing="4.0">
+                     <children>
+                        <HBox maxWidth="1.7976931348623157E308" spacing="4.0">
+                           <children>
+                              <Button fx:id="sourceClear" maxWidth="1.7976931348623157E308" minWidth="-Infinity" mnemonicParsing="false" onAction="#sourceClear" text="Clear" HBox.hgrow="ALWAYS" />
+                              <Button fx:id="sourceRemove" maxWidth="1.7976931348623157E308" minWidth="-Infinity" mnemonicParsing="false" onAction="#sourceRemove" text="Del" HBox.hgrow="ALWAYS" />
+                              <Button fx:id="sourceAdd" maxWidth="1.7976931348623157E308" minWidth="-Infinity" mnemonicParsing="false" onAction="#sourceAdd" text="Add" HBox.hgrow="ALWAYS" />
+                              <Button fx:id="sourceBasedOn" maxWidth="1.7976931348623157E308" minWidth="-Infinity" mnemonicParsing="false" onAction="#sourceBasedOn" text="New Based On" HBox.hgrow="ALWAYS" />
+                           </children>
+                        </HBox>
+                        <ScrollPane fitToHeight="true" fitToWidth="true" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" VBox.vgrow="ALWAYS">
+                           <content>
+                              <TreeTableView fx:id="sourcesTree" editable="true" prefWidth="200.0" tableMenuButtonVisible="true">
+                                <columns>
+                                  <TreeTableColumn fx:id="sourcesNameColumn" prefWidth="75.0" text="Name" />
+                                    <TreeTableColumn fx:id="sourcesContactColumn" editable="false" prefWidth="128.0" text="Contact" />
+                                  <TreeTableColumn fx:id="sourcesURLColumn" prefWidth="92.0" text="URL" />
+                                    <TreeTableColumn fx:id="sourcesDetailsColumn" prefWidth="128.0" text="Details" visible="false" />
+                                </columns>
+                              </TreeTableView>
+                           </content>
+                        </ScrollPane>
+                     </children>
+                     <padding>
+                        <Insets bottom="2.0" left="2.0" right="2.0" top="2.0" />
+                     </padding>
+                  </VBox>
+               </content>
+               <padding>
+                  <Insets bottom="2.0" left="2.0" right="2.0" top="2.0" />
+               </padding>
+            </TitledPane>
+         </items>
+      </SplitPane>
+   </bottom>
+</BorderPane>

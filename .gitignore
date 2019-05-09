@@ -1,0 +1,9 @@
+.idea/
+target/
+Initializer.json
+defaultInitializer.json
+Suppliers.txt
+Processes.txt
+Locations.txt
+Items.txt
+out/

@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.BorderPane?>
+<BorderPane xmlns="http://javafx.com/javafx/8.0.172-ea" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.dgs.dapc.itemDB.javafx.main.MainController">
+   <center>
+      <TabPane fx:id="tabs" prefHeight="800" prefWidth="1000">
+          <Tab fx:id="itemsTab" closable="false" text="Locations of items">
+              <fx:include fx:id="items" source="tabs/items/ItemsTab.fxml" />
+          </Tab>
+          <Tab fx:id="sourcesTab" closable="false" text="Sources of items">
+              <fx:include fx:id="sources" source="tabs/sources/SourcesTab.fxml" />
+          </Tab>
+          <Tab fx:id="locationsTab" closable="false" text="Locations">
+              <fx:include fx:id="locations" source="tabs/locations/LocationsTab.fxml" />
+          </Tab>
+          <Tab fx:id="contactsTab" closable="false" text="Contacts">
+              <fx:include fx:id="contacts" source="tabs/contacts/ContactsTab.fxml" />
+          </Tab>
+          <Tab fx:id="designationsTab" closable="false" text="Designations">
+              <fx:include fx:id="designations" source="tabs/designations/DesignationsTab.fxml" />
+          </Tab>
+          <Tab fx:id="tagsTab" closable="false" text="Tags">
+              <fx:include fx:id="tags" source="tabs/tags/TagsTab.fxml" />
+          </Tab>
+          <Tab fx:id="utilTab"  closable="false" text="Util">
+              <fx:include fx:id="util" source="tabs/util/UtilTab.fxml" />
+          </Tab>
+       </TabPane>
+   </center>
+</BorderPane>

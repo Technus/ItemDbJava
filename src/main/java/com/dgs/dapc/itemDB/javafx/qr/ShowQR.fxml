@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.ScrollPane?>
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.effect.Glow?>
+<?import javafx.scene.image.ImageView?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.VBox?>
+
+<VBox spacing="4.0" xmlns="http://javafx.com/javafx/8.0.172-ea" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.dgs.dapc.itemDB.javafx.qr.ShowQRController">
+   <children>
+      <ScrollPane fitToHeight="true" fitToWidth="true" maxHeight="1.7976931348623157E308" pannable="true" VBox.vgrow="ALWAYS">
+         <content>
+            <ImageView fx:id="qrImage" fitHeight="150.0" fitWidth="128.0" pickOnBounds="true" preserveRatio="true" smooth="false" />
+         </content>
+      </ScrollPane>
+      <TextField fx:id="qrValueText" editable="false" maxWidth="1.7976931348623157E308" promptText="QR Value">
+         <effect>
+            <Glow />
+         </effect>
+      </TextField>
+      <HBox spacing="4.0">
+         <children>
+            <TextField fx:id="discriminatorText" editable="false" maxWidth="1.7976931348623157E308" promptText="Discriminator" HBox.hgrow="SOMETIMES">
+               <effect>
+                  <Glow />
+               </effect>
+            </TextField>
+            <TextField fx:id="objectIdText" editable="false" maxWidth="1.7976931348623157E308" promptText="Object ID" HBox.hgrow="SOMETIMES">
+               <effect>
+                  <Glow />
+               </effect>
+            </TextField>
+         </children>
+      </HBox>
+      <Button fx:id="printButton" defaultButton="true" disable="true" maxWidth="1.7976931348623157E308" mnemonicParsing="false" text="Print QR">
+         <VBox.margin>
+            <Insets />
+         </VBox.margin></Button>
+   </children>
+   <padding>
+      <Insets bottom="2.0" left="2.0" right="2.0" top="2.0" />
+   </padding>
+</VBox>

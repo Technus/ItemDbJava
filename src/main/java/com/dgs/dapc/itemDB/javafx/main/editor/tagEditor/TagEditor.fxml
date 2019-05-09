@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import com.dgs.dapc.itemDB.javafx.nullComboBox.NullCombo?>
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<ScrollPane fitToHeight="true" fitToWidth="true" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" prefHeight="400.0" prefWidth="300.0" xmlns="http://javafx.com/javafx/8.0.172-ea" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.dgs.dapc.itemDB.javafx.main.editor.tagEditor.TagEditorController">
+   <content>
+      <VBox prefWidth="300.0" spacing="4.0">
+         <children>
+            <HBox spacing="4.0">
+               <children>
+                  <ToggleButton fx:id="pinToggle" maxHeight="1.7976931348623157E308" mnemonicParsing="false" text="📌" />
+                  <GridPane hgap="4.0" maxWidth="1.7976931348623157E308" minHeight="-Infinity" vgap="4.0" HBox.hgrow="SOMETIMES">
+                     <columnConstraints>
+                        <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" />
+                        <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" />
+                     </columnConstraints>
+                     <rowConstraints>
+                        <RowConstraints minHeight="10.0" vgrow="SOMETIMES" />
+                        <RowConstraints minHeight="10.0" vgrow="SOMETIMES" />
+                     </rowConstraints>
+                     <children>
+                        <Button fx:id="saveButton" contentDisplay="RIGHT" defaultButton="true" maxWidth="1.7976931348623157E308" mnemonicParsing="false" onAction="#save" text="Save Tag" />
+                        <Button fx:id="showQR" maxWidth="1.7976931348623157E308" mnemonicParsing="false" onAction="#show" text="Show QR" GridPane.rowIndex="1" />
+                        <Button fx:id="printQR" maxWidth="1.7976931348623157E308" mnemonicParsing="false" onAction="#print" text="Print QR" GridPane.columnIndex="1" GridPane.rowIndex="1" />
+                        <Button fx:id="saveAndCloseButton" maxWidth="1.7976931348623157E308" mnemonicParsing="false" text="Save And Close" GridPane.columnIndex="1" />
+                     </children>
+                  </GridPane>
+               </children>
+            </HBox>
+            <TextField fx:id="nameInput" promptText="Name" VBox.vgrow="NEVER" />
+            <NullCombo fx:id="typeSelect" maxWidth="1.7976931348623157E308" promptText="Select Data Type" />
+            <NullCombo fx:id="converterSelect" maxWidth="1.7976931348623157E308" promptText="Select String Converter" />
+            <TextArea fx:id="detailsInput" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" prefHeight="337.0" prefWidth="133.0" promptText="Details/Description/Notes" VBox.vgrow="ALWAYS" />
+         </children>
+         <padding>
+            <Insets bottom="2.0" left="2.0" right="2.0" top="2.0" />
+         </padding>
+      </VBox>
+   </content>
+</ScrollPane>

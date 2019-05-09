@@ -1,0 +1,4 @@
+.combo-box-base > .arrow-button > .arrow  {
+    -fx-padding: 4 4 4 4; /* 2 4 2 4 */
+    -fx-shape: "M 400 250 L 550 250 L 550 150 L 700 300 L 550 450 L 550 350 L 400 350 L 400 250 Z";
+}

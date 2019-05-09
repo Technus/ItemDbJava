@@ -1,0 +1,197 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import com.dgs.dapc.itemDB.javafx.nullComboBox.NullCombo?>
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.Pagination?>
+<?import javafx.scene.control.ScrollPane?>
+<?import javafx.scene.control.Spinner?>
+<?import javafx.scene.control.SplitPane?>
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.control.TitledPane?>
+<?import javafx.scene.control.ToggleButton?>
+<?import javafx.scene.control.Tooltip?>
+<?import javafx.scene.control.TreeTableColumn?>
+<?import javafx.scene.control.TreeTableView?>
+<?import javafx.scene.layout.ColumnConstraints?>
+<?import javafx.scene.layout.GridPane?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.Pane?>
+<?import javafx.scene.layout.RowConstraints?>
+<?import javafx.scene.layout.VBox?>
+
+<SplitPane dividerPositions="0.15" prefHeight="600.0" prefWidth="800.0" xmlns="http://javafx.com/javafx/8.0.172-ea" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.dgs.dapc.itemDB.javafx.main.tabs.sources.SourcesTabController">
+<ScrollPane fitToHeight="true" fitToWidth="true" minWidth="-Infinity" prefWidth="300.0" SplitPane.resizableWithParent="false">
+    <VBox spacing="12.0">
+         <TitledPane text="QR Operations">
+            <content>
+               <VBox spacing="4.0">
+                  <children>
+                     <TextField fx:id="qrLinkInput" maxWidth="1.7976931348623157E308" promptText="Scan QR Here" />
+                  </children>
+                  <padding>
+                     <Insets bottom="2.0" left="2.0" right="2.0" top="2.0" />
+                  </padding>
+               </VBox>
+            </content>
+         </TitledPane>
+        <TitledPane text="Query">
+            <content>
+               <VBox spacing="4.0">
+                  <children>
+                     <HBox spacing="4.0">
+                        <children>
+                           <Button maxWidth="1.7976931348623157E308" mnemonicParsing="false" onAction="#reloadAll" text="Load All Records" HBox.hgrow="SOMETIMES" />
+                           <Button maxWidth="1.7976931348623157E308" mnemonicParsing="false" onAction="#clearQuery" text="Clear" HBox.hgrow="SOMETIMES" />
+                        </children>
+                     </HBox>
+                    <HBox spacing="4.0">
+                      <children>
+                        <ToggleButton fx:id="needsOrdering" maxWidth="1.7976931348623157E308" mnemonicParsing="false" text="Needs Ordering" HBox.hgrow="SOMETIMES" />
+                        <ToggleButton fx:id="stockLow" maxWidth="1.7976931348623157E308" mnemonicParsing="false" text="Stock Low" HBox.hgrow="SOMETIMES" />
+                      </children>
+                    </HBox>
+                     <HBox spacing="4.0">
+                        <children>
+                           <TextField fx:id="genericQueryInput" maxWidth="1.7976931348623157E308" onAction="#runSimpleQuery" promptText="General Search" HBox.hgrow="ALWAYS" />
+                           <ToggleButton fx:id="genericRegExp" maxHeight="1.7976931348623157E308" minWidth="-Infinity" mnemonicParsing="false" text="RegExp" HBox.hgrow="SOMETIMES">
+                              <tooltip>
+                                 <Tooltip text="Use RegExp" />
+                              </tooltip>
+                           </ToggleButton>
+                        </children>
+                     </HBox>
+                     <HBox maxWidth="1.7976931348623157E308" spacing="4.0">
+                        <children>
+                           <TextField fx:id="nameQueryInput" maxWidth="1.7976931348623157E308" onAction="#runSimpleQuery" promptText="Name" HBox.hgrow="ALWAYS" />
+                           <ToggleButton fx:id="nameRegExp" maxHeight="1.7976931348623157E308" minWidth="-Infinity" mnemonicParsing="false" text="RegExp" HBox.hgrow="SOMETIMES">
+                              <tooltip>
+                                 <Tooltip text="Use RegExp" />
+                              </tooltip>
+                           </ToggleButton>
+                        </children>
+                     </HBox>
+                     <HBox maxWidth="1.7976931348623157E308" spacing="4.0">
+                        <children>
+                           <TextField fx:id="serialQueryInput" maxWidth="1.7976931348623157E308" onAction="#runSimpleQuery" promptText="Serial" HBox.hgrow="ALWAYS" />
+                           <ToggleButton fx:id="serialRegExp" maxHeight="1.7976931348623157E308" minWidth="-Infinity" mnemonicParsing="false" text="RegExp" HBox.hgrow="SOMETIMES">
+                              <tooltip>
+                                 <Tooltip text="Use RegExp" />
+                              </tooltip>
+                           </ToggleButton>
+                        </children>
+                     </HBox>
+                      <NullCombo fx:id="containsTagQueryInput" maxWidth="1.7976931348623157E308" promptText="Contains Tag" />
+                      <NullCombo fx:id="containedInLocationQueryInput" maxWidth="1.7976931348623157E308" promptText="Contained In Location" />
+                      <NullCombo fx:id="containsDesignationQueryInput" maxWidth="1.7976931348623157E308" promptText="Contains Designation" />
+                      <NullCombo fx:id="containsSourceQueryInput" maxWidth="1.7976931348623157E308" promptText="Contains Source" />
+                     <Button defaultButton="true" maxWidth="1.7976931348623157E308" mnemonicParsing="false" onAction="#runSimpleQuery" text="Search" />
+                  </children>
+                  <padding>
+                     <Insets bottom="2.0" left="2.0" right="2.0" top="2.0" />
+                  </padding>
+               </VBox>
+            </content></TitledPane>
+         <TitledPane text="Edit">
+            <content>
+               <VBox spacing="4.0">
+                  <children>
+                     <HBox maxWidth="1.7976931348623157E308" spacing="4.0">
+                        <children>
+                           <Button maxWidth="1.7976931348623157E308" mnemonicParsing="false" onAction="#create" text="New Item" HBox.hgrow="ALWAYS" />
+                           <Button fx:id="newBasedOnButton" disable="true" maxWidth="1.7976931348623157E308" mnemonicParsing="false" onAction="#basedOn" text="New Based On" HBox.hgrow="ALWAYS" />
+                        </children>
+                     </HBox>
+                      <Button fx:id="removeButton" maxWidth="1.7976931348623157E308" mnemonicParsing="false" onAction="#removeSelected" text="Remove Selected" />
+                  </children>
+                  <padding>
+                     <Insets bottom="2.0" left="2.0" right="2.0" top="2.0" />
+                  </padding>
+               </VBox>
+            </content>
+         </TitledPane>
+         <VBox maxHeight="1.7976931348623157E308" VBox.vgrow="SOMETIMES">
+            <children>
+               <Pane maxHeight="1.7976931348623157E308" VBox.vgrow="SOMETIMES" />
+              <TitledPane text="Collapse and Expand">
+              <content>
+                <VBox spacing="4.0">
+                  <children>
+                    <HBox spacing="4.0">
+                      <children>
+                        <ToggleButton fx:id="expandToggle" maxWidth="1.7976931348623157E308" mnemonicParsing="false" text="Expand All" HBox.hgrow="SOMETIMES" />
+                      </children>
+                    </HBox>
+                  </children>
+                  <padding>
+                    <Insets bottom="2.0" left="2.0" right="2.0" top="2.0" />
+                  </padding>
+                </VBox>
+              </content>
+            </TitledPane>
+
+              <TitledPane text="Pagination">
+                  <content>
+                     <GridPane hgap="4.0" minWidth="0.0" vgap="4.0">
+                        <columnConstraints>
+                           <ColumnConstraints hgrow="ALWAYS" maxWidth="1.7976931348623157E308" prefWidth="200.0" />
+                           <ColumnConstraints fillWidth="false" hgrow="NEVER" minWidth="-Infinity" />
+                        </columnConstraints>
+                        <rowConstraints>
+                           <RowConstraints fillHeight="false" valignment="CENTER" vgrow="NEVER" />
+                           <RowConstraints fillHeight="false" valignment="CENTER" vgrow="NEVER" />
+                           <RowConstraints maxHeight="-Infinity" minHeight="-Infinity" valignment="TOP" vgrow="NEVER" />
+                          <RowConstraints fillHeight="false" valignment="CENTER" vgrow="NEVER" />
+                        </rowConstraints>
+                        <children>
+                           <Spinner fx:id="spinnerPerPage" editable="true" maxWidth="1.7976931348623157E308" minWidth="0.0" styleClass="split-arrows-horizontal" />
+                           <Spinner fx:id="spinnerPage" editable="true" maxWidth="1.7976931348623157E308" minWidth="0.0" styleClass="split-arrows-horizontal" GridPane.rowIndex="1" />
+                           <Label text="Page" GridPane.columnIndex="1" GridPane.rowIndex="1" />
+                           <Label text="Per Page" GridPane.columnIndex="1" />
+                           <Pagination fx:id="pagination" maxPageIndicatorCount="32" maxWidth="1.7976931348623157E308" minWidth="0.0" style="-fx-page-information-visible: false;" GridPane.columnSpan="2147483647" GridPane.rowIndex="2">
+                              <GridPane.margin>
+                                 <Insets bottom="-16.0" top="-18.0" />
+                              </GridPane.margin>
+                           </Pagination>
+                          <Label fx:id="countLabel" text="Label" GridPane.columnSpan="2147483647" GridPane.halignment="CENTER" GridPane.rowIndex="3" />
+                        </children>
+                        <padding>
+                           <Insets bottom="2.0" left="2.0" right="2.0" top="2.0" />
+                        </padding>
+                     </GridPane>
+                  </content>
+               </TitledPane>
+            </children>
+         </VBox>
+         <padding>
+            <Insets bottom="2.0" left="2.0" right="2.0" top="2.0" />
+         </padding>
+    </VBox>
+</ScrollPane>
+    <ScrollPane fitToHeight="true" fitToWidth="true" maxWidth="1.7976931348623157E308">
+        <TreeTableView fx:id="sourcesTree" editable="true" prefHeight="200.0" prefWidth="200.0" tableMenuButtonVisible="true">
+            <columns>
+                <TreeTableColumn fx:id="sourcesNameColumn" prefWidth="250.0" text="Name" />
+            <TreeTableColumn fx:id="sourcesManufacturerSupplierColumn" editable="false" prefWidth="150.0" text="Manufacturer&#10;Or Supplier" />
+                <TreeTableColumn fx:id="sourcesTagsParentColumn" editable="false" maxWidth="1.7976931348623157E308" minWidth="-1.0" prefWidth="-1.0" text="Tags">
+                    <columns>
+                        <TreeTableColumn fx:id="sourcesTagsColumn" editable="false" prefWidth="75.0" text="Summary" />
+                    </columns>
+                </TreeTableColumn>
+                <TreeTableColumn fx:id="sourcesDesignationColumn" editable="false" prefWidth="150.0" text="Designations" />
+                <TreeTableColumn fx:id="sourcesCountParentColumn" editable="false" prefWidth="75.0" text="Count">
+                    <columns>
+                        <TreeTableColumn fx:id="sourcesCountColumn" prefWidth="50.0" text="Qty." />
+                        <TreeTableColumn fx:id="sourcesMinColumn" prefWidth="50.0" text="Min." />
+                  <TreeTableColumn fx:id="sourcesOrderedColumn" prefWidth="50.0" text="Pur." />
+                    </columns>
+                </TreeTableColumn>
+                <TreeTableColumn fx:id="sourcesSupplierColumn" editable="false" prefWidth="75.0" text="Supplier" visible="false" />
+                <TreeTableColumn fx:id="sourcesLinkColumn" prefWidth="75.0" text="Link" />
+                <TreeTableColumn fx:id="sourcesSerialColumn" editable="false" prefWidth="100.0" text="Serial No." />
+                <TreeTableColumn fx:id="sourcesDetailsColumn" prefWidth="250.0" text="Details" />
+            </columns>
+        </TreeTableView>
+    </ScrollPane>
+</SplitPane>

@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.ButtonBar?>
+<?import javafx.scene.control.ScrollPane?>
+<?import javafx.scene.control.TreeTableColumn?>
+<?import javafx.scene.control.TreeTableView?>
+<?import javafx.scene.layout.BorderPane?>
+
+<BorderPane xmlns="http://javafx.com/javafx/8.0.172-ea" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.dgs.dapc.itemDB.javafx.main.queryBuilder.QueryBuilderController">
+   <center>
+      <ScrollPane fitToHeight="true" fitToWidth="true" prefHeight="295.0" prefWidth="531.0">
+         <content>
+            <TreeTableView fx:id="queryTree" prefHeight="200.0" prefWidth="200.0" tableMenuButtonVisible="true">
+              <columns>
+                <TreeTableColumn fx:id="logicColumn" prefWidth="75.0" text="And/Or" />
+                <TreeTableColumn fx:id="fieldColumn" prefWidth="75.0" text="Field" />
+                  <TreeTableColumn fx:id="operationColumn" prefWidth="75.0" text="Operation" />
+                  <TreeTableColumn fx:id="valueColumn" prefWidth="290.0" text="Value" />
+              </columns>
+            </TreeTableView>
+         </content>
+      </ScrollPane>
+   </center>
+   <top>
+      <ButtonBar buttonOrder="BUTTON_ORDER_NONE" BorderPane.alignment="CENTER">
+        <buttons>
+          <Button mnemonicParsing="false" text="Button" />
+        </buttons>
+         <padding>
+            <Insets bottom="2.0" left="2.0" right="2.0" top="2.0" />
+         </padding>
+      </ButtonBar>
+   </top>
+</BorderPane>
