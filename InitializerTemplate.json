@@ -1,0 +1,18 @@
+{
+  "_id" : "InitializerTemplate",
+  "collectionName" : "itemsBlob",
+  "languageTag" : "en-US",
+  "localFilesPath" : ".",
+  "remote" : {
+    "address" : "127.0.0.1",
+    "database" : "ItemDBO",
+    "authenticationDatabase" : "admin",
+    "port" : 27017,
+    "userName" : "name",
+    "password" : "pass"
+  },
+  "timestamp" : {
+    "$date" : "2018-12-05T07:04:43.525Z"
+  },
+  "collation": "pl"
+}
