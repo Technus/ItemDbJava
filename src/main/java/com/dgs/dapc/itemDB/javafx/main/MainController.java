@@ -45,6 +45,7 @@ import static com.mongodb.client.model.Accumulators.first;
 import static com.mongodb.client.model.Accumulators.push;
 import static com.mongodb.client.model.Aggregates.*;
 import static com.mongodb.client.model.Projections.exclude;
+import static com.mongodb.client.model.Sorts.descending;
 
 public class MainController implements Initializable,AutoCloseable {
     public HostServices hostServices;
@@ -122,10 +123,20 @@ public class MainController implements Initializable,AutoCloseable {
         @Override
         public void modifyAggregate(List<Bson> sort) {
             sort.add(unwind("$tags", new UnwindOptions().preserveNullAndEmptyArrays(true)));
-            sort.add(addFields(new Field<>("tagValue",new Document("$cond",
-                    new Document("if", new Document("$eq", Arrays.asList("$tags.tag", obj.getId())))
-                            .append("then", "$tags.value")
-                            .append("else", new BsonNull())))));//todo makes duplicates?
+            sort.add(addFields(new Field<>("hasTag",
+                            new Document("$cond",
+                                    new Document("if",
+                                            new Document("$eq", Arrays.asList("$tags.tag",obj.getId())))
+                                            .append("then", true)
+                                            .append("else", false))),
+                    new Field<>("tagValue",
+                            new Document("$cond",
+                                    new Document("if",
+                                            new Document("$eq", Arrays.asList("$tags.tag",obj.getId())))
+                                            .append("then", "$tags.value")
+                                            .append("else",
+                                                    new BsonNull())))));
+            sort.add(sort(descending("hasTag")));
             sort.add(group("$_id",
                     first("name", "$name"),
                     first("picture", "$picture"),
@@ -134,8 +145,7 @@ public class MainController implements Initializable,AutoCloseable {
                     first("sources", "$sources"),
                     first("placements", "$placements"),
                     push("tags", "$tags"),
-                    push("tagValue","$tagValue")));
-            sort.add(unwind("$tagValue", new UnwindOptions().preserveNullAndEmptyArrays(true)));
+                    first("tagValue", "$tagValue")));
             sort.add(Utility.sort(column, "tagValue"));
             sort.add(project(exclude("tagValue")));
         }
