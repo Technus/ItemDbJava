@@ -106,7 +106,7 @@ public class ItemsTabController implements Initializable {
         });
 
         qrModeSelect.setItems(new ObservableListWrapper<>(Arrays.asList(UtilTabController.ModeQR.values())));
-        qrModeSelect.setValue(UtilTabController.ModeQR.EDIT);
+        qrModeSelect.setValue(UtilTabController.ModeQR.QUERY);
 
         SpinnerValueFactory.IntegerSpinnerValueFactory integerSpinnerValueFactory1 =
                 new SpinnerValueFactory.IntegerSpinnerValueFactory(1, Integer.MAX_VALUE, 50);
