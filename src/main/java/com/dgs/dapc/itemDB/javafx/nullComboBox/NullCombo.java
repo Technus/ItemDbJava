@@ -69,7 +69,7 @@ public class NullCombo<T> extends TextField {
 
     {
         setPromptText("Select");
-        setStyle("-fx-control-inner-background: derive(-fx-base,+7%);");
+        setStyle("-fx-control-inner-background: derive(-fx-base,+8%);");
         nullString.set("Deselect");
         nullItem.setStyle("-fx-text-fill:-fx-prompt-text-fill;");
 
@@ -134,7 +134,7 @@ public class NullCombo<T> extends TextField {
         //});
         focusedProperty().addListener((observable, oldValue, newValue) -> {
             if(newValue){
-                showProperly();
+                //showProperly();
                 selectAll();
             }else{
                 commitEdit();
