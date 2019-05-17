@@ -151,9 +151,9 @@ public class PlacementEditorController implements IWindowInitialize {
             });
 
             locationSelect.setRegexPredicate();
-            locationSelect.setNullObject(new Location("Deselect Location",null,null));
+            locationSelect.setNullString("Deselect Location");
             locationSelect.setBackingList(Location.COLLECTION.readableAndSortableList);
-            Platform.runLater(()->locationSelect.setValue(this.placement.getLocation()));
+            Platform.runLater(()->locationSelect.setNullableValue(this.placement.getLocation()));
             locationSelect.nullableValueProperty().addListener((observable, oldValue, newValue) -> placement.setLocation(newValue));
 
             {
@@ -206,7 +206,7 @@ public class PlacementEditorController implements IWindowInitialize {
             designationsList.setRowFactory(tv -> {
                 TableRow<Designation> row = new TableRow<>();
                 row.addEventFilter(MouseEvent.MOUSE_PRESSED, (MouseEvent e) -> {
-                    if (e.getClickCount() % 2 == 0 && e.getButton().equals(MouseButton.PRIMARY))
+                    if (e.getClickCount() == 2 && e.getButton()==MouseButton.PRIMARY)
                         e.consume();
                 });
                 row.setOnMouseClicked(event -> {
@@ -224,7 +224,7 @@ public class PlacementEditorController implements IWindowInitialize {
             designationsNameColumn.setCellValueFactory(param -> param.getValue().nameProperty());
             designationsDetailsColumn.setCellValueFactory(param -> param.getValue().detailsProperty());
             designationSelect.setRegexPredicate();
-            designationSelect.setNullObject(new Designation("Deselect Designation",null,null));
+            designationSelect.setNullString("Deselect Designation");
             designationSelect.setBackingList(Designation.COLLECTION.readableAndSortableList);
             designationAdd.disableProperty().bind(new BooleanBinding() {
                 {
@@ -293,7 +293,7 @@ public class PlacementEditorController implements IWindowInitialize {
     public void designationAdd(ActionEvent actionEvent) {
         Designation designation=designationSelect.getNullableValue();
         placement.designationsProperty().add(designation);
-        designationSelect.setValue(null);
+        designationSelect.setNullableValue(null);
     }
 
     public void designationClear(ActionEvent actionEvent) {

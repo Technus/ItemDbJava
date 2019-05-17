@@ -1,27 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
 <?import com.dgs.dapc.itemDB.javafx.nullComboBox.NullCombo?>
-<?import javafx.geometry.Insets?>
-<?import javafx.scene.control.Button?>
-<?import javafx.scene.control.ComboBox?>
-<?import javafx.scene.control.Label?>
-<?import javafx.scene.control.Pagination?>
-<?import javafx.scene.control.ScrollPane?>
-<?import javafx.scene.control.Spinner?>
-<?import javafx.scene.control.SplitPane?>
-<?import javafx.scene.control.TextField?>
-<?import javafx.scene.control.TitledPane?>
-<?import javafx.scene.control.ToggleButton?>
-<?import javafx.scene.control.Tooltip?>
-<?import javafx.scene.control.TreeTableColumn?>
-<?import javafx.scene.control.TreeTableView?>
-<?import javafx.scene.layout.ColumnConstraints?>
-<?import javafx.scene.layout.GridPane?>
-<?import javafx.scene.layout.HBox?>
-<?import javafx.scene.layout.Pane?>
-<?import javafx.scene.layout.RowConstraints?>
-<?import javafx.scene.layout.VBox?>
-
+<?import javafx.geometry.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
 <SplitPane dividerPositions="0.15" prefHeight="600.0" prefWidth="800.0" xmlns="http://javafx.com/javafx/8.0.172-ea" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.dgs.dapc.itemDB.javafx.main.tabs.items.ItemsTabController">
     <ScrollPane fitToHeight="true" fitToWidth="true" minWidth="-Infinity" prefWidth="300.0" SplitPane.resizableWithParent="false">
         <VBox spacing="12.0">
@@ -106,6 +88,7 @@
                         </children>
                      </HBox>
                      <Button fx:id="removeButton" maxWidth="1.7976931348623157E308" mnemonicParsing="false" onAction="#removeSelected" text="Remove Selected" />
+                     <Button disable="true" maxWidth="1.7976931348623157E308" mnemonicParsing="false" onAction="#editFound" text="Edit Found" />
                   </children>
                   <padding>
                      <Insets bottom="2.0" left="2.0" right="2.0" top="2.0" />
@@ -171,7 +154,7 @@
     <ScrollPane fitToHeight="true" fitToWidth="true" maxWidth="1.7976931348623157E308">
         <TreeTableView fx:id="itemsTree" editable="true" prefHeight="200.0" prefWidth="200.0" tableMenuButtonVisible="true">
             <columns>
-                <TreeTableColumn fx:id="itemsNameColumn" prefWidth="250.0" text="Name" />
+                <TreeTableColumn fx:id="itemsNameColumn" prefWidth="285.0" text="Name" />
               <TreeTableColumn fx:id="itemsManufacturerColumn" editable="false" prefWidth="150.0" text="Manufacturer" />
 
               <TreeTableColumn fx:id="itemsTagsParentColumn" editable="false" maxWidth="1.7976931348623157E308" minWidth="-1.0" prefWidth="-1.0" text="Tags">

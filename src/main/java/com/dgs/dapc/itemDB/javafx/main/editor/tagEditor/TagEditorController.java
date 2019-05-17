@@ -83,28 +83,16 @@ public class TagEditorController implements IWindowInitialize {
             detailsInput.textProperty().bindBidirectional(this.tag.detailsProperty());
 
             typeSelect.setRegexPredicate();
-            typeSelect.setNullText("Deselect Data Type");
+            typeSelect.setNullString("Deselect Data Type");
             typeSelect.setBackingList(Tag.TYPES_LIST);
-            typeSelect.setValue(this.tag.getType());
+            typeSelect.setNullableValue(this.tag.getType());
             typeSelect.nullableValueProperty().addListener((observable, oldValue, newValue) -> tag.setType(newValue));
-            typeSelect.setFilter(t -> {
-                if(t==null){
-                    return false;
-                }
-                return t.toString().toLowerCase().contains(typeSelect.getEditor().textProperty().getValueSafe().toLowerCase());
-            });
 
             converterSelect.setRegexPredicate();
-            converterSelect.setNullText("Deselect String Converter");
+            converterSelect.setNullString("Deselect String Converter");
             converterSelect.setBackingList(Tag.CONVERTERS_LIST);
-            converterSelect.setValue(this.tag.getConverter());
+            converterSelect.setNullableValue(this.tag.getConverter());
             converterSelect.nullableValueProperty().addListener((observable, oldValue, newValue) -> tag.setConverter(newValue));
-            converterSelect.setFilter(t -> {
-                if(t==null){
-                    return false;
-                }
-                return t.toString().toLowerCase().contains(converterSelect.getEditor().textProperty().getValueSafe().toLowerCase());
-            });
         }
     }
 

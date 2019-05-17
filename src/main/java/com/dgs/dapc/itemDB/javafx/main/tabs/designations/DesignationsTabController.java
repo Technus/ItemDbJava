@@ -32,7 +32,7 @@ public class DesignationsTabController implements Initializable {
         designationsTable.setRowFactory( tv -> {
             TableRow<Designation> row = new TableRow<>();
             row.addEventFilter(MouseEvent.MOUSE_PRESSED, (MouseEvent e) -> {
-                if (e.getClickCount() % 2 == 0 && e.getButton().equals(MouseButton.PRIMARY))
+                if (e.getClickCount() == 2 && e.getButton()==MouseButton.PRIMARY)
                     e.consume();
             });
             row.setOnMouseClicked(event -> {
@@ -105,7 +105,7 @@ public class DesignationsTabController implements Initializable {
         Designation designation=designationsTable.getSelectionModel().getSelectedItem();
         if(ButtonType.OK==new Alert(Alert.AlertType.CONFIRMATION,"Remove "+designation+" ?").showAndWait().orElse(ButtonType.CANCEL)) {
             mainController.model.logic.getDesignationCollection().deleteOne(new Document("_id", designation.getId()));
-            designationsTable.getItems().remove(designation);
+            Designation.COLLECTION.map.remove(designation.getId());
         }
     }
 }

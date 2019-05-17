@@ -10,6 +10,7 @@ import com.dgs.dapc.itemDB.javafx.main.editor.itemEditor.ItemEditorController;
 import com.dgs.dapc.itemDB.javafx.main.editor.itemEditor.placementEditor.PlacementEditorController;
 import com.dgs.dapc.itemDB.javafx.main.tabs.util.UtilTabController;
 import com.dgs.dapc.itemDB.javafx.nullComboBox.NullCombo;
+import com.github.technus.dbAdditions.mongoDB.pojo.Tuple2;
 import com.mongodb.BasicDBObject;
 import com.mongodb.QueryBuilder;
 import com.mongodb.client.MongoCollection;
@@ -92,6 +93,7 @@ public class ItemsTabController implements Initializable {
     public ToggleButton stockLow;
     public Label countLabel;
     public ToggleButton expandToggle;
+
 
     private ObservableList<Bson> queryList = FXCollections.observableArrayList();
     private ObservableList<Bson> sortingList = FXCollections.observableArrayList();
@@ -176,19 +178,23 @@ public class ItemsTabController implements Initializable {
             @SuppressWarnings("unchecked")
             @Override
             protected Object computeValue() {
-                if (mainController != null && queryList.size() > 0) {
-                    ArrayList<Bson> aggregation = new ArrayList<>();
-                    aggregation.addAll(queryList);
-                    aggregation.addAll(sortingList);
-                    aggregation.add(Aggregates.skip(spinnerPerPage.getValue() * pagination.getCurrentPageIndex()));
-                    aggregation.add(Aggregates.limit(spinnerPerPage.getValue()));
-                    MongoCollection<Item> collection = mainController.model.logic.getItemsCollection();
-                    List<TreeItem<Object>> list=new ArrayList<>();
-                    for (Item item : collection.aggregate(aggregation).allowDiskUse(true).collation(mainController.model.logic.getCollation())) {
-                        list.add(item.getTreeItemPlacements());
+                if (mainController != null) {
+                    if(queryList.size()>0){
+                        ArrayList<Bson> aggregation = new ArrayList<>();
+                        aggregation.addAll(queryList);
+                        aggregation.addAll(sortingList);
+                        aggregation.add(Aggregates.skip(spinnerPerPage.getValue() * pagination.getCurrentPageIndex()));
+                        aggregation.add(Aggregates.limit(spinnerPerPage.getValue()));
+                        List<TreeItem<Object>> list=new ArrayList<>();
+                        for (Item item : mainController.model.logic.getItemsCollection()
+                                .aggregate(aggregation).allowDiskUse(true).collation(mainController.model.logic.getCollation())) {
+                            list.add(item.getTreeItemPlacements());
+                        }
+                        itemsTree.rootProperty().get().getChildren().setAll(list);
+                        Utility.setExpandRecursively(itemsTree.getRoot(),expandToggle.isSelected());
+                    }else{
+                        itemsTree.rootProperty().get().getChildren().clear();
                     }
-                    itemsTree.rootProperty().get().getChildren().setAll(list);
-                    Utility.setExpandRecursively(itemsTree.getRoot(),expandToggle.isSelected());
                 }
 
                 return Item.createPlacementsPageRoot().getValue();
@@ -207,11 +213,11 @@ public class ItemsTabController implements Initializable {
                 }
             });
             row.addEventFilter(MouseEvent.MOUSE_PRESSED, (MouseEvent e) -> {
-                if (e.getClickCount() % 2 == 0 && e.getButton().equals(MouseButton.PRIMARY))
+                if (e.getClickCount() == 2 && e.getButton()==MouseButton.PRIMARY)
                     e.consume();
             });
             row.setOnMouseClicked(event -> {
-                if (event.getClickCount() == 2 && event.getButton()== MouseButton.PRIMARY && !row.isEmpty()) {
+                if (event.getClickCount() == 2 && event.getButton() == MouseButton.PRIMARY && !row.isEmpty()) {
                     openEditor(row.getTreeItem());
                     event.consume();
                 }
@@ -434,14 +440,14 @@ public class ItemsTabController implements Initializable {
         });
 
         containsTagQueryInput.setRegexPredicate();
-        containsTagQueryInput.setNullObject(new Tag("Deselect Tag", null, null));
+        containsTagQueryInput.setNullString("Deselect Tag");
         containsTagQueryInput.setBackingList(Tag.COLLECTION.readableAndSortableList);
-        containsTagQueryInput.setBackingList(Tag.COLLECTION.readableAndSortableList);containsTagQueryInput.nullableValueProperty().addListener(new ChangeListener<Tag>() {
+        containsTagQueryInput.nullableValueProperty().addListener(new ChangeListener<Tag>() {
             private TreeTableColumn column;
 
             @Override
             public void changed(ObservableValue<? extends Tag> observable, Tag oldValue, Tag newValue) {
-                if (containsTagQueryInput.isNullSelected()) {
+                if (newValue==null) {
                     if(column!=null) {
                         column.setVisible(false);
                         column=null;
@@ -458,13 +464,13 @@ public class ItemsTabController implements Initializable {
             }
         });
         containsDesignationQueryInput.setRegexPredicate();
-        containsDesignationQueryInput.setNullObject(new Designation("Deselect Designation",null,null));
+        containsDesignationQueryInput.setNullString("Deselect Designation");
         containsDesignationQueryInput.setBackingList(Designation.COLLECTION.readableAndSortableList);
         containedInLocationQueryInput.setRegexPredicate();
-        containedInLocationQueryInput.setNullObject(new Location("Deselect Location",null,null));
+        containedInLocationQueryInput.setNullString("Deselect Location");
         containedInLocationQueryInput.setBackingList(Location.COLLECTION.readableAndSortableList);
         containsSourceQueryInput.setRegexPredicate();
-        containsSourceQueryInput.setNullObject(new Contact("Deselect Contact",null,null,null));
+        containsSourceQueryInput.setNullString("Deselect Contact");
         containsSourceQueryInput.setBackingList(Contact.COLLECTION.readableAndSortableList);
 
         qrLinkInput.textProperty().addListener((observable, oldValue, newValue) -> {
@@ -690,16 +696,16 @@ public class ItemsTabController implements Initializable {
 
     public void appendContains(QueryBuilder queryBuilder){
         if(!containsTagQueryInput.isNullSelected()){
-            queryBuilder.and(QueryBuilder.start().put("tags.tag").is(containsTagQueryInput.getValue().getId()).get());
+            queryBuilder.and(QueryBuilder.start().put("tags.tag").is(containsTagQueryInput.getNullableValue().getId()).get());
         }
         if(!containedInLocationQueryInput.isNullSelected()){
-            queryBuilder.and(QueryBuilder.start().put("placements.locationId").in(containedInLocationQueryInput.getValue().withAllChildren().stream().map(Location::getId).collect(Collectors.toList())).get());
+            queryBuilder.and(QueryBuilder.start().put("placements.locationId").in(containedInLocationQueryInput.getNullableValue().withAllChildren().stream().map(Location::getId).collect(Collectors.toList())).get());
         }
         if(!containsDesignationQueryInput.isNullSelected()){
-            queryBuilder.and(QueryBuilder.start().put("placements.designationsId").is(containsDesignationQueryInput.getValue().getId()).get());
+            queryBuilder.and(QueryBuilder.start().put("placements.designationsId").is(containsDesignationQueryInput.getNullableValue().getId()).get());
         }
         if(!containsSourceQueryInput.isNullSelected()){
-            queryBuilder.and(QueryBuilder.start().put("placements.sources.supplierId").is(containsSourceQueryInput.getValue().getId()).get());
+            queryBuilder.and(QueryBuilder.start().put("placements.sources.supplierId").is(containsSourceQueryInput.getNullableValue().getId()).get());
         }
     }
 
@@ -715,8 +721,8 @@ public class ItemsTabController implements Initializable {
         if (o.getValue() instanceof Item) {
             List<TreeItem> placements = new ArrayList<>();
             ((Item) o.getValue()).placementsProperty().forEach(placementTreeItem -> {
-                if ((containedInLocationQueryInput.isNullSelected() || containedInLocationQueryInput.getValue().getId().equals(placementTreeItem.getValue().getLocationId())) &&
-                    (containsDesignationQueryInput.isNullSelected() || placementTreeItem.getValue().getDesignationsId().contains(containsDesignationQueryInput.getValue().getId()))) {
+                if ((containedInLocationQueryInput.isNullSelected() || containedInLocationQueryInput.getNullableValue().getId().equals(placementTreeItem.getValue().getLocationId())) &&
+                    (containsDesignationQueryInput.isNullSelected() || placementTreeItem.getValue().getDesignationsId().contains(containsDesignationQueryInput.getNullableValue().getId()))) {
                     placements.add(placementTreeItem);
                 }
             });
@@ -830,22 +836,22 @@ public class ItemsTabController implements Initializable {
                 break;
             }
             case Location.PREFIX: {
-                containedInLocationQueryInput.getSelectionModel().select(Location.COLLECTION.getAndMakeIfMissing(did.id));
+                containedInLocationQueryInput.setNullableValue(Location.COLLECTION.getAndMakeIfMissing(did.id));
                 runSimpleQuery();
                 break;
             }
             case Tag.PREFIX: {
-                containsTagQueryInput.getSelectionModel().select(Tag.COLLECTION.getAndMakeIfMissing(did.id));
+                containsTagQueryInput.setNullableValue(Tag.COLLECTION.getAndMakeIfMissing(did.id));
                 runSimpleQuery();
                 break;
             }
             case Designation.PREFIX: {
-                containsDesignationQueryInput.getSelectionModel().select(Designation.COLLECTION.getAndMakeIfMissing(did.id));
+                containsDesignationQueryInput.setNullableValue(Designation.COLLECTION.getAndMakeIfMissing(did.id));
                 runSimpleQuery();
                 break;
             }
             case Contact.PREFIX:{
-                containsSourceQueryInput.getSelectionModel().select(Contact.COLLECTION.getAndMakeIfMissing(did.id));
+                containsSourceQueryInput.setNullableValue(Contact.COLLECTION.getAndMakeIfMissing(did.id));
                 runSimpleQuery();
                 break;
             }
@@ -855,22 +861,22 @@ public class ItemsTabController implements Initializable {
                 break;
             }
             case UtilTabController.CLEAR_DESIGNATION:{
-                containsDesignationQueryInput.getSelectionModel().select(0);
+                containsDesignationQueryInput.setNullableValue(null);
                 runSimpleQuery();
                 break;
             }
             case UtilTabController.CLEAR_LOCATION:{
-                containedInLocationQueryInput.getSelectionModel().select(0);
+                containedInLocationQueryInput.setNullableValue(null);
                 runSimpleQuery();
                 break;
             }
             case UtilTabController.CLEAR_TAG:{
-                containsTagQueryInput.getSelectionModel().select(0);
+                containsTagQueryInput.setNullableValue(null);
                 runSimpleQuery();
                 break;
             }
             case UtilTabController.CLEAR_CONTACT:{
-                containsSourceQueryInput.getSelectionModel().select(0);
+                containsSourceQueryInput.setNullableValue(null);
                 runSimpleQuery();
                 break;
             }
@@ -945,12 +951,65 @@ public class ItemsTabController implements Initializable {
     }
 
     public void clearQuery(ActionEvent actionEvent) {
-        containedInLocationQueryInput.getSelectionModel().select(0);
-        containsTagQueryInput.getSelectionModel().select(0);
-        containsDesignationQueryInput.getSelectionModel().select(0);
-        containsSourceQueryInput.getSelectionModel().select(0);
+        containedInLocationQueryInput.setNullableValue(null);
+        containsTagQueryInput.setNullableValue(null);
+        containsDesignationQueryInput.setNullableValue(null);
+        containsSourceQueryInput.setNullableValue(null);
         serialQueryInput.setText(null);
         nameQueryInput.setText(null);
         genericQueryInput.setText(null);
+    }
+
+    public void editFound(ActionEvent actionEvent) {
+        if (mainController != null && queryList.size()>0) {
+            Designation designation=containsDesignationQueryInput.getNullableValue();
+
+            ArrayList<Bson> aggregation = new ArrayList<>();
+            aggregation.addAll(queryList);
+            aggregation.addAll(sortingList);
+            MongoCollection<Item> collection = mainController.model.logic.getItemsCollection();
+            List<TreeItem<Object>> list=new ArrayList<>();
+            for (Item item : collection.aggregate(aggregation).allowDiskUse(true).collation(mainController.model.logic.getCollation())) {
+                list.add(item.getTreeItemPlacements());
+            }
+            if(list.size()==0) {
+                return;
+            }
+
+            ArrayList<Tuple2<Item,Placement>> selectedPlacements=new ArrayList<>();
+
+            for (TreeItem<Object> itemTreeItem:list) {
+                if(itemTreeItem.getValue() instanceof Item){
+                    Placement placementCandidate=null;
+                    boolean foundWithDesignation=false;
+                    for (TreeItem<Object> placementTreeItem:itemTreeItem.getChildren()) {
+                        if(placementTreeItem.getValue() instanceof Placement){
+                            if(designation!=null && ((Placement) placementTreeItem.getValue()).designationsProperty().contains(designation)){
+                                //any found with designation matching is ok
+                                foundWithDesignation=true;
+                            }else if(foundWithDesignation){
+                                //only when there was no match with designation
+                                continue;
+                            }
+                            if(placementCandidate==null){
+                                //pick first
+                                placementCandidate=(Placement)placementTreeItem.getValue();
+                            }else if(placementCandidate.getCount()<((Placement)placementTreeItem.getValue()).getCount()){
+                                //pick the one with more!
+                                placementCandidate=(Placement)placementTreeItem.getValue();
+                            }
+                        }
+                    }
+                    if(placementCandidate!=null){
+                        selectedPlacements.add(new Tuple2<>((Item)itemTreeItem.getValue(),placementCandidate));
+                    }
+                }
+            }
+
+            Utility.Window<ChangesOverviewController> changes=Utility.loadFXML(ChangesOverviewController.class.getResource("ChangesOverview.fxml"),"Changes Overview");
+            changes.controller.setMainController(mainController);
+            changes.controller.setSelectedPlacements(selectedPlacements);
+            changes.stage.show();
+        }
     }
 }

@@ -170,20 +170,23 @@ public class SourcesTabController implements Initializable {
             @SuppressWarnings("unchecked")
             @Override
             protected Object computeValue() {
-                if (mainController != null && queryList.size() > 0) {
-                    ArrayList<Bson> aggregation = new ArrayList<>();
-                    aggregation.addAll(queryList);
-                    aggregation.addAll(sortingList);
-                    aggregation.add(Aggregates.skip(spinnerPerPage.getValue() * pagination.getCurrentPageIndex()));
-                    aggregation.add(Aggregates.limit(spinnerPerPage.getValue()));
-                    MongoCollection<Item> collection = mainController.model.logic.getItemsCollection();
-                    List<TreeItem<Object>> list=new ArrayList<>();
-                    for (Item item : collection.aggregate(aggregation).allowDiskUse(true).collation(mainController.model.logic.getCollation())) {
-                        list.add(item.getTreeItemSources());
+                if (mainController != null) {
+                    if (queryList.size() > 0) {
+                        ArrayList<Bson> aggregation = new ArrayList<>();
+                        aggregation.addAll(queryList);
+                        aggregation.addAll(sortingList);
+                        aggregation.add(Aggregates.skip(spinnerPerPage.getValue() * pagination.getCurrentPageIndex()));
+                        aggregation.add(Aggregates.limit(spinnerPerPage.getValue()));
+                        MongoCollection<Item> collection = mainController.model.logic.getItemsCollection();
+                        List<TreeItem<Object>> list = new ArrayList<>();
+                        for (Item item : collection.aggregate(aggregation).allowDiskUse(true).collation(mainController.model.logic.getCollation())) {
+                            list.add(item.getTreeItemSources());
+                        }
+                        sourcesTree.rootProperty().get().getChildren().setAll(list);
+                        Utility.setExpandRecursively(sourcesTree.getRoot(), expandToggle.isSelected());
+                    }else{
+                        sourcesTree.rootProperty().get().getChildren().clear();
                     }
-                    sourcesTree.rootProperty().get().getChildren().setAll(list);
-                    Utility.setExpandRecursively(sourcesTree.getRoot(),expandToggle.isSelected());
-
                 }
                 return Item.createSourcesPageRoot().getValue();
             }
@@ -201,7 +204,7 @@ public class SourcesTabController implements Initializable {
                 }
             });
             row.addEventFilter(MouseEvent.MOUSE_PRESSED, (MouseEvent e) -> {
-                if (e.getClickCount() % 2 == 0 && e.getButton().equals(MouseButton.PRIMARY))
+                if (e.getClickCount() == 2 && e.getButton()==MouseButton.PRIMARY)
                     e.consume();
             });
             row.setOnMouseClicked(event -> {
@@ -406,7 +409,7 @@ public class SourcesTabController implements Initializable {
             return null;
         });
         containsTagQueryInput.setRegexPredicate();
-        containsTagQueryInput.setNullObject(new Tag("Deselect Tag", null, null));
+        containsTagQueryInput.setNullString("Deselect Tag");
         containsTagQueryInput.setBackingList(Tag.COLLECTION.readableAndSortableList);containsTagQueryInput.nullableValueProperty().addListener(new ChangeListener<Tag>() {
             private TreeTableColumn column;
 
@@ -429,13 +432,13 @@ public class SourcesTabController implements Initializable {
             }
         });
         containsDesignationQueryInput.setRegexPredicate();
-        containsDesignationQueryInput.setNullObject(new Designation("Deselect Designation",null,null));
+        containsDesignationQueryInput.setNullString("Deselect Designation");
         containsDesignationQueryInput.setBackingList(Designation.COLLECTION.readableAndSortableList);
         containedInLocationQueryInput.setRegexPredicate();
-        containedInLocationQueryInput.setNullObject(new Location("Deselect Location",null,null));
+        containedInLocationQueryInput.setNullString("Deselect Location");
         containedInLocationQueryInput.setBackingList(Location.COLLECTION.readableAndSortableList);
         containsSourceQueryInput.setRegexPredicate();
-        containsSourceQueryInput.setNullObject(new Contact("Deselect Contact",null,null,null));
+        containsSourceQueryInput.setNullString("Deselect Contact");
         containsSourceQueryInput.setBackingList(Contact.COLLECTION.readableAndSortableList);
 
         newBasedOnButton.disableProperty().bind(new BooleanBinding() {
@@ -602,16 +605,16 @@ public class SourcesTabController implements Initializable {
             }
         }
         if(!containsTagQueryInput.isNullSelected()){
-            queryBuilder.and(QueryBuilder.start().put("tags.tag").is(containsTagQueryInput.getValue().getId()).get());
+            queryBuilder.and(QueryBuilder.start().put("tags.tag").is(containsTagQueryInput.getNullableValue().getId()).get());
         }
         if(!containedInLocationQueryInput.isNullSelected()){
-            queryBuilder.and(QueryBuilder.start().put("placements.locationId").in(containedInLocationQueryInput.getValue().withAllChildren().stream().map(Location::getId).collect(Collectors.toList())).get());
+            queryBuilder.and(QueryBuilder.start().put("placements.locationId").in(containedInLocationQueryInput.getNullableValue().withAllChildren().stream().map(Location::getId).collect(Collectors.toList())).get());
         }
         if(!containsDesignationQueryInput.isNullSelected()){
-            queryBuilder.and(QueryBuilder.start().put("placements.designationsId").is(containsDesignationQueryInput.getValue().getId()).get());
+            queryBuilder.and(QueryBuilder.start().put("placements.designationsId").is(containsDesignationQueryInput.getNullableValue().getId()).get());
         }
         if(!containsSourceQueryInput.isNullSelected()){
-            queryBuilder.and(QueryBuilder.start().put("placements.sources.supplierId").is(containsSourceQueryInput.getValue().getId()).get());
+            queryBuilder.and(QueryBuilder.start().put("placements.sources.supplierId").is(containsSourceQueryInput.getNullableValue().getId()).get());
         }
         queryBuilder.and(Utility.queryForClass(Item.class));
 
@@ -699,10 +702,10 @@ public class SourcesTabController implements Initializable {
     }
 
     public void clearQuery(ActionEvent actionEvent) {
-        containedInLocationQueryInput.getSelectionModel().select(0);
-        containsTagQueryInput.getSelectionModel().select(0);
-        containsDesignationQueryInput.getSelectionModel().select(0);
-        containsSourceQueryInput.getSelectionModel().select(0);
+        containedInLocationQueryInput.setNullableValue(null);
+        containsTagQueryInput.setNullableValue(null);
+        containsDesignationQueryInput.setNullableValue(null);
+        containsSourceQueryInput.setNullableValue(null);
         serialQueryInput.setText(null);
         nameQueryInput.setText(null);
         genericQueryInput.setText(null);

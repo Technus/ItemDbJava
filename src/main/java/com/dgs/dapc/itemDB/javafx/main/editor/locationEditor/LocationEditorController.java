@@ -95,9 +95,9 @@ public class LocationEditorController implements IWindowInitialize {
                 }
             });
             parentSelect.setRegexPredicate();
-            parentSelect.setNullObject(new Location("Deselect Location",null,null));
+            parentSelect.setNullString("Deselect Location");
             parentSelect.setBackingList(Location.COLLECTION.readableAndSortableList);
-            Platform.runLater(()->parentSelect.setValue(this.location.getParent()));
+            Platform.runLater(()->parentSelect.setNullableValue(this.location.getParent()));
             parentSelect.nullableValueProperty().addListener((observable, oldValue, newValue) -> location.setParent(newValue));
         }
     }

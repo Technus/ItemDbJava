@@ -152,7 +152,7 @@ public class ItemEditorController implements IWindowInitialize {
             manufacturersList.setRowFactory( tv -> {
                 TableRow<Contact> row = new TableRow<>();
                 row.addEventFilter(MouseEvent.MOUSE_PRESSED, (MouseEvent e) -> {
-                    if (e.getClickCount() % 2 == 0 && e.getButton().equals(MouseButton.PRIMARY))
+                    if (e.getClickCount() == 2 && e.getButton()==MouseButton.PRIMARY)
                         e.consume();
                 });
                 row.setOnMouseClicked(event -> {
@@ -188,7 +188,7 @@ public class ItemEditorController implements IWindowInitialize {
             tagsList.setRowFactory(tv -> {
                 TableRow<TagValue> row = new TableRow<>();
                 row.addEventFilter(MouseEvent.MOUSE_PRESSED, (MouseEvent e) -> {
-                    if (e.getClickCount() % 2 == 0 && e.getButton().equals(MouseButton.PRIMARY))
+                    if (e.getClickCount() == 2 && e.getButton()==MouseButton.PRIMARY)
                         e.consume();
                 });
                 row.setOnMouseClicked(event -> {
@@ -218,7 +218,7 @@ public class ItemEditorController implements IWindowInitialize {
             placementsTree.setRowFactory(tv -> {
                 TreeTableRow<Placement> row = new TreeTableRow<>();
                 row.addEventFilter(MouseEvent.MOUSE_PRESSED, (MouseEvent e) -> {
-                    if (e.getClickCount() % 2 == 0 && e.getButton().equals(MouseButton.PRIMARY))
+                    if (e.getClickCount() == 2 && e.getButton()==MouseButton.PRIMARY)
                         e.consume();
                 });
                 row.setOnMouseClicked(event -> {
@@ -332,7 +332,7 @@ public class ItemEditorController implements IWindowInitialize {
             sourcesTree.setRowFactory(tv -> {
                 TreeTableRow<Source> row = new TreeTableRow<>();
                 row.addEventFilter(MouseEvent.MOUSE_PRESSED, (MouseEvent e) -> {
-                    if (e.getClickCount() % 2 == 0 && e.getButton().equals(MouseButton.PRIMARY))
+                    if (e.getClickCount() == 2 && e.getButton()==MouseButton.PRIMARY)
                         e.consume();
                 });
                 row.setOnMouseClicked(event -> {
@@ -381,7 +381,7 @@ public class ItemEditorController implements IWindowInitialize {
             sourcesContactColumn.setCellValueFactory(param -> param.getValue().getValue().supplierNameProperty());
 
             manufacturerSelect.setRegexPredicate();
-            manufacturerSelect.setNullObject(new Contact("Deselect Contact",null,null,null));
+            manufacturerSelect.setNullString("Deselect Contact");
             manufacturerSelect.setBackingList(Contact.COLLECTION.readableAndSortableList);
             manufacturerAdd.disableProperty().bind(new BooleanBinding() {
                 {
@@ -424,7 +424,7 @@ public class ItemEditorController implements IWindowInitialize {
             });
 
             tagSelect.setRegexPredicate();
-            tagSelect.setNullObject(new Tag("Deselect Tag",null,null));
+            tagSelect.setNullString("Deselect Tag");
             tagSelect.setBackingList(Tag.COLLECTION.readableAndSortableList);
             tagAdd.disableProperty().bind(new BooleanBinding() {
                 {
@@ -541,7 +541,7 @@ public class ItemEditorController implements IWindowInitialize {
     public void manufacturerAdd(ActionEvent actionEvent) {
         Contact contact = manufacturerSelect.getNullableValue();
         item.manufacturersProperty().add(contact);
-        manufacturerSelect.setValue(null);
+        manufacturerSelect.setNullableValue(null);
     }
 
     public void manufacturerClear(ActionEvent actionEvent) {
@@ -566,7 +566,8 @@ public class ItemEditorController implements IWindowInitialize {
             window.controller.save(actionEvent);
         }else{
             window.stage.show();
-        }tagSelect.setValue(null);
+        }
+        tagSelect.setNullableValue(null);
     }
 
     public void tagRemove(ActionEvent actionEvent) {

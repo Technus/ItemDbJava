@@ -105,8 +105,9 @@ public class TagValueEditorController<T> implements IWindowInitialize {
             this.parent = parent;
             this.tagValue= parent.cloneObjectFully();
             tagSelect.setRegexPredicate();
-            tagSelect.setItems(Tag.COLLECTION.readableAndSortableList);
-            tagSelect.setValue(this.tagValue.getTag());
+            tagSelect.setBackingList(Tag.COLLECTION.readableAndSortableList);
+            tagSelect.setNullString("Deselect Tag");
+            tagSelect.setNullableValue(this.tagValue.getTag());
             tagSelect.nullableValueProperty().addListener((observable, oldValue, newValue) -> tagValue.setTag(newValue));
 
             valueInput.setText(this.tagValue.getValueString());
