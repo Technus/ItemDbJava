@@ -107,9 +107,9 @@ public class SourceEditorController implements IWindowInitialize {
             sourceURL.valueProperty().bindBidirectional(this.source.urlProperty());
             detailsInput.textProperty().bindBidirectional(this.source.detailsProperty());
             supplierSelect.setRegexPredicate();
-            supplierSelect.setNullObject(new Contact("Deselect Contact",null,null,null));
+            supplierSelect.setNullString("Deselect Contact");
             supplierSelect.setBackingList(Contact.COLLECTION.readableAndSortableList);
-            supplierSelect.setValue(this.source.getSupplier());
+            supplierSelect.setNullableValue(this.source.getSupplier());
             supplierSelect.nullableValueProperty().addListener((observable, oldValue, newValue) -> source.setSupplier(newValue));
         }
     }

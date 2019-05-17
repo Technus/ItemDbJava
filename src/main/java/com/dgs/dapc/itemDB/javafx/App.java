@@ -19,10 +19,8 @@ import java.util.Locale;
 
 public class App extends Application {
     /* todo:
-    - Alarmy, druk
-    - zestawy, przenoszenie sztuk między lokacjami
-    - grupowanie lokacji w Placements na podst. ich zagnieżdzania
-    - rozwijanie i zwijanie poziomów
+    - druk
+    - zestawy
     - location tab!
     - logging?
      */

@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.Spinner?>
+<?import javafx.scene.control.TableColumn?>
+<?import javafx.scene.control.TableView?>
+<?import javafx.scene.control.TitledPane?>
+<?import javafx.scene.control.ToggleButton?>
+<?import javafx.scene.layout.BorderPane?>
+<?import javafx.scene.layout.VBox?>
+
+<BorderPane prefHeight="600.0" prefWidth="800.0" xmlns="http://javafx.com/javafx/8.0.172-ea" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.dgs.dapc.itemDB.javafx.main.tabs.items.ChangesOverviewController">
+   <center>
+      <TableView fx:id="placementsTable" prefHeight="200.0" prefWidth="200.0" BorderPane.alignment="CENTER">
+        <columns>
+          <TableColumn prefWidth="75.0" text="Name" />
+          <TableColumn prefWidth="75.0" text="C2" />
+        </columns>
+      </TableView>
+   </center>
+   <left>
+      <VBox prefWidth="150.0" spacing="4.0" BorderPane.alignment="CENTER">
+         <children>
+            <ToggleButton fx:id="pinToggle" mnemonicParsing="false" text="📌" />
+            <Button fx:id="removeButton" maxWidth="1.7976931348623157E308" mnemonicParsing="false" onAction="#removeFromList" text="Remove from list" />
+            <TitledPane text="Add / Subtract">
+               <content>
+                  <VBox spacing="4.0">
+                     <children>
+                        <Spinner fx:id="countSpinner" editable="true" styleClass="split-arrows-horizontal" />
+                        <Button fx:id="addButton" maxWidth="1.7976931348623157E308" mnemonicParsing="false" onAction="#addToAll" text="Add to all" />
+                        <Button fx:id="subButton" maxWidth="1.7976931348623157E308" mnemonicParsing="false" onAction="#subFromAll" text="Take from all" />
+                     </children>
+                     <padding>
+                        <Insets bottom="2.0" left="2.0" right="2.0" top="2.0" />
+                     </padding>
+                  </VBox>
+               </content>
+            </TitledPane>
+         </children>
+         <padding>
+            <Insets bottom="2.0" left="2.0" right="2.0" top="2.0" />
+         </padding></VBox>
+   </left>
+</BorderPane>

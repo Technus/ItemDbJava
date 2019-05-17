@@ -34,7 +34,7 @@ public class TagsTabController implements Initializable {
         tagsTable.setRowFactory( tv -> {
             TableRow<Tag> row = new TableRow<>();
             row.addEventFilter(MouseEvent.MOUSE_PRESSED, (MouseEvent e) -> {
-                if (e.getClickCount() % 2 == 0 && e.getButton().equals(MouseButton.PRIMARY))
+                if (e.getClickCount() == 2 && e.getButton()==MouseButton.PRIMARY)
                     e.consume();
             });
             row.setOnMouseClicked(event -> {

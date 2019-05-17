@@ -21,6 +21,8 @@ import com.mongodb.client.model.Field;
 import com.mongodb.client.model.UnwindOptions;
 import javafx.application.HostServices;
 import javafx.application.Platform;
+import javafx.beans.value.ChangeListener;
+import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
 import javafx.collections.ListChangeListener;
 import javafx.collections.ObservableList;
@@ -162,6 +164,7 @@ public class MainController implements Initializable,AutoCloseable {
         column.setEditable(false);
         column.setPrefWidth(150);
         column.textProperty().bind(me.nameProperty());
+        column.setUserData(new TagColumnUserData(column,me));
         column.setCellValueFactory(param -> {
             if (param.getValue().getValue() instanceof Item) {
                 TagValue tagValue = ((Item) param.getValue().getValue()).tagsProperty().map.get(me.getId());
@@ -171,7 +174,6 @@ public class MainController implements Initializable,AutoCloseable {
             }
             return null;
         });
-        column.setUserData(new TagColumnUserData(column,me));
         column.setCellFactory(param -> {
             TextFieldTreeTableCell<Object,String> cell=new TextFieldTreeTableCell<>();
             cell.setOnMouseClicked(event -> {
@@ -230,12 +232,6 @@ public class MainController implements Initializable,AutoCloseable {
             }
         });
         additions.forEach(tagColumnAdder);
-        Platform.runLater(()->{
-            itemsController.itemsTree.resizeColumn(itemsController.itemsTagsParentColumn,1);
-            itemsController.itemsTree.resizeColumn(itemsController.itemsTagsParentColumn,-1);
-            sourcesController.sourcesTree.resizeColumn(sourcesController.sourcesTagsParentColumn,1);
-            sourcesController.sourcesTree.resizeColumn(sourcesController.sourcesTagsParentColumn,-1);
-        });
     };
 
     @Override
@@ -251,6 +247,15 @@ public class MainController implements Initializable,AutoCloseable {
                                                 tagsController.mainController =
                                                         utilController.mainController = this;
 
+        itemsTab.selectedProperty().addListener((observable, oldValue, newValue) -> {
+            if(newValue){
+                Platform.runLater(()->{
+                    itemsController.itemsTree.resizeColumn(itemsController.itemsTagsParentColumn,1);
+                    itemsController.itemsTree.resizeColumn(itemsController.itemsTagsParentColumn,-1);
+                    itemsController.itemsTree.refresh();
+                });
+            }
+        });
         itemsTab.setUserData((Runnable) () -> {
             if (editors.stream().noneMatch(editor -> editor instanceof ItemEditorController ||
                     editor instanceof PlacementEditorController ||
@@ -258,6 +263,15 @@ public class MainController implements Initializable,AutoCloseable {
                     editor instanceof SourceEditorController)) {
                 sourcesController.clearRecords();
                 itemsController.reloadRecords();
+            }
+        });
+        sourcesTab.selectedProperty().addListener((observable, oldValue, newValue) -> {
+            if(newValue){
+                Platform.runLater(()->{
+                    sourcesController.sourcesTree.resizeColumn(sourcesController.sourcesTagsParentColumn,1);
+                    sourcesController.sourcesTree.resizeColumn(sourcesController.sourcesTagsParentColumn,-1);
+                    sourcesController.sourcesTree.refresh();
+                });
             }
         });
         sourcesTab.setUserData((Runnable) () -> {

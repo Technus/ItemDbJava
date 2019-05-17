@@ -34,6 +34,7 @@ import org.bson.types.ObjectId;
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
+import java.text.Collator;
 import java.util.*;
 import java.util.function.Consumer;
 
@@ -255,7 +256,6 @@ public class MainLogic implements AutoCloseable {
 
     public void reloadTagCollection(){
         reloadCollection(Tag.COLLECTION.map,getTagCollection());
-        //todo causes parent tag column layout weirdness?
     }
 
     public MongoCollection<Designation> getDesignationCollection() {

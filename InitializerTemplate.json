@@ -14,5 +14,5 @@
   "timestamp" : {
     "$date" : "2018-12-05T07:04:43.525Z"
   },
-  "collation": "pl"
+  "collation": "en"
 }

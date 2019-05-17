@@ -41,7 +41,7 @@ public class LocationsTabController implements Initializable {
         locationsTree.setRowFactory(tv -> {
             TreeTableRow<Location> row = new TreeTableRow<>();
             row.addEventFilter(MouseEvent.MOUSE_PRESSED, (MouseEvent e) -> {
-                if (e.getClickCount() % 2 == 0 && e.getButton().equals(MouseButton.PRIMARY))
+                if (e.getClickCount() == 2 && e.getButton()==MouseButton.PRIMARY)
                     e.consume();
             });
             row.setOnMouseClicked(event -> {
