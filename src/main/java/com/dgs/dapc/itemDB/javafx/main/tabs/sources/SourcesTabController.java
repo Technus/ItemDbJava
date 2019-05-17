@@ -410,12 +410,13 @@ public class SourcesTabController implements Initializable {
         });
         containsTagQueryInput.setRegexPredicate();
         containsTagQueryInput.setNullString("Deselect Tag");
-        containsTagQueryInput.setBackingList(Tag.COLLECTION.readableAndSortableList);containsTagQueryInput.nullableValueProperty().addListener(new ChangeListener<Tag>() {
+        containsTagQueryInput.setBackingList(Tag.COLLECTION.readableAndSortableList);
+        containsTagQueryInput.nullableValueProperty().addListener(new ChangeListener<Tag>() {
             private TreeTableColumn column;
 
             @Override
             public void changed(ObservableValue<? extends Tag> observable, Tag oldValue, Tag newValue) {
-                if (containsTagQueryInput.isNullSelected()) {
+                if (newValue==null) {
                     if(column!=null) {
                         column.setVisible(false);
                         column=null;

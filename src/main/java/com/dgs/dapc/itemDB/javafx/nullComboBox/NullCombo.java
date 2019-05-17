@@ -17,75 +17,48 @@ import javafx.scene.layout.Region;
 
 import java.util.ArrayList;
 import java.util.Comparator;
+import java.util.Objects;
 import java.util.function.BiFunction;
 import java.util.regex.Pattern;
+import java.util.stream.Collectors;
 
 public class NullCombo<T> extends TextField {
     private final ContextMenu contextMenu=new ContextMenu();
     private final ObservableList<MenuItem> backingItems= FXCollections.observableArrayList();
-    {
-        backingItems.addListener((ListChangeListener<MenuItem>) c -> {
-            contextMenu.getItems().setAll(backingItems);
-            contextMenu.hide();
-        });
-    }
-
     private final SimpleObjectProperty<BiFunction<String,T,Boolean>> filter=new SimpleObjectProperty<>((s, t) -> true);
-    {
-        contextMenu.setMaxHeight(300);
-        contextMenu.setPrefHeight(200);
-        contextMenu.setMinHeight(100);
-        contextMenu.addEventHandler(Menu.ON_SHOWING, e -> {
-            Node content = contextMenu.getSkin().getNode();
-            if (content instanceof Region) {
-                ((Region) content).setMaxHeight(contextMenu.getMaxHeight());
-                ((Region) content).setMinHeight(contextMenu.getMinHeight());
-            }
-        });
-        contextMenu.setOpacity(0.95D);
-
-        setStyle("-fx-control-inner-background: derive(-fx-base,+7%);");
-
-        setOnMouseClicked(event -> {
-            if(!contextMenu.isShowing()){
-                contextMenu.show(NullCombo.this, Side.RIGHT, 0, 0);
-            }
-        });
-        setOnKeyTyped(event -> {
-            //if(event.getCharacter().charAt(0)=='\r'|| event.getCharacter().charAt(0)=='\n'){
-            //    commitEdit();
-            //    event.consume();
-            //}
-        });
-        setOnKeyPressed(event -> {
-            if(event.getCode() == KeyCode.ENTER){
-                commitEdit();
-                return;
-            }else if(event.getCode()==KeyCode.TAB || event.getCode()==KeyCode.ESCAPE){
-                return;
-            }
-            if(!contextMenu.isShowing()) {
-                contextMenu.show(NullCombo.this, Side.RIGHT, 0, 0);
-            }
-        });
-        textProperty().addListener((observable, oldValue, newValue) -> {
-            backingItems.forEach(this::setVisible);
-        });
-        filter.addListener((observable, oldValue, newValue) -> {
-            if(newValue==null){
-                setFilter((s,t)->true);
-            }else{
-                backingItems.forEach(this::setVisible);
-            }
-        });
-    }
-    private final SimpleBooleanProperty anyFocused=new SimpleBooleanProperty();
     private final SimpleStringProperty nullString =new SimpleStringProperty();
     private final MenuItem nullItem=new MenuItem();
-    {
-        nullItem.setStyle("-fx-text-fill:-fx-prompt-text-fill;");
-    }
-
+    private final ReadOnlyBooleanWrapper nullSelected =new ReadOnlyBooleanWrapper(true);
+    private final SimpleObjectProperty<ObservableList<T>> backingList=new SimpleObjectProperty<>();
+    private final ListChangeListener<T> changeListener= c -> {
+        ArrayList<MenuItem> work=new ArrayList<>();
+        while(c.next()){
+            if(c.wasRemoved() && c.getRemoved().size()>0){
+                backingItems.forEach(menuItem -> {
+                    if(menuItem!=nullItem && c.getRemoved().contains(menuItem.getUserData())){
+                        work.add(menuItem);
+                    }
+                });
+                if(work.size()>0) {
+                    backingItems.removeAll(work);
+                    work.clear();
+                }
+            }
+            if(c.wasAdded() && c.getAddedSubList().size()>0) {
+                c.getAddedSubList().forEach(t -> {
+                    MenuItem item = new MenuItem(t.toString());
+                    item.setUserData(t);
+                    setVisible(item);
+                    work.add(item);
+                });
+                backingItems.addAll(work);
+                work.clear();
+            }
+        }
+        if(!c.getList().contains(getNullableValue())){
+            setNullableValue(null);
+        }
+    };
     private final SimpleObjectProperty<T> nullableValue =new SimpleObjectProperty<T>(){
         @Override
         public void set(T newValue) {
@@ -93,24 +66,34 @@ public class NullCombo<T> extends TextField {
             setText(newValue==null?null:newValue.toString());
         }
     };
-    private final ReadOnlyBooleanWrapper nullSelected =new ReadOnlyBooleanWrapper(true);
+
     {
-        contextMenu.setOnHiding(event -> {
-            if(isFocused()){
-                Platform.runLater(()->{
-                    if(isFocused()) contextMenu.show(NullCombo.this,Side.RIGHT,0,0);
-                    else contextMenu.hide();
-                });
+        setPromptText("Select");
+        setStyle("-fx-control-inner-background: derive(-fx-base,+7%);");
+        nullString.set("Deselect");
+        nullItem.setStyle("-fx-text-fill:-fx-prompt-text-fill;");
+
+        contextMenu.setMaxHeight(300);
+        contextMenu.setPrefHeight(200);
+        contextMenu.setMinHeight(200);
+        contextMenu.addEventHandler(Menu.ON_SHOWING, e -> {
+            Node content = contextMenu.getSkin().getNode();
+            if (content instanceof Region) {
+                ((Region) content).setMaxHeight(contextMenu.getMaxHeight());
+                //((Region) content).setMinHeight(contextMenu.getMinHeight());
             }
         });
-        contextMenu.setOnShowing(event -> {
-            backingItems.remove(nullItem);
-            backingItems.forEach(menuItem -> {
-                menuItem.setVisible(true);
-            });
-            backingItems.sort(Comparator.comparing(menuItem -> menuItem.getUserData().toString()));
-            backingItems.add(0,nullItem);
-        });
+        contextMenu.setOpacity(0.95D);
+        //contextMenu.setOnHiding(event -> {
+        //    if(isFocused()){
+        //        Platform.runLater(()->{
+        //            if(isFocused()) {
+        //                showProperly();
+        //            }
+        //            else if(contextMenu.isShowing()) contextMenu.hide();
+        //        });
+        //    }
+        //});
         contextMenu.setOnAction(event -> {
             if(event.getTarget() instanceof MenuItem){
                 if(event.getTarget()==nullItem){
@@ -120,87 +103,86 @@ public class NullCombo<T> extends TextField {
                 }
             }
         });
-        anyFocused.bind(new BooleanBinding() {
-            {
-                bind();
-                bind(contextMenu.focusedProperty());
-            }
-            @Override
-            protected boolean computeValue() {
-                return isFocused()||contextMenu.isFocused();
-            }
+
+        textProperty().addListener((observable, oldValue, newValue) -> {
+            backingItems.forEach(this::setVisible);
+            backingItems.setAll(new ArrayList<>(backingItems));
         });
-        anyFocused.addListener((observable, oldValue, newValue) -> {
-            if(newValue){
-                contextMenu.show(NullCombo.this, Side.RIGHT,0,0);
-                selectAll();
-            }else{
-                if(contextMenu.isShowing()) {
-                    commitEdit();
-                } else if(getNullableValue()!=null) {
-                    setText(getNullableValue().toString());
-                }
-            }
-        });
+
         setOnAction(event -> {
             commitEdit();
         });
-        nullString.addListener((observable, oldValue, newValue) -> {
-            nullItem.setText(newValue);
-        });
-        nullString.set("Deselect");
-        setPromptText("Select");
-    }
+        setOnKeyTyped(event -> {
+            if(event.getCharacter().charAt(0)=='\r'|| event.getCharacter().charAt(0)=='\n'){
+                commitEdit();
+            }
 
-    private final ListChangeListener<T> changeListener= c -> {
-        ArrayList<MenuItem> toRemove=new ArrayList<>();
-        while(c.next()){
-            if(c.wasRemoved()){
-                backingItems.forEach(menuItem -> {
-                    if(menuItem!=nullItem && c.getRemoved().contains(menuItem.getUserData())){
-                        toRemove.add(menuItem);
-                    }
-                });
-                toRemove.forEach(menuItem -> backingItems.remove(menuItem));
-                toRemove.clear();
+        });
+        setOnKeyPressed(event -> {
+            if(event.getCode() == KeyCode.ENTER){
+                commitEdit();
             }
-            if(c.wasAdded()){
-                if(c.getAddedSubList().size()>0){
-                    c.getAddedSubList().forEach(t->{
-                        MenuItem item=new MenuItem(t.toString());
-                        item.setUserData(t);
-                        setVisible(item);
-                        backingItems.add(item);
-                    });
+        });
+        setOnMouseClicked(event -> {
+            if(!contextMenu.isShowing()) {
+                showProperly();
+            }
+            //setFocused(true);
+        });
+        //setOnDragDetected(event -> {
+        //    setFocused(false);
+        //});
+        focusedProperty().addListener((observable, oldValue, newValue) -> {
+            if(newValue){
+                showProperly();
+                selectAll();
+            }else{
+                commitEdit();
+                if(getNullableValue()!=null) {
+                    setText(getNullableValue().toString());
                 }
+                contextMenu.hide();
             }
-        }
-        if(!c.getList().contains(getNullableValue())){
-            setNullableValue(null);
-        }
-    };
-    private final SimpleObjectProperty<ObservableList<T>> backingList=new SimpleObjectProperty<>();
-    {
+        });
+
+        backingItems.addListener((ListChangeListener<MenuItem>) c -> {
+            contextMenu.getItems().setAll(backingItems.filtered(MenuItem::isVisible));
+            //contextMenu.hide();
+        });
         backingList.addListener((observable, oldValue, newValue) -> {
             if(oldValue!=null){
                 oldValue.removeListener(changeListener);
             }
-            backingItems.clear();
             if(newValue!=null){
-                newValue.addListener(changeListener);
+                ArrayList<MenuItem> items=new ArrayList<>();
+                items.add(nullItem);
                 newValue.forEach(t->{
                     MenuItem item=new MenuItem(t.toString());
                     item.setUserData(t);
                     setVisible(item);
-                    backingItems.add(item);
+                    items.add(item);
                 });
-                backingItems.add(0,nullItem);
+                backingItems.setAll(items);
+                newValue.addListener(changeListener);
                 if(!newValue.contains(getNullableValue())){
                     setNullableValue(null);
                 }
             }else{
+                backingItems.setAll(nullItem);
                 setNullableValue(null);
             }
+        });
+
+        filter.addListener((observable, oldValue, newValue) -> {
+            if(newValue==null){
+                setFilter((s,t)->true);
+            }else{
+                backingItems.stream().skip(1).forEach(this::setVisible);
+                backingItems.setAll(new ArrayList<>(backingItems));
+            }
+        });
+        nullString.addListener((observable, oldValue, newValue) -> {
+            nullItem.setText(newValue);
         });
         nullSelected.bind(new BooleanBinding() {
             {
@@ -213,25 +195,24 @@ public class NullCombo<T> extends TextField {
         });
     }
 
-    private void commitEdit(){
-        if(getText()==null || getText().length()==0){
-            setNullableValue(null);
-            return;
-        }
-        Object newVal=backingItems.stream()
-                .filter(MenuItem::isVisible)
-                .filter(menuItem -> menuItem!=nullItem)
-                .findFirst().orElse(nullItem).getUserData();
-        if(newVal==null){
-            setNullableValue(null);
-        }else {
-            setNullableValue((T)newVal);
-        }
-        selectAll();
-        contextMenu.hide();
+    private void showProperly(){
+        backingItems.stream().skip(1).forEach(menuItem -> {
+            if(!menuItem.isVisible()){
+                menuItem.setVisible(true);
+            }
+            menuItem.setText(menuItem.getUserData().toString());
+        });
+        backingItems.sort((o1, o2) -> {
+            if(o2==nullItem){
+                return 1;
+            }else if(o1==nullItem){
+                return -1;
+            }
+            return o1.textProperty().getValueSafe().compareTo(o2.textProperty().getValueSafe());
+        });
+        backingItems.setAll(new ArrayList<>(backingItems));
+        contextMenu.show(NullCombo.this,Side.RIGHT,0,0);
     }
-
-    private ArrayList<MenuItem> temp=new ArrayList<>();
 
     private void setVisible(MenuItem item){
         if(item!=nullItem){
@@ -242,6 +223,23 @@ public class NullCombo<T> extends TextField {
             }
         }
     }
+
+    private void commitEdit(){
+        if(getText()==null || getText().length()==0){
+            setNullableValue(null);
+            return;
+        }
+        Object newVal=contextMenu.getItems().stream()
+                .skip(1).findFirst().orElse(nullItem).getUserData();
+        if(newVal==null){
+            setNullableValue(null);
+        }else {
+            setNullableValue((T)newVal);
+        }
+        selectAll();
+    }
+
+    private ArrayList<MenuItem> temp=new ArrayList<>();
 
     public ObservableList getBackingList() {
         return backingList.get();
@@ -278,6 +276,9 @@ public class NullCombo<T> extends TextField {
     @Override
     protected void finalize() throws Throwable {
         super.finalize();
+        if(contextMenu.isShowing()){
+            contextMenu.hide();
+        }
         if(backingList.get()!=null){
             backingList.get().removeListener(changeListener);
         }
@@ -286,9 +287,12 @@ public class NullCombo<T> extends TextField {
     public void setRegexPredicate(){
         filter.set(new BiFunction<String, T, Boolean>() {
             private Pattern pattern = Pattern.compile("");
+            private String string="";
 
             @Override
             public Boolean apply(String s, T t) {
+                string=s;
+
                 try {
                     String regexp;
                     if(!s.startsWith("(?")){
