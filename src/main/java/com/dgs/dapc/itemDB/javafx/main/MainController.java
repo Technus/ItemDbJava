@@ -232,12 +232,6 @@ public class MainController implements Initializable,AutoCloseable {
             }
         });
         additions.forEach(tagColumnAdder);
-        Platform.runLater(()->{//todo might be useless
-            itemsController.itemsTree.resizeColumn(itemsController.itemsTagsParentColumn,1);
-            itemsController.itemsTree.resizeColumn(itemsController.itemsTagsParentColumn,-1);
-            sourcesController.sourcesTree.resizeColumn(sourcesController.sourcesTagsParentColumn,1);
-            sourcesController.sourcesTree.resizeColumn(sourcesController.sourcesTagsParentColumn,-1);
-        });
     };
 
     @Override
@@ -255,7 +249,11 @@ public class MainController implements Initializable,AutoCloseable {
 
         itemsTab.selectedProperty().addListener((observable, oldValue, newValue) -> {
             if(newValue){
-                Platform.runLater(()->itemsController.itemsTree.refresh());
+                Platform.runLater(()->{
+                    itemsController.itemsTree.resizeColumn(itemsController.itemsTagsParentColumn,1);
+                    itemsController.itemsTree.resizeColumn(itemsController.itemsTagsParentColumn,-1);
+                    itemsController.itemsTree.refresh();
+                });
             }
         });
         itemsTab.setUserData((Runnable) () -> {
@@ -269,7 +267,11 @@ public class MainController implements Initializable,AutoCloseable {
         });
         sourcesTab.selectedProperty().addListener((observable, oldValue, newValue) -> {
             if(newValue){
-                Platform.runLater(()->sourcesController.sourcesTree.refresh());
+                Platform.runLater(()->{
+                    sourcesController.sourcesTree.resizeColumn(sourcesController.sourcesTagsParentColumn,1);
+                    sourcesController.sourcesTree.resizeColumn(sourcesController.sourcesTagsParentColumn,-1);
+                    sourcesController.sourcesTree.refresh();
+                });
             }
         });
         sourcesTab.setUserData((Runnable) () -> {
