@@ -52,7 +52,7 @@ public class ItemEditorController implements IWindowInitialize {
     public TableColumn<TagValue, String> tagsValueColumn;
     public TableColumn<TagValue, String> tagsNameColumn;
 
-    public TreeTableView<Placement> placementsTree;//todo duplicates?
+    public TreeTableView<Placement> placementsTree;
     public TreeTableColumn<Placement, String> placementsNameColumn;
     public TreeTableColumn<Placement, String> placementsLocationColumn;
     public TreeTableColumn<Placement, String> placementsCoordinatesColumn;

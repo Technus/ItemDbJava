@@ -50,7 +50,6 @@ import static com.mongodb.client.model.Aggregates.*;
 import static com.mongodb.client.model.Filters.lt;
 import static com.mongodb.client.model.Projections.exclude;
 
-//todo actually sources tree?
 public class SourcesTabController implements Initializable {
     public MainController mainController;
 

@@ -256,7 +256,6 @@ public class MainLogic implements AutoCloseable {
 
     public void reloadTagCollection(){
         reloadCollection(Tag.COLLECTION.map,getTagCollection());
-        //todo causes parent tag column layout weirdness?
     }
 
     public MongoCollection<Designation> getDesignationCollection() {
