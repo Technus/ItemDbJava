@@ -14,10 +14,7 @@ import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
 import javafx.scene.control.TreeItem;
 import javafx.scene.control.TreeTableColumn;
-import javafx.stage.FileChooser;
-import javafx.stage.Modality;
-import javafx.stage.Stage;
-import javafx.stage.StageStyle;
+import javafx.stage.*;
 import javafx.util.StringConverter;
 import org.bson.BsonDocument;
 import org.bson.BsonString;
@@ -38,6 +35,7 @@ import java.nio.charset.Charset;
 import java.util.ArrayList;
 import java.util.BitSet;
 import java.util.List;
+import java.util.Random;
 import java.util.function.Supplier;
 import java.util.regex.Pattern;
 
@@ -297,16 +295,11 @@ public class Utility {
         }
     }
 
-    public static <T> Window<T> loadFXML(URL fxml) {
-        return loadFXML(fxml,"Unnamed",Modality.NONE,null);
+    public static <T> Window<T> loadFXML(URL fxml, String title, javafx.stage.Window parent) {
+        return loadFXML(fxml,title,Modality.NONE,parent);
     }
 
-
-    public static <T> Window<T> loadFXML(URL fxml,String title) {
-        return loadFXML(fxml,title,Modality.NONE,null);
-    }
-
-    public static <T> Window<T> loadFXML(URL fxml,String title,Modality modality,Stage parent) {
+    public static <T> Window<T> loadFXML(URL fxml,String title,Modality modality,javafx.stage.Window parent) {
         try {
             FXMLLoader loader = new FXMLLoader(fxml);
             Parent root = loader.load();
@@ -315,8 +308,12 @@ public class Utility {
             stage.setScene(new Scene(root));
             T controller=loader.getController();
             stage.setAlwaysOnTop(true);//added
-            stage.initOwner(parent);
             stage.setTitle(title);
+            if(parent!=null){
+                //stage.initOwner(parent);
+                stage.setX(parent.getX()+parent.getWidth()/5+new Random().nextDouble()*16);
+                stage.setY(parent.getY()+new Random().nextDouble()*16);
+            }
             if(controller instanceof IWindowInitialize){
                 ((IWindowInitialize) controller).initializeStage(stage);
             }

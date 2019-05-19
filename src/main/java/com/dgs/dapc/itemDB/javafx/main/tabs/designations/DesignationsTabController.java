@@ -38,7 +38,7 @@ public class DesignationsTabController implements Initializable {
             row.setOnMouseClicked(event -> {
                 if (event.getClickCount() == 2 && event.getButton()== MouseButton.PRIMARY && !row.isEmpty()) {
                     Designation rowData = row.getItem();
-                    Utility.Window<DesignationEditorController> window=Utility.loadFXML(DesignationEditorController.class.getResource("DesignationEditor.fxml"),"Designation Editor: "+rowData.getId().toHexString());
+                    Utility.Window<DesignationEditorController> window=Utility.loadFXML(DesignationEditorController.class.getResource("DesignationEditor.fxml"),"Designation Editor: "+rowData.getId().toHexString(),mainController.getStage());
                     window.controller.setMainController(mainController);
                     window.controller.setDesignation(rowData);
                     window.stage.show();
@@ -87,7 +87,7 @@ public class DesignationsTabController implements Initializable {
 
     public void create(ActionEvent actionEvent) {
         Designation designation=new Designation();
-        Utility.Window<DesignationEditorController> window=Utility.loadFXML(DesignationEditorController.class.getResource("DesignationEditor.fxml"),"Designation Editor: "+designation.getId().toHexString());
+        Utility.Window<DesignationEditorController> window=Utility.loadFXML(DesignationEditorController.class.getResource("DesignationEditor.fxml"),"Designation Editor: "+designation.getId().toHexString(),mainController.getStage());
         window.controller.setMainController(mainController);
         window.controller.setDesignation(designation);
         window.stage.show();
@@ -95,7 +95,7 @@ public class DesignationsTabController implements Initializable {
 
     public void basedOn(ActionEvent actionEvent) {
         Designation designation=designationsTable.getSelectionModel().getSelectedItem().cloneObjectData();
-        Utility.Window<DesignationEditorController> window=Utility.loadFXML(DesignationEditorController.class.getResource("DesignationEditor.fxml"),"Designation Editor: "+designation.getId().toHexString());
+        Utility.Window<DesignationEditorController> window=Utility.loadFXML(DesignationEditorController.class.getResource("DesignationEditor.fxml"),"Designation Editor: "+designation.getId().toHexString(),mainController.getStage());
         window.controller.setMainController(mainController);
         window.controller.setDesignation(designation);
         window.stage.show();

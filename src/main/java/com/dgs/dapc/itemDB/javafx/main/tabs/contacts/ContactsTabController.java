@@ -40,7 +40,7 @@ public class ContactsTabController implements Initializable {
             row.setOnMouseClicked(event -> {
                 if (event.getClickCount() == 2 && event.getButton()== MouseButton.PRIMARY && !row.isEmpty()) {
                     Contact rowData = row.getItem();
-                    Utility.Window<ContactEditorController> window=Utility.loadFXML(ContactEditorController.class.getResource("ContactEditor.fxml"),"Contact Editor: "+rowData.getId().toHexString());
+                    Utility.Window<ContactEditorController> window=Utility.loadFXML(ContactEditorController.class.getResource("ContactEditor.fxml"),"Contact Editor: "+rowData.getId().toHexString(),mainController.getStage());
                     window.controller.setMainController(mainController);
                     window.controller.setContact(rowData);
                     window.stage.show();
@@ -114,7 +114,7 @@ public class ContactsTabController implements Initializable {
 
     public void create(ActionEvent actionEvent) {
         Contact contact=new Contact();
-        Utility.Window<ContactEditorController> window=Utility.loadFXML(ContactEditorController.class.getResource("ContactEditor.fxml"),"Contact Editor: "+contact.getId().toHexString());
+        Utility.Window<ContactEditorController> window=Utility.loadFXML(ContactEditorController.class.getResource("ContactEditor.fxml"),"Contact Editor: "+contact.getId().toHexString(),mainController.getStage());
         window.controller.setMainController(mainController);
         window.controller.setContact(contact);
         window.stage.show();
@@ -122,7 +122,7 @@ public class ContactsTabController implements Initializable {
 
     public void basedOn(ActionEvent actionEvent) {
         Contact contact=contactsTable.getSelectionModel().getSelectedItem().cloneObjectData();
-        Utility.Window<ContactEditorController> window=Utility.loadFXML(ContactEditorController.class.getResource("ContactEditor.fxml"),"Contact Editor: "+contact.getId().toHexString());
+        Utility.Window<ContactEditorController> window=Utility.loadFXML(ContactEditorController.class.getResource("ContactEditor.fxml"),"Contact Editor: "+contact.getId().toHexString(),mainController.getStage());
         window.controller.setMainController(mainController);
         window.controller.setContact(contact);
         window.stage.show();

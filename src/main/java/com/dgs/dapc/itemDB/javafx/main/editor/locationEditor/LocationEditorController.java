@@ -107,7 +107,7 @@ public class LocationEditorController implements IWindowInitialize {
     }
 
     public void show(ActionEvent actionEvent) {
-        Utility.Window<ShowQRController> window=Utility.loadFXML(ShowQRController.class.getResource("ShowQR.fxml"),"QR View: "+parent.getDiscriminatedId().toString());
+        Utility.Window<ShowQRController> window=Utility.loadFXML(ShowQRController.class.getResource("ShowQR.fxml"),"QR View: "+parent.getDiscriminatedId().toString(),getStage());
         window.controller.setQrImage(parent.getDiscriminatedId());
         window.stage.show();
     }

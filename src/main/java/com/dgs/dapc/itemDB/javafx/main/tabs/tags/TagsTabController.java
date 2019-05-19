@@ -40,7 +40,7 @@ public class TagsTabController implements Initializable {
             row.setOnMouseClicked(event -> {
                 if (event.getClickCount() == 2 && event.getButton()== MouseButton.PRIMARY && !row.isEmpty()) {
                     Tag rowData = row.getItem();
-                    Utility.Window<TagEditorController> window=Utility.loadFXML(TagEditorController.class.getResource("TagEditor.fxml"),"Tag Editor: "+rowData.getId().toHexString());
+                    Utility.Window<TagEditorController> window=Utility.loadFXML(TagEditorController.class.getResource("TagEditor.fxml"),"Tag Editor: "+rowData.getId().toHexString(),mainController.getStage());
                     window.controller.setMainController(mainController);
                     window.controller.setTag(rowData);
                     window.stage.show();
@@ -93,7 +93,7 @@ public class TagsTabController implements Initializable {
 
     public void create(ActionEvent actionEvent) {
         Tag tag=new Tag();
-        Utility.Window<TagEditorController> window=Utility.loadFXML(TagEditorController.class.getResource("TagEditor.fxml"),"Tag Editor: "+tag.getId().toHexString());
+        Utility.Window<TagEditorController> window=Utility.loadFXML(TagEditorController.class.getResource("TagEditor.fxml"),"Tag Editor: "+tag.getId().toHexString(),mainController.getStage());
         window.controller.setMainController(mainController);
         window.controller.setTag(tag);
         window.stage.show();
@@ -101,7 +101,7 @@ public class TagsTabController implements Initializable {
 
     public void basedOn(ActionEvent actionEvent) {
         Tag tag=tagsTable.getSelectionModel().getSelectedItem().cloneObjectData();
-        Utility.Window<TagEditorController> window=Utility.loadFXML(TagEditorController.class.getResource("TagEditor.fxml"),"Tag Editor: "+tag.getId().toHexString());
+        Utility.Window<TagEditorController> window=Utility.loadFXML(TagEditorController.class.getResource("TagEditor.fxml"),"Tag Editor: "+tag.getId().toHexString(),mainController.getStage());
         window.controller.setMainController(mainController);
         window.controller.setTag(tag);
         window.stage.show();

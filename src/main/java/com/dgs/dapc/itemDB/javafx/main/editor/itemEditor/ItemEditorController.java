@@ -158,7 +158,7 @@ public class ItemEditorController implements IWindowInitialize {
                 row.setOnMouseClicked(event -> {
                     if (event.getClickCount() == 2 && event.getButton()== MouseButton.PRIMARY && !row.isEmpty()) {
                         Contact rowData = row.getItem();
-                        Utility.Window<ContactEditorController> window=Utility.loadFXML(ContactEditorController.class.getResource("ContactEditor.fxml"),"Contact Editor: "+rowData.getId().toHexString());
+                        Utility.Window<ContactEditorController> window=Utility.loadFXML(ContactEditorController.class.getResource("ContactEditor.fxml"),"Contact Editor: "+rowData.getId().toHexString(),getStage());
                         window.controller.setMainController(mainController);
                         window.controller.setContact(rowData);
                         window.stage.show();
@@ -194,7 +194,7 @@ public class ItemEditorController implements IWindowInitialize {
                 row.setOnMouseClicked(event -> {
                     if (event.getClickCount() == 2 && event.getButton()== MouseButton.PRIMARY && !row.isEmpty()) {
                         TagValue rowData = row.getItem();
-                        Utility.Window<TagValueEditorController> window = Utility.loadFXML(TagValueEditorController.class.getResource("TagValueEditor.fxml"), "Tag Value Editor");
+                        Utility.Window<TagValueEditorController> window = Utility.loadFXML(TagValueEditorController.class.getResource("TagValueEditor.fxml"), "Tag Value Editor",getStage());
                         window.controller.setMainController(mainController);
                         window.controller.setItemTagValue(this.item,rowData,true);
                         window.stage.show();
@@ -224,7 +224,7 @@ public class ItemEditorController implements IWindowInitialize {
                 row.setOnMouseClicked(event -> {
                     if (event.getClickCount() == 2 &&event.getButton()== MouseButton.PRIMARY && !row.isEmpty()) {
                         Placement rowData = row.getItem();
-                        Utility.Window<PlacementEditorController> window = Utility.loadFXML(PlacementEditorController.class.getResource("PlacementEditor.fxml"), "Placement / Product / Position Editor: " + rowData.getId().toHexString());
+                        Utility.Window<PlacementEditorController> window = Utility.loadFXML(PlacementEditorController.class.getResource("PlacementEditor.fxml"), "Placement / Product / Position Editor: " + rowData.getId().toHexString(),getStage());
                         window.controller.setMainController(mainController);
                         window.controller.setItemPlacement(this.item,rowData,true);
                         window.stage.show();
@@ -338,7 +338,7 @@ public class ItemEditorController implements IWindowInitialize {
                 row.setOnMouseClicked(event -> {
                     if (event.getClickCount() == 2 &&event.getButton()== MouseButton.PRIMARY && !row.isEmpty()) {
                         Source rowData = row.getItem();
-                        Utility.Window<SourceEditorController> window = Utility.loadFXML(SourceEditorController.class.getResource("SourceEditor.fxml"), "Source Editor");
+                        Utility.Window<SourceEditorController> window = Utility.loadFXML(SourceEditorController.class.getResource("SourceEditor.fxml"), "Source Editor",getStage());
                         window.controller.setMainController(mainController);
                         window.controller.setItemSource(this.item,rowData,true);
                         window.stage.show();
@@ -533,7 +533,7 @@ public class ItemEditorController implements IWindowInitialize {
     }
 
     public void show(ActionEvent actionEvent) {
-        Utility.Window<ShowQRController> window = Utility.loadFXML(ShowQRController.class.getResource("ShowQR.fxml"), "QR View: " + parent.getDiscriminatedId().toString());
+        Utility.Window<ShowQRController> window = Utility.loadFXML(ShowQRController.class.getResource("ShowQR.fxml"), "QR View: " + parent.getDiscriminatedId().toString(),getStage());
         window.controller.setQrImage(parent.getDiscriminatedId());
         window.stage.show();
     }
@@ -559,7 +559,7 @@ public class ItemEditorController implements IWindowInitialize {
     @SuppressWarnings("unchecked")
     public void tagAdd(ActionEvent actionEvent) {
         TagValue tagValue = new TagValue(tagSelect.getNullableValue(), null);
-        Utility.Window<TagValueEditorController> window = Utility.loadFXML(TagValueEditorController.class.getResource("TagValueEditor.fxml"), "TagValue Editor");
+        Utility.Window<TagValueEditorController> window = Utility.loadFXML(TagValueEditorController.class.getResource("TagValueEditor.fxml"), "TagValue Editor",getStage());
         window.controller.setMainController(mainController);
         window.controller.setItemTagValue(item,tagValue,true);
         if(tagValue.getTag().getType()==Void.class){
@@ -580,7 +580,7 @@ public class ItemEditorController implements IWindowInitialize {
 
     public void placementAdd(ActionEvent actionEvent) {
         Placement placement = new Placement();
-        Utility.Window<PlacementEditorController> window = Utility.loadFXML(PlacementEditorController.class.getResource("PlacementEditor.fxml"), "Placement / Product / Position Editor: " + placement.getId().toHexString());
+        Utility.Window<PlacementEditorController> window = Utility.loadFXML(PlacementEditorController.class.getResource("PlacementEditor.fxml"), "Placement / Product / Position Editor: " + placement.getId().toHexString(),getStage());
         window.controller.setMainController(mainController);
         window.controller.setItemPlacement(item,placement,true);
         window.stage.show();
@@ -588,7 +588,7 @@ public class ItemEditorController implements IWindowInitialize {
 
     public void placementBasedOn(ActionEvent actionEvent) {
         Placement placement = placementsTree.getSelectionModel().getSelectedItem().getValue().cloneObjectData();
-        Utility.Window<PlacementEditorController> window = Utility.loadFXML(PlacementEditorController.class.getResource("PlacementEditor.fxml"), "Placement / Product / Position Editor: " + placement.getId().toHexString());
+        Utility.Window<PlacementEditorController> window = Utility.loadFXML(PlacementEditorController.class.getResource("PlacementEditor.fxml"), "Placement / Product / Position Editor: " + placement.getId().toHexString(),getStage());
         window.controller.setMainController(mainController);
         window.controller.setItemPlacement(item,placement,true);
         window.stage.show();
@@ -603,7 +603,7 @@ public class ItemEditorController implements IWindowInitialize {
     }
 
     public void sourceAdd(ActionEvent actionEvent) {
-        Utility.Window<SourceEditorController> window = Utility.loadFXML(SourceEditorController.class.getResource("SourceEditor.fxml"), "Source Editor");
+        Utility.Window<SourceEditorController> window = Utility.loadFXML(SourceEditorController.class.getResource("SourceEditor.fxml"), "Source Editor",getStage());
         window.controller.setMainController(mainController);
         window.controller.setItemSource(item,new Source(),true);
         window.stage.show();
@@ -611,7 +611,7 @@ public class ItemEditorController implements IWindowInitialize {
 
     public void sourceBasedOn(ActionEvent actionEvent) {
         Source source = sourcesTree.getSelectionModel().getSelectedItem().getValue().cloneObjectData();
-        Utility.Window<SourceEditorController> window = Utility.loadFXML(SourceEditorController.class.getResource("SourceEditor.fxml"), "Source Editor");
+        Utility.Window<SourceEditorController> window = Utility.loadFXML(SourceEditorController.class.getResource("SourceEditor.fxml"), "Source Editor",getStage());
         window.controller.setMainController(mainController);
         window.controller.setItemSource(item,source,true);
         window.stage.show();

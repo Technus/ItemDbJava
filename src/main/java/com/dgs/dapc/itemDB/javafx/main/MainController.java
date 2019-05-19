@@ -33,6 +33,8 @@ import javafx.scene.control.TabPane;
 import javafx.scene.control.TreeItem;
 import javafx.scene.control.TreeTableColumn;
 import javafx.scene.control.cell.TextFieldTreeTableCell;
+import javafx.stage.Stage;
+import javafx.stage.Window;
 import javafx.util.Callback;
 import org.bson.BsonNull;
 import org.bson.Document;
@@ -182,7 +184,7 @@ public class MainController implements Initializable,AutoCloseable {
                     if (rowData instanceof Item) {
                         TagValue tagValue = ((Item) rowData).tagsProperty().map.get(me.getId());
                         if (tagValue!=null){
-                            Utility.Window<TagValueEditorController> window = Utility.loadFXML(TagValueEditorController.class.getResource("TagValueEditor.fxml"), "TagValue Editor");
+                            Utility.Window<TagValueEditorController> window = Utility.loadFXML(TagValueEditorController.class.getResource("TagValueEditor.fxml"), "TagValue Editor",getStage());
                             window.controller.setMainController(this);
                             window.controller.setItemTagValue((Item)rowData,tagValue,false);
                             event.consume();
@@ -332,4 +334,8 @@ public class MainController implements Initializable,AutoCloseable {
         }
     }
     */
+
+    public Window getStage(){
+        return tabs.getScene().getWindow();
+    }
 }

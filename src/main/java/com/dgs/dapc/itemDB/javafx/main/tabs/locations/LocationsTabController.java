@@ -47,7 +47,7 @@ public class LocationsTabController implements Initializable {
             row.setOnMouseClicked(event -> {
                 if (event.getClickCount() == 2 && event.getButton()== MouseButton.PRIMARY && !row.isEmpty()) {
                     Location rowData = row.getItem();
-                    Utility.Window<LocationEditorController> window=Utility.loadFXML(LocationEditorController.class.getResource("LocationEditor.fxml"),"Location Editor: "+rowData.getId().toHexString());
+                    Utility.Window<LocationEditorController> window=Utility.loadFXML(LocationEditorController.class.getResource("LocationEditor.fxml"),"Location Editor: "+rowData.getId().toHexString(),mainController.getStage());
                     window.controller.setMainController(mainController);
                     window.controller.setLocation(rowData);
                     window.stage.show();
@@ -98,7 +98,7 @@ public class LocationsTabController implements Initializable {
 
     public void create(ActionEvent actionEvent) {
         Location location=new Location();
-        Utility.Window<LocationEditorController> window=Utility.loadFXML(LocationEditorController.class.getResource("LocationEditor.fxml"),"Location Editor: "+location.getId().toHexString());
+        Utility.Window<LocationEditorController> window=Utility.loadFXML(LocationEditorController.class.getResource("LocationEditor.fxml"),"Location Editor: "+location.getId().toHexString(),mainController.getStage());
         window.controller.setMainController(mainController);
         window.controller.setLocation(location);
         window.stage.show();
@@ -106,7 +106,7 @@ public class LocationsTabController implements Initializable {
 
     public void basedOn(ActionEvent actionEvent) {
         Location location=locationsTree.getSelectionModel().getSelectedItem().getValue().cloneObjectData();
-        Utility.Window<LocationEditorController> window=Utility.loadFXML(LocationEditorController.class.getResource("LocationEditor.fxml"),"Location Editor: "+location.getId().toHexString());
+        Utility.Window<LocationEditorController> window=Utility.loadFXML(LocationEditorController.class.getResource("LocationEditor.fxml"),"Location Editor: "+location.getId().toHexString(),mainController.getStage());
         window.controller.setMainController(mainController);
         window.controller.setLocation(location);
         window.stage.show();

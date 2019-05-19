@@ -892,12 +892,12 @@ public class ItemsTabController implements Initializable {
         if(o==null)return;
         Object rowObj=o.getValue();
         if (rowObj instanceof Item) {
-            Utility.Window<ItemEditorController> window = Utility.loadFXML(ItemEditorController.class.getResource("ItemEditor.fxml"), "Item Editor: " + ((Item) rowObj).getId().toHexString());
+            Utility.Window<ItemEditorController> window = Utility.loadFXML(ItemEditorController.class.getResource("ItemEditor.fxml"), "Item Editor: " + ((Item) rowObj).getId().toHexString(),mainController.getStage());
             window.controller.setMainController(mainController);
             window.controller.setItem((Item) rowObj);
             window.stage.show();
         } else if (rowObj instanceof Placement) {
-            Utility.Window<PlacementEditorController> window = Utility.loadFXML(PlacementEditorController.class.getResource("PlacementEditor.fxml"), "Placement / Product / Position Editor");
+            Utility.Window<PlacementEditorController> window = Utility.loadFXML(PlacementEditorController.class.getResource("PlacementEditor.fxml"), "Placement / Product / Position Editor",mainController.getStage());
             window.controller.setMainController(mainController);
             window.controller.setItemPlacement((Item) o.getParent().getValue(),(Placement) rowObj,false);
             window.stage.show();
@@ -906,7 +906,7 @@ public class ItemsTabController implements Initializable {
 
     public void create(ActionEvent actionEvent) {
         Item item=new Item();
-        Utility.Window<ItemEditorController> window=Utility.loadFXML(ItemEditorController.class.getResource("ItemEditor.fxml"),"Item Editor: "+item.getId().toHexString());
+        Utility.Window<ItemEditorController> window=Utility.loadFXML(ItemEditorController.class.getResource("ItemEditor.fxml"),"Item Editor: "+item.getId().toHexString(),mainController.getStage());
         window.controller.setMainController(mainController);
         window.controller.setItem(item);
         window.stage.show();
@@ -914,7 +914,7 @@ public class ItemsTabController implements Initializable {
 
     public void basedOn(ActionEvent actionEvent) {
         Item item=((Item)itemsTree.getSelectionModel().getSelectedItem().getValue()).cloneObjectData();
-        Utility.Window<ItemEditorController> window=Utility.loadFXML(ItemEditorController.class.getResource("ItemEditor.fxml"),"Item Editor: "+item.getId().toHexString());
+        Utility.Window<ItemEditorController> window=Utility.loadFXML(ItemEditorController.class.getResource("ItemEditor.fxml"),"Item Editor: "+item.getId().toHexString(),mainController.getStage());
         window.controller.setMainController(mainController);
         window.controller.setItem(item);
         window.stage.show();
@@ -1006,7 +1006,7 @@ public class ItemsTabController implements Initializable {
                 }
             }
 
-            Utility.Window<ChangesOverviewController> changes=Utility.loadFXML(ChangesOverviewController.class.getResource("ChangesOverview.fxml"),"Changes Overview");
+            Utility.Window<ChangesOverviewController> changes=Utility.loadFXML(ChangesOverviewController.class.getResource("ChangesOverview.fxml"),"Changes Overview",mainController.getStage());
             changes.controller.setMainController(mainController);
             changes.controller.setSelectedPlacements(selectedPlacements);
             changes.stage.show();

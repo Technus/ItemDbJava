@@ -212,7 +212,7 @@ public class PlacementEditorController implements IWindowInitialize {
                 row.setOnMouseClicked(event -> {
                     if (event.getClickCount() == 2 && event.getButton()== MouseButton.PRIMARY && !row.isEmpty()) {
                         Designation rowData = row.getItem();
-                        Utility.Window<DesignationEditorController> window=Utility.loadFXML(DesignationEditorController.class.getResource("DesignationEditor.fxml"),"Designation Editor");
+                        Utility.Window<DesignationEditorController> window=Utility.loadFXML(DesignationEditorController.class.getResource("DesignationEditor.fxml"),"Designation Editor",getStage());
                         window.controller.setMainController(mainController);
                         window.controller.setDesignation(rowData);
                         window.stage.show();
@@ -285,7 +285,7 @@ public class PlacementEditorController implements IWindowInitialize {
     }
 
     public void show(ActionEvent actionEvent) {
-        Utility.Window<ShowQRController> window=Utility.loadFXML(ShowQRController.class.getResource("ShowQR.fxml"),"QR View: "+parent.getDiscriminatedId().toString());
+        Utility.Window<ShowQRController> window=Utility.loadFXML(ShowQRController.class.getResource("ShowQR.fxml"),"QR View: "+parent.getDiscriminatedId().toString(),getStage());
         window.controller.setQrImage(parent.getDiscriminatedId());
         window.stage.show();
     }
