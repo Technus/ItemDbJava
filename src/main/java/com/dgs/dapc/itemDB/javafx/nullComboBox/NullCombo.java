@@ -109,13 +109,19 @@ public class NullCombo<T> extends TextField {
 
         setOnKeyTyped(event -> {
             if(event.getCharacter().charAt(0)=='\r'|| event.getCharacter().charAt(0)=='\n'){
-                commitEdit();
+                if(isShowingValue){
+                    return;
+                }else if (textProperty().getValueSafe().length()==0) {
+                    setNullableValue(null);
+                }else{
+                    commitEdit();
+                }
                 contextMenu.hide();
             }
         });
         setOnMouseClicked(event -> {
             if(!contextMenu.isShowing()) {
-                if(textProperty().getValueSafe().length()==0){
+                if(textProperty().getValueSafe().length()==0 || isShowingValue){
                     showWithAll();
                 }else {
                     contextMenu.show(NullCombo.this,Side.RIGHT,0,0);
@@ -125,8 +131,8 @@ public class NullCombo<T> extends TextField {
         });
         focusedProperty().addListener((observable, oldValue, newValue) -> {
             if(newValue){
-                if(!contextMenu.isShowing()) {
-                    if(textProperty().getValueSafe().length()==0){
+                if(!contextMenu.isShowing() && !isShowingValue) {
+                    if(textProperty().getValueSafe().length()==0 ){
                         showWithAll();
                     }else {
                         contextMenu.show(NullCombo.this,Side.RIGHT,0,0);
@@ -136,8 +142,8 @@ public class NullCombo<T> extends TextField {
             }else{
                 if(!isShowingValue) {
                     commitEdit();
-                    contextMenu.hide();
                 }
+                contextMenu.hide();
             }
         });
 
