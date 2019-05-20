@@ -107,22 +107,12 @@ public class NullCombo<T> extends TextField {
         });
         setNullableValue(null);
 
-        //setOnAction(event -> {
-        //    commitEdit();
-        //    contextMenu.hide();
-        //});
         setOnKeyTyped(event -> {
             if(event.getCharacter().charAt(0)=='\r'|| event.getCharacter().charAt(0)=='\n'){
                 commitEdit();
                 contextMenu.hide();
             }
         });
-        //setOnKeyPressed(event -> {
-        //    if(event.getCode() == KeyCode.ENTER){
-        //        commitEdit();
-        //        contextMenu.hide();
-        //    }
-        //});
         setOnMouseClicked(event -> {
             if(!contextMenu.isShowing()) {
                 if(textProperty().getValueSafe().length()==0){
@@ -132,11 +122,7 @@ public class NullCombo<T> extends TextField {
                 }
                 selectAll();
             }
-            //setFocused(true);
         });
-        //setOnDragDetected(event -> {
-        //    setFocused(false);
-        //});
         focusedProperty().addListener((observable, oldValue, newValue) -> {
             if(newValue){
                 if(!contextMenu.isShowing()) {
@@ -157,7 +143,6 @@ public class NullCombo<T> extends TextField {
 
         backingItems.addListener((ListChangeListener<MenuItem>) c -> {
             contextMenu.getItems().setAll(backingItems.filtered(MenuItem::isVisible));
-            //contextMenu.hide();
         });
         backingList.addListener((observable, oldValue, newValue) -> {
             if(oldValue!=null){
