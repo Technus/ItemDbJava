@@ -2,7 +2,10 @@ package com.dgs.dapc.itemDB.javafx.nullComboBox;
 
 import javafx.application.Platform;
 import javafx.beans.binding.BooleanBinding;
-import javafx.beans.property.*;
+import javafx.beans.property.ReadOnlyBooleanProperty;
+import javafx.beans.property.ReadOnlyBooleanWrapper;
+import javafx.beans.property.SimpleObjectProperty;
+import javafx.beans.property.SimpleStringProperty;
 import javafx.collections.FXCollections;
 import javafx.collections.ListChangeListener;
 import javafx.collections.ObservableList;
@@ -16,11 +19,8 @@ import javafx.scene.input.KeyCode;
 import javafx.scene.layout.Region;
 
 import java.util.ArrayList;
-import java.util.Comparator;
-import java.util.Objects;
 import java.util.function.BiFunction;
 import java.util.regex.Pattern;
-import java.util.stream.Collectors;
 
 public class NullCombo<T> extends TextField {
     private final ContextMenu contextMenu=new ContextMenu();
@@ -84,16 +84,17 @@ public class NullCombo<T> extends TextField {
             }
         });
         contextMenu.setOpacity(0.95D);
-        //contextMenu.setOnHiding(event -> {
-        //    if(isFocused()){
-        //        Platform.runLater(()->{
-        //            if(isFocused()) {
-        //                showProperly();
-        //            }
-        //            else if(contextMenu.isShowing()) contextMenu.hide();
-        //        });
-        //    }
-        //});
+        contextMenu.setOnHiding(event -> {
+            if(isFocused()){
+                Platform.runLater(()->{
+                    if(isFocused()) {
+                        contextMenu.show(NullCombo.this,Side.RIGHT,0,0);
+                    } else if(contextMenu.isShowing()) {
+                        contextMenu.hide();
+                    }
+                });
+            }
+        });
         contextMenu.setOnAction(event -> {
             if(event.getTarget() instanceof MenuItem){
                 if(event.getTarget()==nullItem){
@@ -125,7 +126,12 @@ public class NullCombo<T> extends TextField {
         });
         setOnMouseClicked(event -> {
             if(!contextMenu.isShowing()) {
-                showProperly();
+                if(textProperty().getValueSafe().length()==0){
+                    showWithAll();
+                }else {
+                    contextMenu.show(NullCombo.this,Side.RIGHT,0,0);
+                }
+                selectAll();
             }
             //setFocused(true);
         });
@@ -134,7 +140,7 @@ public class NullCombo<T> extends TextField {
         //});
         focusedProperty().addListener((observable, oldValue, newValue) -> {
             if(newValue){
-                //showProperly();
+                //showWithAll();
                 selectAll();
             }else{
                 commitEdit();
@@ -195,7 +201,7 @@ public class NullCombo<T> extends TextField {
         });
     }
 
-    private void showProperly(){
+    private void showWithAll(){
         backingItems.stream().skip(1).forEach(menuItem -> {
             if(!menuItem.isVisible()){
                 menuItem.setVisible(true);
