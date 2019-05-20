@@ -1,6 +1,5 @@
 package com.dgs.dapc.itemDB.javafx.nullComboBox;
 
-import javafx.application.Platform;
 import javafx.beans.binding.BooleanBinding;
 import javafx.beans.property.ReadOnlyBooleanProperty;
 import javafx.beans.property.ReadOnlyBooleanWrapper;
@@ -84,17 +83,17 @@ public class NullCombo<T> extends TextField {
             }
         });
         contextMenu.setOpacity(0.95D);
-        contextMenu.setOnHiding(event -> {
-            if(isFocused()){
-                Platform.runLater(()->{
-                    if(isFocused()) {
-                        contextMenu.show(NullCombo.this,Side.RIGHT,0,0);
-                    } else if(contextMenu.isShowing()) {
-                        contextMenu.hide();
-                    }
-                });
-            }
-        });
+        //contextMenu.setOnHiding(event -> {
+        //    if(isFocused()){
+        //        Platform.runLater(()->{
+        //            if(isFocused()) {
+        //                contextMenu.show(NullCombo.this,Side.RIGHT,0,0);
+        //            } else if(contextMenu.isShowing()) {
+        //                contextMenu.hide();
+        //            }
+        //        });
+        //    }
+        //});
         contextMenu.setOnAction(event -> {
             if(event.getTarget() instanceof MenuItem){
                 if(event.getTarget()==nullItem){
@@ -102,12 +101,16 @@ public class NullCombo<T> extends TextField {
                 }else {
                     setNullableValue((T)((MenuItem) event.getTarget()).getUserData());
                 }
+                showWithAll();
             }
         });
 
         textProperty().addListener((observable, oldValue, newValue) -> {
             backingItems.forEach(this::setVisible);
             backingItems.setAll(new ArrayList<>(backingItems));
+            try{
+                contextMenu.show(NullCombo.this,Side.RIGHT,0,0);
+            }catch (Exception ignored){}
         });
 
         setOnAction(event -> {
@@ -116,12 +119,14 @@ public class NullCombo<T> extends TextField {
         setOnKeyTyped(event -> {
             if(event.getCharacter().charAt(0)=='\r'|| event.getCharacter().charAt(0)=='\n'){
                 commitEdit();
+                contextMenu.hide();
             }
 
         });
         setOnKeyPressed(event -> {
             if(event.getCode() == KeyCode.ENTER){
                 commitEdit();
+                contextMenu.hide();
             }
         });
         setOnMouseClicked(event -> {
