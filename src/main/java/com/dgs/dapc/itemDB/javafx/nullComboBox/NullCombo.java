@@ -1,5 +1,6 @@
 package com.dgs.dapc.itemDB.javafx.nullComboBox;
 
+import javafx.application.Platform;
 import javafx.beans.binding.BooleanBinding;
 import javafx.beans.property.ReadOnlyBooleanProperty;
 import javafx.beans.property.ReadOnlyBooleanWrapper;
@@ -14,7 +15,6 @@ import javafx.scene.control.ContextMenu;
 import javafx.scene.control.Menu;
 import javafx.scene.control.MenuItem;
 import javafx.scene.control.TextField;
-import javafx.scene.input.KeyCode;
 import javafx.scene.layout.Region;
 
 import java.util.ArrayList;
@@ -22,6 +22,7 @@ import java.util.function.BiFunction;
 import java.util.regex.Pattern;
 
 public class NullCombo<T> extends TextField {
+    private volatile boolean isShowingValue;
     private final ContextMenu contextMenu=new ContextMenu();
     private final ObservableList<MenuItem> backingItems= FXCollections.observableArrayList();
     private final SimpleObjectProperty<BiFunction<String,T,Boolean>> filter=new SimpleObjectProperty<>((s, t) -> true);
@@ -63,10 +64,12 @@ public class NullCombo<T> extends TextField {
         public void set(T newValue) {
             super.set(newValue);
             setText(newValue==null?null:newValue.toString());
+            isShowingValue=true;
         }
     };
 
     {
+
         setPromptText("Select");
         setStyle("-fx-control-inner-background: derive(-fx-base,+8%);");
         nullString.set("Deselect");
@@ -79,21 +82,10 @@ public class NullCombo<T> extends TextField {
             Node content = contextMenu.getSkin().getNode();
             if (content instanceof Region) {
                 ((Region) content).setMaxHeight(contextMenu.getMaxHeight());
-                //((Region) content).setMinHeight(contextMenu.getMinHeight());
+                ((Region) content).setMinHeight(contextMenu.getMinHeight());
             }
         });
         contextMenu.setOpacity(0.95D);
-        //contextMenu.setOnHiding(event -> {
-        //    if(isFocused()){
-        //        Platform.runLater(()->{
-        //            if(isFocused()) {
-        //                contextMenu.show(NullCombo.this,Side.RIGHT,0,0);
-        //            } else if(contextMenu.isShowing()) {
-        //                contextMenu.hide();
-        //            }
-        //        });
-        //    }
-        //});
         contextMenu.setOnAction(event -> {
             if(event.getTarget() instanceof MenuItem){
                 if(event.getTarget()==nullItem){
@@ -101,7 +93,7 @@ public class NullCombo<T> extends TextField {
                 }else {
                     setNullableValue((T)((MenuItem) event.getTarget()).getUserData());
                 }
-                showWithAll();
+                Platform.runLater(this::showWithAll);
             }
         });
 
@@ -111,24 +103,26 @@ public class NullCombo<T> extends TextField {
             try{
                 contextMenu.show(NullCombo.this,Side.RIGHT,0,0);
             }catch (Exception ignored){}
+            isShowingValue=false;
         });
+        setNullableValue(null);
 
-        setOnAction(event -> {
-            commitEdit();
-        });
+        //setOnAction(event -> {
+        //    commitEdit();
+        //    contextMenu.hide();
+        //});
         setOnKeyTyped(event -> {
             if(event.getCharacter().charAt(0)=='\r'|| event.getCharacter().charAt(0)=='\n'){
                 commitEdit();
                 contextMenu.hide();
             }
-
         });
-        setOnKeyPressed(event -> {
-            if(event.getCode() == KeyCode.ENTER){
-                commitEdit();
-                contextMenu.hide();
-            }
-        });
+        //setOnKeyPressed(event -> {
+        //    if(event.getCode() == KeyCode.ENTER){
+        //        commitEdit();
+        //        contextMenu.hide();
+        //    }
+        //});
         setOnMouseClicked(event -> {
             if(!contextMenu.isShowing()) {
                 if(textProperty().getValueSafe().length()==0){
@@ -145,14 +139,19 @@ public class NullCombo<T> extends TextField {
         //});
         focusedProperty().addListener((observable, oldValue, newValue) -> {
             if(newValue){
-                //showWithAll();
+                if(!contextMenu.isShowing()) {
+                    if(textProperty().getValueSafe().length()==0){
+                        showWithAll();
+                    }else {
+                        contextMenu.show(NullCombo.this,Side.RIGHT,0,0);
+                    }
+                }
                 selectAll();
             }else{
-                commitEdit();
-                if(getNullableValue()!=null) {
-                    setText(getNullableValue().toString());
+                if(!isShowingValue) {
+                    commitEdit();
+                    contextMenu.hide();
                 }
-                contextMenu.hide();
             }
         });
 
