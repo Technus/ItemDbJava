@@ -10,6 +10,7 @@ import javafx.scene.control.Label;
 import javafx.scene.control.ScrollPane;
 import javafx.scene.layout.Region;
 import javafx.stage.Modality;
+import javafx.stage.Stage;
 
 import java.util.List;
 import java.util.Optional;
@@ -18,9 +19,11 @@ public class MainModel {
     public final MainLogic logic;
 
     public Region defaultRegion;//default place for error log
+    private final Stage stage;
 
-    public MainModel(List<String> parameters){
+    public MainModel(List<String> parameters, Stage stage){
         logic=new MainLogic(parameters);
+        this.stage=stage;
 
     }
 
@@ -46,8 +49,8 @@ public class MainModel {
     }
 
     private ButtonType showConfirmThrowable(Region region,Throwable throwable,ButtonType... buttonTypes){
-        //logic.logError(throwable);//todo uncomment
-        throwable.printStackTrace();//todo comment
+        logic.logError(throwable);//todo uncomment
+        //throwable.printStackTrace();//todo comment
 
         Alert.AlertType type=throwable instanceof Exception? Alert.AlertType.WARNING: Alert.AlertType.ERROR;
         Alert alert = new Alert(type,null,buttonTypes);
@@ -68,6 +71,7 @@ public class MainModel {
             }
         }
         alert.initModality(Modality.APPLICATION_MODAL);
+        alert.initOwner(stage);
         try {
             Optional<ButtonType> buttonTypeOptional = alert.showAndWait();
             return buttonTypeOptional.orElse(ButtonType.CLOSE);

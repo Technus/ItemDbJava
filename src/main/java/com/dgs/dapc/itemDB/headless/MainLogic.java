@@ -22,6 +22,7 @@ import com.mongodb.client.MongoCollection;
 import com.mongodb.client.MongoDatabase;
 import com.mongodb.client.model.Collation;
 import com.mongodb.client.model.CollationStrength;
+import com.mongodb.client.result.DeleteResult;
 import org.bson.BsonDocument;
 import org.bson.Document;
 import org.bson.codecs.configuration.CodecRegistries;
@@ -34,8 +35,10 @@ import org.bson.types.ObjectId;
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
-import java.text.Collator;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Locale;
+import java.util.Map;
 import java.util.function.Consumer;
 
 import static com.github.technus.dbAdditions.mongoDB.pojo.ThrowableLog.THROWABLE_LOG_COLLECTION_CODECS;
@@ -70,31 +73,49 @@ public class MainLogic implements AutoCloseable {
         this.args=args==null?new String[0]:args;
         ThrowableLog.currentApplicationName ="ItemDB";
         throwableConsumer = throwable -> {
-            if (throwableCollectionLocal == null) {
-                throwable.printStackTrace();
-            } else {
+            throwable.printStackTrace();
+            if (throwableCollectionLocal != null) {
                 try {
-                    boolean failed = false;
                     ThrowableLog log;
                     try {
                         log = new ThrowableLog(throwable);
                     } catch (Exception e) {
                         new Exception("Unable to create full throwable log", e).printStackTrace();
                         log = new ThrowableLog(throwable, 10);
-                        failed = true;
                     }
                     try {
-                        //throwableCollectionLocal.insertOne(log);//todo fix?
-                        throwable.printStackTrace();//todo uncomment
+                        throwableCollectionLocal.insertOne(log);//todo fix?
+                        //throwable.printStackTrace();//todo uncomment
                     } catch (Exception e) {
                         new MongoFSBackendException("Unable to insert throwable log", e).printStackTrace();
-                        failed = true;
-                    }
-                    if (failed) {
-                        throwable.printStackTrace();
                     }
                 } catch (Throwable t) {
                     new MongoFSBackendException("Failed to log error", t).printStackTrace();
+                }
+                if (throwableCollectionRemote != null) {
+                    for (ThrowableLog log : throwableCollectionLocal.find()) {
+                        ObjectId id = log.getId();
+                        try {
+                            log.setId(null);
+                            throwableCollectionRemote.insertOne(log);
+                        } catch (Exception e) {
+                            new MongoException("Couldn't insert throwable log to remote",e).printStackTrace();
+                            //just to be sure that there is no infinite work to do not log this error
+                            break;
+                        }
+                        try{
+                            DeleteResult result=throwableCollectionLocal.deleteOne(new Document().append("_id", id));
+                            if(!result.wasAcknowledged() || result.getDeletedCount()!=0){
+                                new MongoFSBackendException(
+                                        "Invalid deletion detected "+result.wasAcknowledged()+" " +result.getDeletedCount(),null)
+                                        .printStackTrace();
+                            }
+                        }catch (Exception e){
+                            new MongoFSBackendException("Couldn't delete throwable log from local",e).printStackTrace();
+                            //just to be sure that there is no infinite work to do do not log this error
+                            break;
+                        }
+                    }
                 }
             }
         };
@@ -147,34 +168,15 @@ public class MainLogic implements AutoCloseable {
             collation=Locale.getDefault().getLanguage();
         }
 
-        File localThrowableFolder=new File(applicationInitializer.getLocalFilesPath()).getAbsoluteFile();
+        localPath=applicationInitializer.getLocalFilesPath();
+
+        File localThrowableFolder=new File(localPath).getAbsoluteFile();
         throwableCollectionLocal = new FileSystemCollection<>(localThrowableFolder,
                 new MongoNamespace("tecAppsLocal", ThrowableLog.class.getSimpleName()), ThrowableLog.class)
                 .withCodecRegistry(THROWABLE_LOG_COLLECTION_CODECS);
 
         remoteClient = new MongoClientHandler(applicationInitializer.getRemote(),
-                commandFailedEvent -> logError(commandFailedEvent.getThrowable()), () -> {
-            if (throwableCollectionLocal != null && throwableCollectionRemote != null) {
-                for (ThrowableLog log : throwableCollectionLocal.find()) {
-                    ObjectId id = log.getId();
-                    try {
-                        log.setId(null);
-                        throwableCollectionRemote.insertOne(log);
-                    } catch (Exception e) {
-                        new MongoException("Couldn't insert throwable log to remote",e).printStackTrace();
-                        //just to be sure that there is no infinite work to do not log this error
-                        break;
-                    }
-                    try{
-                        throwableCollectionLocal.deleteOne(new Document().append("_id", id));
-                    }catch (Exception e){
-                        new MongoFSBackendException("Couldn't delete throwable log from local",e).printStackTrace();
-                        //just to be sure that there is no infinite work to do do not log this error
-                        break;
-                    }
-                }
-            }
-        });
+                commandFailedEvent -> logError(commandFailedEvent.getThrowable()), () -> {});
         MongoDatabase remoteDatabase = remoteClient.getDatabase();
 
         try {
@@ -185,7 +187,7 @@ public class MainLogic implements AutoCloseable {
             logError(new MongoException("Couldn't ping database",e));
         }
 
-        throwableCollectionRemote = remoteDatabase.getCollection(ThrowableLog.class.getSimpleName(), ThrowableLog.class)
+        throwableCollectionRemote = remoteDatabase.getCollection("ERROR_LOGS", ThrowableLog.class)
                 .withCodecRegistry(THROWABLE_LOG_COLLECTION_CODECS);
 
         NullableConvention nullableConvention=new NullableConvention();
@@ -288,5 +290,10 @@ public class MainLogic implements AutoCloseable {
 
     public Collation getCollation(){
         return Collation.builder().locale(collation).collationStrength(CollationStrength.SECONDARY).build();
+    }
+
+    private static String localPath;
+    public static String getLocalFilesPath(){
+        return localPath;
     }
 }

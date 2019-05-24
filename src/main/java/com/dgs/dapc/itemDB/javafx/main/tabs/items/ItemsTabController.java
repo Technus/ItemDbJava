@@ -714,7 +714,7 @@ public class ItemsTabController implements Initializable {
     }
 
     public void reloadRecords(){
-        queryList.setAll(queryList.toArray(new Bson[0]));
+        queryList.setAll(new ArrayList<>(queryList));
     }
 
     public TreeItem matchPlacement(TreeItem o) {

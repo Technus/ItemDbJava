@@ -1,5 +1,6 @@
 package com.dgs.dapc.itemDB.headless.db.pojo.topLevel;
 
+import com.dgs.dapc.itemDB.headless.MainLogic;
 import com.dgs.dapc.itemDB.headless.db.*;
 import com.dgs.dapc.itemDB.headless.properties.ObservableBoundMapList;
 import com.dgs.dapc.itemDB.headless.properties.ObservableToStringList;
@@ -18,6 +19,8 @@ import org.bson.codecs.pojo.annotations.BsonId;
 import org.bson.codecs.pojo.annotations.BsonProperty;
 import org.bson.types.ObjectId;
 
+import java.io.File;
+import java.nio.file.Files;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -147,11 +150,23 @@ public class Location implements INamed, IDetailed, IIdentifiable, IPictured, IC
             }
             @Override
             protected Image computeValue() {
-                try {
-                    return new Image(picture.get());
-                }catch (Exception e){
-                    return null;
+                if(picture.getValueSafe().length()>0) {
+                    try {
+                        File file=new File(MainLogic.getLocalFilesPath() + File.separator + picture.get());
+                        if (Files.exists(file.toPath())) {
+                            return new Image(file.toURI().toString());
+                        } else {
+                            file=new File(picture.get());
+                            if(Files.exists(file.toPath())){
+                                return new Image(file.toURI().toString());
+                            }
+                        }
+                        return new Image(picture.get());
+                    } catch (Exception e) {
+                        return null;
+                    }
                 }
+                return null;
             }
         });
         containsImage.bind(new BooleanBinding() {

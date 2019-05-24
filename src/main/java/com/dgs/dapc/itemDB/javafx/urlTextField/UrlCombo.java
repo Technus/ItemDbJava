@@ -3,7 +3,7 @@ package com.dgs.dapc.itemDB.javafx.urlTextField;
 import javafx.beans.binding.ObjectBinding;
 import javafx.collections.ObservableList;
 import javafx.scene.control.ComboBox;
-import javafx.util.StringConverter;
+import javafx.util.converter.DefaultStringConverter;
 
 import java.net.URISyntaxException;
 import java.util.function.Consumer;
@@ -18,17 +18,7 @@ public class UrlCombo extends ComboBox<String> {
             e.printStackTrace();
         }
         setEditable(true);
-        setConverter(new StringConverter<String>() {
-            @Override
-            public String toString(String object) {
-                return object;
-            }
-
-            @Override
-            public String fromString(String string) {
-                return string;
-            }
-        });
+        setConverter(new DefaultStringConverter());
 
         itemsProperty().bind(new ObjectBinding<ObservableList<String>>() {
             @Override

@@ -1,6 +1,6 @@
 package com.dgs.dapc.itemDB.headless.db.pojo.topLevel;
 
-import com.dgs.dapc.itemDB.headless.DoubleSI;
+import com.dgs.dapc.itemDB.headless.*;
 import com.dgs.dapc.itemDB.headless.db.*;
 import com.dgs.dapc.itemDB.headless.properties.ObservableBoundMapList;
 import com.github.technus.dbAdditions.mongoDB.conventions.BsonRemove;
@@ -175,6 +175,10 @@ public class Tag implements INamed, IDetailed, IIdentifiable, ICloneable<Tag>,IS
         });
         TYPES_LIST.add(File.class);
         CONVERTERS.put(DoubleSI.class,DoubleSI.INSTANCE);
+        CONVERTERS.put(DoubleSIShort.class,DoubleSIShort.INSTANCE);
+        CONVERTERS.put(DoubleSIHigher.class,DoubleSIHigher.INSTANCE);
+        CONVERTERS.put(DoubleSILimitedShort.class,DoubleSILimitedShort.INSTANCE);
+        CONVERTERS.put(DoubleSILimitedHigher.class,DoubleSILimitedHigher.INSTANCE);
     }
 
     private final SimpleObjectProperty<ObjectId> id=new SimpleObjectProperty<>();

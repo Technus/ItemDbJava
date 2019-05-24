@@ -1,0 +1,88 @@
+{
+  "_t" : "com.github.technus.dbAdditions.mongoDB.pojo.ThrowableLog",
+  "applicationName" : "ItemDB",
+  "message" : "TEST",
+  "stackTrace" : [{
+      "declaringClass" : "com.dgs.dapc.itemDB.javafx.App$1",
+      "methodName" : "lambda$call$3",
+      "fileName" : "App.java",
+      "lineNumber" : 105
+    }, {
+      "declaringClass" : "com.sun.javafx.application.PlatformImpl",
+      "methodName" : "lambda$null$173",
+      "fileName" : "PlatformImpl.java",
+      "lineNumber" : 295
+    }, {
+      "declaringClass" : "java.security.AccessController",
+      "methodName" : "doPrivileged",
+      "fileName" : "AccessController.java",
+      "lineNumber" : -2
+    }, {
+      "declaringClass" : "com.sun.javafx.application.PlatformImpl",
+      "methodName" : "lambda$runLater$174",
+      "fileName" : "PlatformImpl.java",
+      "lineNumber" : 294
+    }, {
+      "declaringClass" : "com.sun.glass.ui.InvokeLaterDispatcher$Future",
+      "methodName" : "run$$$capture",
+      "fileName" : "InvokeLaterDispatcher.java",
+      "lineNumber" : 95
+    }, {
+      "declaringClass" : "com.sun.glass.ui.InvokeLaterDispatcher$Future",
+      "methodName" : "run",
+      "fileName" : "InvokeLaterDispatcher.java",
+      "lineNumber" : -1
+    }, {
+      "declaringClass" : "com.sun.glass.ui.win.WinApplication",
+      "methodName" : "_runLoop",
+      "fileName" : "WinApplication.java",
+      "lineNumber" : -2
+    }, {
+      "declaringClass" : "com.sun.glass.ui.win.WinApplication",
+      "methodName" : "lambda$null$148",
+      "fileName" : "WinApplication.java",
+      "lineNumber" : 191
+    }, {
+      "declaringClass" : "java.lang.Thread",
+      "methodName" : "run",
+      "fileName" : "Thread.java",
+      "lineNumber" : 745
+    }],
+  "systemUser" : {
+    "domainName" : "EMEA",
+    "systemName" : "PL-C-STN-DAPC-1",
+    "userName" : "dapc"
+  },
+  "threadLog" : {
+    "alive" : true,
+    "daemon" : false,
+    "interrupted" : false,
+    "name" : "JavaFX Application Thread",
+    "priority" : 5,
+    "state" : "RUNNABLE",
+    "threadGroup" : {
+      "activeCount" : 8,
+      "activeGroupCount" : 0,
+      "daemon" : false,
+      "destroyed" : false,
+      "maxPriority" : 10,
+      "name" : "main",
+      "parent" : {
+        "activeCount" : 13,
+        "activeGroupCount" : 1,
+        "daemon" : false,
+        "destroyed" : false,
+        "maxPriority" : 10,
+        "name" : "system"
+      }
+    },
+    "threadId" : 16
+  },
+  "throwableClass" : "java.lang.RuntimeException",
+  "time" : {
+    "$date" : "2019-05-24T10:01:32.26Z"
+  },
+  "_id" : {
+    "$oid" : "5ce7c10681c3b7192c80d06c"
+  }
+}

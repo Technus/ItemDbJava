@@ -16,6 +16,7 @@ import com.dgs.dapc.itemDB.javafx.main.editor.itemEditor.sourceEditor.SourceEdit
 import com.dgs.dapc.itemDB.javafx.main.editor.itemEditor.tagValueEditor.TagValueEditorController;
 import com.dgs.dapc.itemDB.javafx.nullComboBox.NullCombo;
 import com.dgs.dapc.itemDB.javafx.qr.ShowQRController;
+import javafx.application.Platform;
 import javafx.beans.binding.BooleanBinding;
 import javafx.beans.binding.StringBinding;
 import javafx.event.ActionEvent;
@@ -27,6 +28,7 @@ import javafx.scene.image.ImageView;
 import javafx.scene.input.*;
 import javafx.scene.layout.BorderPane;
 import javafx.stage.Stage;
+import javafx.util.converter.DefaultStringConverter;
 import org.bson.BsonDocument;
 import org.bson.BsonObjectId;
 import org.bson.types.ObjectId;
@@ -179,6 +181,7 @@ public class ItemEditorController implements IWindowInitialize {
                         }
                     }
                 });
+                cell.setConverter(new DefaultStringConverter());
                 cell.setStyle("-fx-text-fill:-fx-text-blue;");
                 return cell;
             });
@@ -207,8 +210,10 @@ public class ItemEditorController implements IWindowInitialize {
             tagsNameColumn.setCellValueFactory(param -> param.getValue().nameProperty());
 
             tagsValueColumn.setOnEditCommit(event -> {
-                event.getRowValue().setValueFromString(event.getNewValue());
-                tagsList.refresh();
+                if(!event.getRowValue().getTag().getType().getClass().isEnum()) {
+                    event.getRowValue().setValueFromString(event.getNewValue());
+                    tagsList.refresh();
+                }
             });
             tagsValueColumn.setCellFactory(TextFieldTableCell.forTableColumn());
             tagsValueColumn.setCellValueFactory(param -> param.getValue().valueStringProperty());
@@ -368,6 +373,7 @@ public class ItemEditorController implements IWindowInitialize {
                         }
                     }
                 });
+                cell.setConverter(new DefaultStringConverter());
                 cell.setStyle("-fx-text-fill:-fx-text-blue;");
                 return cell;
             });
@@ -562,10 +568,10 @@ public class ItemEditorController implements IWindowInitialize {
         Utility.Window<TagValueEditorController> window = Utility.loadFXML(TagValueEditorController.class.getResource("TagValueEditor.fxml"), "TagValue Editor",getStage());
         window.controller.setMainController(mainController);
         window.controller.setItemTagValue(item,tagValue,true);
-        if(tagValue.getTag().getType()==Void.class){
+        if(!tagValue.getTag().getType().getClass().isEnum()){
             window.controller.save(actionEvent);
         }else{
-            window.stage.show();
+            Platform.runLater(window.stage::show);
         }
         tagSelect.setNullableValue(null);
     }

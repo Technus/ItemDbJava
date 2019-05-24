@@ -8,8 +8,8 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.TreeMap;
 
-public class DoubleSI extends StringConverter<Double> {
-    public static final DoubleSI INSTANCE =new DoubleSI();
+public class DoubleSILimitedHigher extends StringConverter<Double> {
+    public static final DoubleSILimitedHigher INSTANCE =new DoubleSILimitedHigher();
 
     private static final NumberFormat FORMAT =NumberFormat.getInstance();
     static {
@@ -78,12 +78,20 @@ public class DoubleSI extends StringConverter<Double> {
 
         public static Prefix getPrefix(Double d){
             if(d==null || d.isInfinite() || d.isNaN()) return none;
-            Map.Entry<Double,Prefix> entry=powerMapping.floorEntry(Math.abs(d));
+            Map.Entry<Double, Prefix> entry=powerMapping.floorEntry(Math.abs(d));
+            return entry==null?yocto:entry.getValue();
+        }
+
+        public static Prefix getPrefixHigher(Double d){
+            if(d==null || d.isInfinite() || d.isNaN()) return none;
+            Map.Entry<Double, Prefix> entry=powerMapping.floorEntry(Math.abs(d)*10);
             return entry==null?yocto:entry.getValue();
         }
 
         public static String formatDouble(Double d){
-            return formatDouble(d, getPrefix(d));
+            String higherResult = formatDouble(d, getPrefixHigher(d));
+            String result = formatDouble(d, getPrefix(d));
+            return higherResult.length() <= result.length() ? higherResult : result;
         }
 
         public static String formatDouble(Double d,Prefix p){

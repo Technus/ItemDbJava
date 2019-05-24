@@ -75,7 +75,7 @@ public class App extends Application {
 
                 updateMessage("Loading main model");
                 updateProgress(++workDone,workAmount);
-                controller.model=new MainModel(parameters);
+                controller.model=new MainModel(parameters,primaryStage);
 
                 updateProgress(++workDone,workAmount);
                 Thread.setDefaultUncaughtExceptionHandler((t,e)->{

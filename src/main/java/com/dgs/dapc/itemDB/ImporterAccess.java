@@ -16,12 +16,14 @@ import java.util.HashMap;
 
 import static java.util.Collections.EMPTY_LIST;
 
-public class Importer {
+public class ImporterAccess {
     private static final String IMPORTED="Imported from Access";
-    private static final MainLogic logic=new MainLogic();
+    private static MainLogic logic;
     private static final Charset charset=Charset.forName("windows-1250");
 
     public static void main(String[] args) throws IOException {
+        logic=new MainLogic(args);
+
         HashMap<Integer,Contact> contacts=new HashMap<>();
         for (String line : Files.readAllLines(new File("Suppliers.txt").toPath(), charset)) {
             if(line.length()==0)continue;

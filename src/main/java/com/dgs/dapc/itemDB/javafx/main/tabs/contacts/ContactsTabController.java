@@ -12,6 +12,7 @@ import javafx.scene.control.*;
 import javafx.scene.control.cell.TextFieldTableCell;
 import javafx.scene.input.MouseButton;
 import javafx.scene.input.MouseEvent;
+import javafx.util.converter.DefaultStringConverter;
 import org.bson.BsonDocument;
 import org.bson.BsonObjectId;
 import org.bson.Document;
@@ -77,6 +78,7 @@ public class ContactsTabController implements Initializable {
                     }
                 }
             });
+            cell.setConverter(new DefaultStringConverter());
             cell.setStyle("-fx-text-fill:-fx-text-blue;");
             return cell;
         });

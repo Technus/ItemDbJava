@@ -18,10 +18,11 @@ import javafx.scene.control.TextField;
 import javafx.scene.layout.Region;
 
 import java.util.ArrayList;
+import java.util.List;
 import java.util.function.BiFunction;
 import java.util.regex.Pattern;
 
-public class NullCombo<T> extends TextField {
+public class MultiCombo<T> extends TextField {
     private volatile boolean isShowingValue;
     private final ContextMenu contextMenu=new ContextMenu();
     private final ObservableList<MenuItem> backingItems= FXCollections.observableArrayList();
@@ -59,14 +60,7 @@ public class NullCombo<T> extends TextField {
             setNullableValue(null);
         }
     };
-    private final SimpleObjectProperty<T> nullableValue =new SimpleObjectProperty<T>(){
-        @Override
-        public void set(T newValue) {
-            super.set(newValue);
-            setText(newValue==null?null:newValue.toString());
-            isShowingValue=true;
-        }
-    };
+    private final ObservableList<T> nullableValue =FXCollections.observableArrayList();
 
     {
         setPromptText("Select");
@@ -101,7 +95,7 @@ public class NullCombo<T> extends TextField {
             backingItems.setAll(new ArrayList<>(backingItems));
             if(isFocused()) {
                 try {
-                    contextMenu.show(NullCombo.this, Side.RIGHT, 0, 0);
+                    contextMenu.show(MultiCombo.this, Side.RIGHT, 0, 0);
                 } catch (Exception ignored) {
                 }
             }
@@ -126,7 +120,7 @@ public class NullCombo<T> extends TextField {
                 if(textProperty().getValueSafe().length()==0 || isShowingValue){
                     showWithAll();
                 }else {
-                    contextMenu.show(NullCombo.this,Side.RIGHT,0,0);
+                    contextMenu.show(MultiCombo.this,Side.RIGHT,0,0);
                 }
                 selectAll();
             }
@@ -137,7 +131,7 @@ public class NullCombo<T> extends TextField {
                     if(textProperty().getValueSafe().length()==0 ){
                         showWithAll();
                     }else {
-                        contextMenu.show(NullCombo.this,Side.RIGHT,0,0);
+                        contextMenu.show(MultiCombo.this,Side.RIGHT,0,0);
                     }
                 }
                 selectAll();
@@ -214,7 +208,7 @@ public class NullCombo<T> extends TextField {
             return o1.textProperty().getValueSafe().compareTo(o2.textProperty().getValueSafe());
         });
         backingItems.setAll(new ArrayList<>(backingItems));
-        contextMenu.show(NullCombo.this,Side.RIGHT,0,0);
+        contextMenu.show(MultiCombo.this,Side.RIGHT,0,0);
     }
 
     private void setVisible(MenuItem item){
@@ -326,16 +320,8 @@ public class NullCombo<T> extends TextField {
         });
     }
 
-    public T getNullableValue() {
-        return nullableValue.get();
-    }
-
-    public SimpleObjectProperty<T> nullableValueProperty() {
+    public ObservableList<T> nullableValueProperty() {
         return nullableValue;
-    }
-
-    public void setNullableValue(T nullableValue) {
-        this.nullableValue.set(nullableValue);
     }
 
     public BiFunction<String, T, Boolean> getFilter() {

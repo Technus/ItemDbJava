@@ -72,7 +72,7 @@
                   <Spinner fx:id="quantitySpinner" editable="true" maxWidth="1.7976931348623157E308" styleClass="split-arrows-horizontal" GridPane.hgrow="ALWAYS" />
                    <Label text="Minimal" GridPane.columnIndex="1" GridPane.rowIndex="1" />
                   <Spinner fx:id="minimalSpinner" editable="true" maxWidth="1.7976931348623157E308" styleClass="split-arrows-horizontal" GridPane.hgrow="ALWAYS" GridPane.rowIndex="1" />
-                  <Label text="Ordered" GridPane.columnIndex="1" GridPane.rowIndex="2" />
+                  <Label text="Purchased" GridPane.columnIndex="1" GridPane.rowIndex="2" />
                   <Spinner fx:id="orderedSpinner" editable="true" maxWidth="1.7976931348623157E308" styleClass="split-arrows-horizontal" GridPane.hgrow="ALWAYS" GridPane.rowIndex="2" />
                </children>
             </GridPane>

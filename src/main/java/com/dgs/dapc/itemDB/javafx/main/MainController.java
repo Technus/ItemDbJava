@@ -6,9 +6,6 @@ import com.dgs.dapc.itemDB.headless.db.IStockState;
 import com.dgs.dapc.itemDB.headless.db.cjo.child.TagValue;
 import com.dgs.dapc.itemDB.headless.db.pojo.topLevel.Item;
 import com.dgs.dapc.itemDB.headless.db.pojo.topLevel.Tag;
-import com.dgs.dapc.itemDB.javafx.main.editor.itemEditor.ItemEditorController;
-import com.dgs.dapc.itemDB.javafx.main.editor.itemEditor.placementEditor.PlacementEditorController;
-import com.dgs.dapc.itemDB.javafx.main.editor.itemEditor.sourceEditor.SourceEditorController;
 import com.dgs.dapc.itemDB.javafx.main.editor.itemEditor.tagValueEditor.TagValueEditorController;
 import com.dgs.dapc.itemDB.javafx.main.tabs.contacts.ContactsTabController;
 import com.dgs.dapc.itemDB.javafx.main.tabs.designations.DesignationsTabController;
@@ -21,8 +18,6 @@ import com.mongodb.client.model.Field;
 import com.mongodb.client.model.UnwindOptions;
 import javafx.application.HostServices;
 import javafx.application.Platform;
-import javafx.beans.value.ChangeListener;
-import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
 import javafx.collections.ListChangeListener;
 import javafx.collections.ObservableList;
@@ -33,7 +28,6 @@ import javafx.scene.control.TabPane;
 import javafx.scene.control.TreeItem;
 import javafx.scene.control.TreeTableColumn;
 import javafx.scene.control.cell.TextFieldTreeTableCell;
-import javafx.stage.Stage;
 import javafx.stage.Window;
 import javafx.util.Callback;
 import org.bson.BsonNull;
@@ -259,10 +253,7 @@ public class MainController implements Initializable,AutoCloseable {
             }
         });
         itemsTab.setUserData((Runnable) () -> {
-            if (editors.stream().noneMatch(editor -> editor instanceof ItemEditorController ||
-                    editor instanceof PlacementEditorController ||
-                    editor instanceof TagValueEditorController ||
-                    editor instanceof SourceEditorController)) {
+            if (!editors.isEmpty()) {
                 sourcesController.clearRecords();
                 itemsController.reloadRecords();
             }
@@ -277,10 +268,7 @@ public class MainController implements Initializable,AutoCloseable {
             }
         });
         sourcesTab.setUserData((Runnable) () -> {
-            if (editors.stream().noneMatch(editor -> editor instanceof ItemEditorController ||
-                    editor instanceof PlacementEditorController ||
-                    editor instanceof TagValueEditorController ||
-                    editor instanceof SourceEditorController)) {
+            if (!editors.isEmpty()) {
                 itemsController.clearRecords();
                 sourcesController.reloadRecords();
             }
@@ -289,10 +277,7 @@ public class MainController implements Initializable,AutoCloseable {
         tabs.selectionModelProperty().get().selectedItemProperty().addListener((observable, oldValue, newValue) -> {
             if (newValue.getUserData() instanceof Runnable) {
                 ((Runnable) newValue.getUserData()).run();
-            } else if (editors.stream().noneMatch(editor -> editor instanceof ItemEditorController ||
-                    editor instanceof PlacementEditorController ||
-                    editor instanceof TagValueEditorController ||
-                    editor instanceof SourceEditorController)) {
+            } else if (!editors.isEmpty()) {
                 unloadRecords();
             }
         });
