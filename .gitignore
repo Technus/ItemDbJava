@@ -8,3 +8,5 @@ Locations.txt
 Items.txt
 out/
 itemDB.iml
+*.tsv
+*.xlsx
