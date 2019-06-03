@@ -103,7 +103,9 @@ public class DesignationsTabController implements Initializable {
 
     public void removeSelected(ActionEvent actionEvent) {
         Designation designation=designationsTable.getSelectionModel().getSelectedItem();
-        if(ButtonType.OK==new Alert(Alert.AlertType.CONFIRMATION,"Remove "+designation+" ?").showAndWait().orElse(ButtonType.CANCEL)) {
+        Alert alert=new Alert(Alert.AlertType.CONFIRMATION,"Remove "+designation+" ?");
+        alert.initOwner(mainController.getStage());
+        if(ButtonType.OK==alert.showAndWait().orElse(ButtonType.CANCEL)) {
             mainController.model.logic.getDesignationCollection().deleteOne(new Document("_id", designation.getId()));
             Designation.COLLECTION.map.remove(designation.getId());
         }

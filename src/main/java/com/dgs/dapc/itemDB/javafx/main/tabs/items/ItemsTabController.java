@@ -28,17 +28,22 @@ import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
+import javafx.embed.swing.SwingFXUtils;
 import javafx.event.ActionEvent;
+import javafx.event.Event;
 import javafx.fxml.Initializable;
+import javafx.scene.SnapshotParameters;
 import javafx.scene.control.*;
 import javafx.scene.control.cell.TextFieldTreeTableCell;
-import javafx.scene.input.MouseButton;
-import javafx.scene.input.MouseEvent;
+import javafx.scene.image.ImageView;
+import javafx.scene.input.*;
 import org.bson.BsonDocument;
 import org.bson.BsonObjectId;
 import org.bson.Document;
 import org.bson.conversions.Bson;
+import org.bson.types.ObjectId;
 
+import java.awt.image.BufferedImage;
 import java.net.URL;
 import java.util.*;
 import java.util.function.Supplier;
@@ -93,6 +98,8 @@ public class ItemsTabController implements Initializable {
     public ToggleButton stockLow;
     public Label countLabel;
     public ToggleButton expandToggle;
+    public ImageView camImage;
+    public ToggleButton scanEnable;
 
 
     private ObservableList<Bson> queryList = FXCollections.observableArrayList();
@@ -100,6 +107,16 @@ public class ItemsTabController implements Initializable {
 
     @Override
     public void initialize(URL location, ResourceBundle resources) {
+        scanEnable.textProperty().bind(new StringBinding() {
+            {
+                bind(scanEnable.selectedProperty());
+            }
+            @Override
+            protected String computeValue() {
+                return scanEnable.isSelected()?"On":"Off";
+            }
+        });
+
         stockLow.setOnAction(event -> {
             if(stockLow.isSelected()) needsOrdering.setSelected(false);
         });
@@ -222,6 +239,38 @@ public class ItemsTabController implements Initializable {
                     event.consume();
                 }
             });
+
+            row.setOnDragDetected(event -> {
+                if (mainController.editors.stream().noneMatch(o -> o instanceof PlacementEditorController) &&
+                        row.getTreeItem().getValue() instanceof Placement) {
+                    Item item = (Item)row.getTreeItem().getParent().getValue();
+                    Placement placement = (Placement) row.getTreeItem().getValue();
+                    ChangesOverviewController.currentDrag=new Tuple2<>(item,placement);
+                    Dragboard db = row.startDragAndDrop(TransferMode.MOVE);
+                    db.setDragView(row.snapshot(new SnapshotParameters(), null));
+                    ClipboardContent content=new ClipboardContent();
+                    content.putString("Placement");
+                    db.setContent(content);
+                }else{
+                    //todo ask to close and save placement editors?
+                    ChangesOverviewController.currentDrag=null;
+                }
+                event.consume();
+            });
+            row.setOnDragEntered(event -> {
+                row.setStyle("-fx-base:-fx-fg-blue;");
+                event.consume();
+            });
+            row.setOnDragExited(event -> {
+                row.setStyle("");
+                event.consume();
+            });
+            row.setOnDragOver(Event::consume);//don't accept
+            row.setOnDragDropped(event -> {
+                ChangesOverviewController.currentDrag=null;
+                event.consume();
+            });//no action
+
             //row.setOnDragDetected(event -> {
             //    if (mainController.editors.stream().noneMatch(o -> o instanceof PlacementEditorController) &&
             //            row.getTreeItem().getValue() instanceof Placement) {
@@ -594,16 +643,24 @@ public class ItemsTabController implements Initializable {
         QueryBuilder queryBuilder=QueryBuilder.start();
         if(genericQueryInput.getText()!=null && genericQueryInput.getText().length()>0){
             QueryBuilder orQuery=QueryBuilder.start();
-            Pattern pattern;
+            Pattern _pattern,pattern;
             if(genericRegExp.isSelected()){
                 try{
-                    pattern=Utility.getPattern(genericQueryInput.getText());
+                    _pattern=Utility.getPattern(genericQueryInput.getText());
                 }catch (PatternSyntaxException e){
-                    pattern=Pattern.compile("(?i)"+ Pattern.quote(genericQueryInput.getText()));
+                    _pattern=Pattern.compile("(?i)"+ Pattern.quote(genericQueryInput.getText()));
                     genericRegExp.setSelected(false);
                 }
             }else{
-                pattern=Pattern.compile("(?i)"+ Pattern.quote(genericQueryInput.getText()));
+                _pattern=Pattern.compile("(?i)"+ Pattern.quote(genericQueryInput.getText()));
+            }
+            pattern=_pattern;
+
+            List<ObjectId> contacts=Contact.COLLECTION.map.values().parallelStream()
+                    .filter(contact -> pattern.matcher(contact.getName()).find()).map(Contact::getId).collect(Collectors.toList());
+            if(contacts.size()>0) {
+                orQuery.or(QueryBuilder.start("sources.supplierId").in(contacts).get());
+                orQuery.or(QueryBuilder.start("manufacturersId").in(contacts).get());
             }
             orQuery.or(QueryBuilder.start("name").regex(pattern).get());
             orQuery.or(QueryBuilder.start("details").regex(pattern).get());
@@ -729,7 +786,9 @@ public class ItemsTabController implements Initializable {
             if (placements.size() == 1) {
                 return placements.get(0);
             }else{
-                new Alert(Alert.AlertType.WARNING,"Cannot find matching placement!").showAndWait();
+                Alert alert = new Alert(Alert.AlertType.WARNING, "Cannot find matching placement!");
+                alert.initOwner(mainController.getStage());
+                alert.showAndWait();
             }
         }
         return null;
@@ -754,7 +813,11 @@ public class ItemsTabController implements Initializable {
             }
             case SUB:{
                 if(o.getValue() instanceof Placement){
-                    if(((Placement) o.getValue()).getCount()<1) new Alert(Alert.AlertType.WARNING,"Not enough!").showAndWait();
+                    if(((Placement) o.getValue()).getCount()<1) {
+                        Alert alert = new Alert(Alert.AlertType.WARNING, "Not enough!");
+                        alert.initOwner(mainController.getStage());
+                        alert.showAndWait();
+                    }
                     if(o.getParent().getValue() instanceof Item) {
                         ((Placement) o.getValue()).setCount(((Placement) o.getValue()).getCount() - 1D);
                         mainController.model.logic.getItemsCollection().replaceOne(
@@ -936,14 +999,18 @@ public class ItemsTabController implements Initializable {
         if(o.getValue() instanceof Placement){
             if(o.getParent().getValue() instanceof Item) {
                 Item item=((Item) o.getParent().getValue());
-                if(ButtonType.OK==new Alert(Alert.AlertType.CONFIRMATION,"Remove "+o.getValue()+" ?").showAndWait().orElse(ButtonType.CANCEL)) {
+                Alert alert=new Alert(Alert.AlertType.CONFIRMATION,"Remove "+o.getValue()+" ?");
+                alert.initOwner(mainController.getStage());
+                if(ButtonType.OK==alert.showAndWait().orElse(ButtonType.CANCEL)) {
                     item.placementsProperty().remove(o);
                     mainController.model.logic.getItemsCollection().replaceOne(
                             new Document("_id", item.getId()), item);
                 }
             }
         }else if(o.getValue() instanceof Item){
-            if(ButtonType.OK==new Alert(Alert.AlertType.CONFIRMATION,"Remove "+o.getValue()+" ?").showAndWait().orElse(ButtonType.CANCEL)) {
+            Alert alert=new Alert(Alert.AlertType.CONFIRMATION,"Remove "+o.getValue()+" ?");
+            alert.initOwner(mainController.getStage());
+            if(ButtonType.OK==alert.showAndWait().orElse(ButtonType.CANCEL)) {
                 mainController.model.logic.getItemsCollection().deleteOne(new Document("_id", ((Item) o.getValue()).getId()));
                 itemsTree.rootProperty().get().getChildren().remove(o);
             }
@@ -1006,10 +1073,30 @@ public class ItemsTabController implements Initializable {
                 }
             }
 
-            Utility.Window<ChangesOverviewController> changes=Utility.loadFXML(ChangesOverviewController.class.getResource("ChangesOverview.fxml"),"Changes Overview",mainController.getStage());
+            Utility.Window<ChangesOverviewController> changes=Utility.loadFXML(ChangesOverviewController.class.getResource("ChangesOverview.fxml"),"Bulk edit",mainController.getStage());
             changes.controller.setMainController(mainController);
             changes.controller.setSelectedPlacements(selectedPlacements);
             changes.stage.show();
         }
+    }
+
+    public void setMainController(MainController mainController){
+        this.mainController=mainController;
+        scanEnable.selectedProperty().bindBidirectional(mainController.scanEnableProperty());
+    }
+
+    public void setImage(BufferedImage image){
+        Platform.runLater(()->{
+            camImage.setImage(SwingFXUtils.toFXImage(image,null));
+        });
+    }
+    public void setCode(String code){
+        Platform.runLater(() -> {
+            qrLinkInput.setText(code);
+        });
+    }
+
+    public void configureCamera(ActionEvent actionEvent) {
+        mainController.configureCameraAsync(actionEvent);
     }
 }

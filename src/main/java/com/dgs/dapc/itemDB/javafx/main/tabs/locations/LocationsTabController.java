@@ -114,7 +114,9 @@ public class LocationsTabController implements Initializable {
 
     public void removeSelected(ActionEvent actionEvent) {
         TreeItem<Location> o=locationsTree.getSelectionModel().getSelectedItem();
-        if(ButtonType.OK==new Alert(Alert.AlertType.CONFIRMATION,"Remove "+o.getValue()+" ?").showAndWait().orElse(ButtonType.CANCEL)) {
+        Alert alert=new Alert(Alert.AlertType.CONFIRMATION,"Remove "+o.getValue()+" ?");
+        alert.initOwner(mainController.getStage());
+        if(ButtonType.OK==alert.showAndWait().orElse(ButtonType.CANCEL)) {
             mainController.model.logic.getLocationCollection().deleteOne(new Document("_id", o.getValue().getId()));
             o.getParent().getChildren().remove(o);
         }

@@ -1,26 +1,10 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
 <?import com.dgs.dapc.itemDB.javafx.nullComboBox.NullCombo?>
-<?import javafx.geometry.Insets?>
-<?import javafx.scene.control.Button?>
-<?import javafx.scene.control.Label?>
-<?import javafx.scene.control.Pagination?>
-<?import javafx.scene.control.ScrollPane?>
-<?import javafx.scene.control.Spinner?>
-<?import javafx.scene.control.SplitPane?>
-<?import javafx.scene.control.TextField?>
-<?import javafx.scene.control.TitledPane?>
-<?import javafx.scene.control.ToggleButton?>
-<?import javafx.scene.control.Tooltip?>
-<?import javafx.scene.control.TreeTableColumn?>
-<?import javafx.scene.control.TreeTableView?>
-<?import javafx.scene.layout.ColumnConstraints?>
-<?import javafx.scene.layout.GridPane?>
-<?import javafx.scene.layout.HBox?>
-<?import javafx.scene.layout.Pane?>
-<?import javafx.scene.layout.RowConstraints?>
-<?import javafx.scene.layout.VBox?>
-
+<?import javafx.geometry.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.image.ImageView?>
+<?import javafx.scene.layout.*?>
 <SplitPane dividerPositions="0.15" prefHeight="600.0" prefWidth="800.0" xmlns="http://javafx.com/javafx/8.0.172-ea" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.dgs.dapc.itemDB.javafx.main.tabs.sources.SourcesTabController">
 <ScrollPane fitToHeight="true" fitToWidth="true" minWidth="-Infinity" prefWidth="300.0" SplitPane.resizableWithParent="false">
     <VBox spacing="12.0">
@@ -28,6 +12,17 @@
             <content>
                <VBox spacing="4.0">
                   <children>
+                    <BorderPane>
+                      <center>
+                        <ImageView fx:id="camImage" fitHeight="90.0" fitWidth="160.0" pickOnBounds="true" preserveRatio="true" smooth="false" />
+                      </center>
+                      <left>
+                        <VBox>
+                          <Button maxHeight="1.7976931348623157E308" mnemonicParsing="false" onAction="#configureCamera" text="📷⚙" BorderPane.alignment="CENTER" />
+                          <ToggleButton fx:id="scanEnable" maxHeight="1.7976931348623157E308" mnemonicParsing="false" text="Toggle" BorderPane.alignment="CENTER" />
+                        </VBox>
+                      </left>
+                    </BorderPane>
                      <TextField fx:id="qrLinkInput" maxWidth="1.7976931348623157E308" promptText="Scan QR Here" />
                   </children>
                   <padding>

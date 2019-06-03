@@ -109,7 +109,9 @@ public class TagsTabController implements Initializable {
 
     public void removeSelected(ActionEvent actionEvent) {
         Tag tag=tagsTable.getSelectionModel().getSelectedItem();
-        if(ButtonType.OK==new Alert(Alert.AlertType.CONFIRMATION,"Remove "+tag+" ?").showAndWait().orElse(ButtonType.CANCEL)) {
+        Alert alert=new Alert(Alert.AlertType.CONFIRMATION,"Remove "+tag+" ?");
+        alert.initOwner(mainController.getStage());
+        if(ButtonType.OK==alert.showAndWait().orElse(ButtonType.CANCEL)) {
             mainController.model.logic.getTagCollection().deleteOne(new Document("_id", tag.getId()));
             Tag.COLLECTION.map.remove(tag.getId());
         }

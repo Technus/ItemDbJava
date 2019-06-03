@@ -1,11 +1,18 @@
 package com.dgs.dapc.itemDB;
 
+import boofcv.abst.fiducial.QrCodeDetector;
+import boofcv.alg.fiducial.qrcode.QrCode;
+import boofcv.factory.fiducial.FactoryFiducial;
+import boofcv.io.image.ConvertBufferedImage;
+import boofcv.struct.image.GrayU8;
 import com.dgs.dapc.itemDB.javafx.IWindowInitialize;
 import com.mongodb.BasicDBObject;
 import com.mongodb.QueryBuilder;
 import com.mongodb.client.MongoCollection;
 import com.mongodb.client.model.Aggregates;
 import com.sun.javafx.scene.control.skin.TableViewSkin;
+import georegression.struct.point.Point2D_F64;
+import georegression.struct.shapes.Polygon2D_F64;
 import javafx.collections.ListChangeListener;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
@@ -14,13 +21,18 @@ import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
 import javafx.scene.control.TreeItem;
 import javafx.scene.control.TreeTableColumn;
-import javafx.stage.*;
+import javafx.stage.FileChooser;
+import javafx.stage.Modality;
+import javafx.stage.Stage;
+import javafx.stage.StageStyle;
 import javafx.util.StringConverter;
 import org.bson.BsonDocument;
 import org.bson.BsonString;
 import org.bson.codecs.pojo.annotations.BsonDiscriminator;
 import org.bson.conversions.Bson;
+import org.ddogleg.struct.FastQueue;
 
+import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
@@ -477,5 +489,65 @@ public class Utility {
     public static void setExpandRecursivelyWithRoot(TreeItem<?> changeRoot, boolean expand){
         changeRoot.setExpanded(expand);
         setExpandRecursively(changeRoot,expand);
+    }
+
+    public static class ScanResult{
+        public BufferedImage image;
+        public List<String> code;
+
+        public ScanResult(BufferedImage image, List<String> code) {
+            this.image = image;
+            this.code = code;
+        }
+    }
+
+    public static ScanResult readQRCode(BufferedImage input) {
+        GrayU8 gray = ConvertBufferedImage.convertFrom(input,(GrayU8)null);
+
+        QrCodeDetector<GrayU8> detector = FactoryFiducial.qrcode(null,GrayU8.class);
+
+        detector.process(gray);
+
+        // Get's a list of all the qr codes it could successfully detect and decode
+        List<QrCode> detections = detector.getDetections();
+
+        Graphics2D g2 = input.createGraphics();
+        int strokeWidth = Math.max(4,input.getWidth()/200); // in large images the line can be too thin
+        g2.setStroke(new BasicStroke(strokeWidth));
+        g2.setColor(Color.GREEN);
+        List<String> codes=new ArrayList<>();
+        for( QrCode qr : detections ) {
+            codes.add(qr.message);
+            g2.drawPolygon(getPolygon(qr.bounds));
+        }
+
+        // List of objects it thinks might be a QR Code but failed for various reasons
+        List<QrCode> failures = detector.getFailures();
+        g2.setColor(Color.RED);
+        for( QrCode qr : failures ) {
+            // If the 'cause' is ERROR_CORRECTION or later then it's probably a real QR Code that
+            if( qr.failureCause.ordinal() < QrCode.Failure.ERROR_CORRECTION.ordinal() ){
+                g2.setColor(Color.YELLOW);
+            }else{
+                g2.setColor(Color.RED);
+            }
+            g2.drawPolygon(getPolygon(qr.bounds));
+
+        }
+        g2.dispose();
+        return new ScanResult(input,codes);
+    }
+
+    public static Polygon getPolygon(Polygon2D_F64 polygon2D_f64){
+        FastQueue<Point2D_F64> vertexes = polygon2D_f64.vertexes;
+        int[] x=new int[vertexes.size];
+        int[] y=new int[vertexes.size];
+        Point2D_F64[] data = vertexes.data;
+        for (int i = 0, dataLength = data.length; i < dataLength; i++) {
+            Point2D_F64 point2D_f64 = data[i];
+            x[i]=(int) point2D_f64.x;
+            y[i]=(int) point2D_f64.y;
+        }
+        return new Polygon(x,y,vertexes.size);
     }
 }

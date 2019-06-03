@@ -82,12 +82,16 @@ public class UtilTabController {
         if(mainController.editors.isEmpty()) {
             performReload();
         }else {
-            if(ButtonType.OK==new Alert(Alert.AlertType.WARNING,"Close all editors and reload?",ButtonType.OK,ButtonType.CANCEL).showAndWait().orElse(ButtonType.CANCEL)){
+            Alert alert=new Alert(Alert.AlertType.WARNING,"Close all editors and reload?",ButtonType.OK,ButtonType.CANCEL);
+            alert.initOwner(mainController.getStage());
+            if(ButtonType.OK==alert.showAndWait().orElse(ButtonType.CANCEL)){
                 killEditors(actionEvent);
                 if(mainController.editors.isEmpty()){
                     performReload();
                 }else {
-                    new Alert(Alert.AlertType.ERROR,"Reload Failed!").showAndWait();
+                    Alert failed = new Alert(Alert.AlertType.ERROR, "Reload Failed!");
+                    failed.initOwner(mainController.getStage());
+                    failed.showAndWait();
                 }
             }
         }

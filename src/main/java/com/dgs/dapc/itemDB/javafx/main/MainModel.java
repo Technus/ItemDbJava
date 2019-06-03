@@ -24,7 +24,6 @@ public class MainModel {
     public MainModel(List<String> parameters, Stage stage){
         logic=new MainLogic(parameters);
         this.stage=stage;
-
     }
 
     //region throwable gui
@@ -49,8 +48,11 @@ public class MainModel {
     }
 
     private ButtonType showConfirmThrowable(Region region,Throwable throwable,ButtonType... buttonTypes){
-        logic.logError(throwable);//todo uncomment
-        //throwable.printStackTrace();//todo comment
+        try{
+            logic.logError(throwable);
+        }catch (Exception e){
+            throwable.printStackTrace();
+        }
 
         Alert.AlertType type=throwable instanceof Exception? Alert.AlertType.WARNING: Alert.AlertType.ERROR;
         Alert alert = new Alert(type,null,buttonTypes);
@@ -72,6 +74,7 @@ public class MainModel {
         }
         alert.initModality(Modality.APPLICATION_MODAL);
         alert.initOwner(stage);
+        ((Stage) alert.getDialogPane().getScene().getWindow()).setAlwaysOnTop(true);
         try {
             Optional<ButtonType> buttonTypeOptional = alert.showAndWait();
             return buttonTypeOptional.orElse(ButtonType.CLOSE);

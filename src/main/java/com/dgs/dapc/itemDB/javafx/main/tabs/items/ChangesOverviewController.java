@@ -4,12 +4,12 @@ import com.dgs.dapc.itemDB.headless.db.pojo.child.Placement;
 import com.dgs.dapc.itemDB.headless.db.pojo.topLevel.Item;
 import com.dgs.dapc.itemDB.javafx.IWindowInitialize;
 import com.dgs.dapc.itemDB.javafx.main.MainController;
+import com.dgs.dapc.itemDB.javafx.main.editor.itemEditor.placementEditor.PlacementEditorController;
 import com.github.technus.dbAdditions.mongoDB.pojo.Tuple2;
-import javafx.collections.FXCollections;
 import javafx.collections.ListChangeListener;
-import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.scene.control.*;
+import javafx.scene.input.TransferMode;
 import javafx.stage.Stage;
 import org.bson.BsonDocument;
 import org.bson.BsonObjectId;
@@ -27,11 +27,20 @@ public class ChangesOverviewController implements IWindowInitialize {
     public Button subButton,addButton;
     public ToggleButton pinToggle;
     public Spinner<Double> countSpinner;
+
+    public TableColumn<Tuple2<Item,Placement>,String> itemNameColumn;
+    public TableColumn<Tuple2<Item,Placement>,String> manufacturerColumn;
+    public TableColumn<Tuple2<Item,Placement>,String> designationsColumn;
+    public TableColumn<Tuple2<Item,Placement>,Double> quantityColumn;
+    public TableColumn<Tuple2<Item,Placement>,Double> minimalColumn;
+    public TableColumn<Tuple2<Item,Placement>,Double> purchasedColumn;
+    public TableColumn<Tuple2<Item,Placement>,String> serialColumn;
+    public TableColumn<Tuple2<Item,Placement>,String> detailsColumn;
+
     private MainController mainController;
-    private ObservableList<Tuple2<Item,Placement>> selectedPlacements;
 
     public void setSelectedPlacements(List<Tuple2<Item,Placement>> selectedPlacements) {
-        placementsTable.setItems(FXCollections.observableArrayList(selectedPlacements));
+        placementsTable.getItems().setAll(selectedPlacements);
         placementsTable.getSelectionModel().getSelectedItems()
                 .addListener((ListChangeListener<Tuple2<Item, Placement>>) c -> {
                     removeButton.setDisable(c.getList().isEmpty());
@@ -46,32 +55,41 @@ public class ChangesOverviewController implements IWindowInitialize {
         countSpinner.getValueFactory().setConverter(THE_DOUBLE_CONVERTER);
         countSpinner.focusedProperty().addListener((observable, oldValue, newValue) -> countSpinner.increment(0));
 
+        itemNameColumn.setCellValueFactory(param -> param.getValue().getX().nameProperty());
+        manufacturerColumn.setCellValueFactory(param -> param.getValue().getX().manufacturersProperty().toStringProperty());
+        designationsColumn.setCellValueFactory(param -> param.getValue().getX().designationsStringProperty());
+        quantityColumn.setCellValueFactory(param -> param.getValue().getY().countProperty().asObject());
+        minimalColumn.setCellValueFactory(param -> param.getValue().getY().minCountProperty().asObject());
+        purchasedColumn.setCellValueFactory(param -> param.getValue().getY().orderedProperty().asObject());
+        serialColumn.setCellValueFactory(param -> param.getValue().getY().serialProperty());
+        detailsColumn.setCellValueFactory(param -> param.getValue().getY().detailsProperty());
+
         //placementsTable.setRowFactory(param -> {
         //    TableRow<Tuple2<Item,Placement>> row=new TableRow<>();
         //    row.setOnDragDetected();
         //    return row;
         //});
-        //placementsTable.setOnDragEntered(event -> {
-        //    placementsTable.setStyle("-fx-base:-fx-fg-blue;");
-        //    event.consume();
-        //});
-        //placementsTable.setOnDragExited(event -> {
-        //    placementsTable.setStyle("");
-        //    event.consume();
-        //});
-        //placementsTable.setOnDragOver(event -> {
-        //    if(currentDrag!= ItemEditorController.this){
-        //        if (mainController.editors.stream().noneMatch(o -> o instanceof PlacementEditorController)) {
-        //            if (currentDrag != null && dragStartPlacement != null) {
-        //                event.acceptTransferModes(TransferMode.MOVE);
-        //            }
-        //        }
-        //    }
-        //    event.consume();
-        //});
-        //placementsTable.setOnDragDropped(event -> {
-        //
-        //});
+        placementsTable.getSelectionModel().setSelectionMode(SelectionMode.MULTIPLE);
+        placementsTable.setOnDragEntered(event -> {
+            placementsTable.setStyle("-fx-base:-fx-fg-blue;");
+            event.consume();
+        });
+        placementsTable.setOnDragExited(event -> {
+            placementsTable.setStyle("");
+            event.consume();
+        });
+        placementsTable.setOnDragOver(event -> {
+            if (mainController.editors.stream().noneMatch(o -> o instanceof PlacementEditorController)) {
+                if (currentDrag != null) {
+                    event.acceptTransferModes(TransferMode.MOVE);
+                }
+            }
+            event.consume();
+        });
+        placementsTable.setOnDragDropped(event -> {
+            placementsTable.getItems().add(currentDrag);
+            currentDrag=null;
+        });
     }
 
     public void setMainController(MainController mainController) {
@@ -80,9 +98,10 @@ public class ChangesOverviewController implements IWindowInitialize {
     }
 
     public void addToAll(ActionEvent actionEvent) {
-        Alert alert=new Alert(Alert.AlertType.CONFIRMATION,"This action will add to all selected placements!", ButtonType.OK,ButtonType.CANCEL);
+        Alert alert=new Alert(Alert.AlertType.CONFIRMATION,"This action will add to all placements!", ButtonType.OK,ButtonType.CANCEL);
+        alert.initOwner(stage);
         if(alert.showAndWait().orElse(ButtonType.CANCEL)!=ButtonType.CANCEL){
-            for (Tuple2<Item, Placement> tuple :selectedPlacements) {
+            for (Tuple2<Item, Placement> tuple :placementsTable.getItems()) {
                 tuple.getY().setCount(tuple.getY().getCount()+countSpinner.getValue());
                 mainController.model.logic.getItemsCollection()
                         .replaceOne(new BsonDocument().append("_id", new BsonObjectId(tuple.getX().getId())), tuple.getX());
@@ -91,15 +110,18 @@ public class ChangesOverviewController implements IWindowInitialize {
     }
 
     public void subFromAll(ActionEvent actionEvent) {
-        Alert alert=new Alert(Alert.AlertType.CONFIRMATION,"This action will subtract from all selected placements!", ButtonType.OK,ButtonType.CANCEL);
+        Alert alert=new Alert(Alert.AlertType.CONFIRMATION,"This action will subtract from all placements!", ButtonType.OK,ButtonType.CANCEL);
+        alert.initOwner(stage);
         if(alert.showAndWait().orElse(ButtonType.CANCEL)!=ButtonType.CANCEL){
-            for (Tuple2<Item, Placement> tuple :selectedPlacements) {
+            for (Tuple2<Item, Placement> tuple :placementsTable.getItems()) {
                 if(tuple.getY().getCount()<1){
-                    new Alert(Alert.AlertType.WARNING,"Insufficient material!",ButtonType.OK).showAndWait();
+                    Alert insufficient=new Alert(Alert.AlertType.WARNING,"Insufficient material!",ButtonType.OK);
+                    insufficient.initOwner(stage);
+                    insufficient.showAndWait();
                     return;
                 }
             }
-            for (Tuple2<Item, Placement> tuple :selectedPlacements) {
+            for (Tuple2<Item, Placement> tuple :placementsTable.getItems()) {
                 tuple.getY().setCount(tuple.getY().getCount()-countSpinner.getValue());
                 mainController.model.logic.getItemsCollection()
                         .replaceOne(new BsonDocument().append("_id", new BsonObjectId(tuple.getX().getId())), tuple.getX());

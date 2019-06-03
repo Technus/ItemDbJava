@@ -105,7 +105,7 @@ public class MainLogic implements AutoCloseable {
                         }
                         try{
                             DeleteResult result=throwableCollectionLocal.deleteOne(new Document().append("_id", id));
-                            if(!result.wasAcknowledged() || result.getDeletedCount()!=0){
+                            if(!result.wasAcknowledged() || result.getDeletedCount()!=1){
                                 new MongoFSBackendException(
                                         "Invalid deletion detected "+result.wasAcknowledged()+" " +result.getDeletedCount(),null)
                                         .printStackTrace();

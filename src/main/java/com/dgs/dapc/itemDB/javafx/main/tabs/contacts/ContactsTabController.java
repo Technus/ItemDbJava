@@ -132,7 +132,9 @@ public class ContactsTabController implements Initializable {
 
     public void removeSelected(ActionEvent actionEvent) {
         Contact contact=contactsTable.getSelectionModel().getSelectedItem();
-        if(ButtonType.OK==new Alert(Alert.AlertType.CONFIRMATION,"Remove "+contact+" ?").showAndWait().orElse(ButtonType.CANCEL)){
+        Alert alert = new Alert(Alert.AlertType.CONFIRMATION,"Remove "+contact+" ?");
+        alert.initOwner(mainController.getStage());
+        if(ButtonType.OK==alert.showAndWait().orElse(ButtonType.CANCEL)){
             mainController.model.logic.getContactCollection().deleteOne(new Document("_id",contact.getId()));
             Contact.COLLECTION.map.remove(contact.getId());
         }

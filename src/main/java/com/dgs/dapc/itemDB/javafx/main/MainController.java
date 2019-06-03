@@ -14,13 +14,19 @@ import com.dgs.dapc.itemDB.javafx.main.tabs.locations.LocationsTabController;
 import com.dgs.dapc.itemDB.javafx.main.tabs.sources.SourcesTabController;
 import com.dgs.dapc.itemDB.javafx.main.tabs.tags.TagsTabController;
 import com.dgs.dapc.itemDB.javafx.main.tabs.util.UtilTabController;
+import com.github.sarxos.webcam.Webcam;
+import com.github.sarxos.webcam.WebcamEvent;
+import com.github.sarxos.webcam.WebcamException;
+import com.github.sarxos.webcam.WebcamListener;
 import com.mongodb.client.model.Field;
 import com.mongodb.client.model.UnwindOptions;
 import javafx.application.HostServices;
 import javafx.application.Platform;
+import javafx.beans.property.SimpleBooleanProperty;
 import javafx.collections.FXCollections;
 import javafx.collections.ListChangeListener;
 import javafx.collections.ObservableList;
+import javafx.event.ActionEvent;
 import javafx.fxml.Initializable;
 import javafx.geometry.Pos;
 import javafx.scene.control.Tab;
@@ -34,10 +40,15 @@ import org.bson.BsonNull;
 import org.bson.Document;
 import org.bson.conversions.Bson;
 
+import java.awt.*;
+import java.awt.image.BufferedImage;
 import java.net.URL;
+import java.util.List;
 import java.util.*;
+import java.util.concurrent.TimeoutException;
 import java.util.function.Consumer;
 import java.util.function.Supplier;
+import java.util.stream.Collectors;
 
 import static com.mongodb.client.model.Accumulators.first;
 import static com.mongodb.client.model.Accumulators.push;
@@ -237,11 +248,11 @@ public class MainController implements Initializable,AutoCloseable {
 
         contactsController.mainController =
                 designationsController.mainController =
-                        itemsController.mainController =
                                 locationsController.mainController =
-                                        sourcesController.mainController =
                                                 tagsController.mainController =
                                                         utilController.mainController = this;
+        itemsController.setMainController(this);
+        sourcesController.setMainController(this);
 
         itemsTab.selectedProperty().addListener((observable, oldValue, newValue) -> {
             if(newValue){
@@ -322,5 +333,142 @@ public class MainController implements Initializable,AutoCloseable {
 
     public Window getStage(){
         return tabs.getScene().getWindow();
+    }
+
+    private final SimpleBooleanProperty scanEnable=new SimpleBooleanProperty();
+
+    public boolean isScanEnable() {
+        return scanEnable.get();
+    }
+
+    public SimpleBooleanProperty scanEnableProperty() {
+        return scanEnable;
+    }
+
+    public void setScanEnable(boolean scanEnable) {
+        this.scanEnable.set(scanEnable);
+    }
+
+    private final WebcamListener webcamListener=new WebcamListener() {
+        private volatile String lastCode=null;
+
+        @Override
+        public void webcamOpen(WebcamEvent we) {
+            lastCode=null;
+        }
+
+        @Override
+        public void webcamClosed(WebcamEvent we) {
+
+        }
+
+        @Override
+        public void webcamDisposed(WebcamEvent we) {
+
+        }
+
+        @Override
+        public void webcamImageObtained(WebcamEvent we) {
+            if(lastCode!=null){
+                return;
+            }
+            BufferedImage image=we.getImage();
+            if(scanEnable.get()) {
+                Utility.ScanResult codeResult = Utility.readQRCode(image);
+                if (itemsTab.isSelected()) {
+                    itemsController.setImage(image);
+                } else if (sourcesTab.isSelected()) {
+                    sourcesController.setImage(image);
+                }
+                if(codeResult.code.size()>0){
+                    String code=codeResult.code.get(0);
+                    if (lastCode == null && code != null) {
+                        lastCode = code;
+                        Toolkit.getDefaultToolkit().beep();
+                        if (itemsTab.isSelected()) {
+                            itemsController.setCode(code);
+                        } else if (sourcesTab.isSelected()) {
+                            sourcesController.setCode(code);
+                        }
+                        new Thread(() -> {
+                            try {
+                                Thread.sleep(1000);
+                                lastCode = null;
+                            } catch (InterruptedException e) {
+                                e.printStackTrace();
+                            }
+                        }).start();
+                    }
+                }
+            }else{
+                if (itemsTab.isSelected()) {
+                    itemsController.setImage(image);
+                } else if (sourcesTab.isSelected()) {
+                    sourcesController.setImage(image);
+                }
+            }
+        }
+    };
+
+    private Webcam webcam;
+
+    {
+        setDefaultWebCamAsync();
+    }
+
+    private void setDefaultWebCamAsync(){
+        try {
+            webcam=Webcam.getDefault(5000);
+            webcam.addWebcamListener(webcamListener);
+            if(!webcam.open(true)){
+                webcam.removeWebcamListener(webcamListener);
+                webcam=null;
+            }
+        } catch (TimeoutException| WebcamException e) {
+            webcam=null;
+        }
+    }
+
+    private void setWebCamAsync(Webcam webCam){
+        try{
+            webcam=webCam;
+            webcam.addWebcamListener(webcamListener);
+            if(!webcam.open(true)){
+                webcam.removeWebcamListener(webcamListener);
+                webcam=null;
+            }
+        }catch (WebcamException e){
+            webcam=null;
+        }
+    }
+
+    public void configureCameraAsync(ActionEvent actionEvent) {
+        if(webcam==null){
+            setDefaultWebCamAsync();
+        }else{
+            String name=webcam.getName();
+            webcam.removeWebcamListener(webcamListener);
+            webcam.close();
+            try {
+                List<Webcam> cams= Webcam.getWebcams(5000).stream()
+                        .sorted(Comparator.comparing(Webcam::getName)).collect(Collectors.toList());
+                boolean foundMe=false;
+                for (Webcam cam:cams) {
+                    if(foundMe){
+                        setWebCamAsync(cam);
+                        break;
+                    }
+                    if(name.equals(cam.getName())){
+                        foundMe=true;
+                    }
+                }
+                if(!foundMe || !webcam.isOpen()){
+                    setWebCamAsync(cams.get(0));
+                }
+            } catch (TimeoutException|WebcamException e) {
+                webcam=null;
+                e.printStackTrace();
+            }
+        }
     }
 }

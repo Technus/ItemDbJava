@@ -16,6 +16,7 @@ import com.mongodb.client.MongoCollection;
 import com.mongodb.client.model.Aggregates;
 import com.mongodb.client.model.Field;
 import com.mongodb.client.model.UnwindOptions;
+import javafx.application.Platform;
 import javafx.beans.InvalidationListener;
 import javafx.beans.binding.BooleanBinding;
 import javafx.beans.binding.ObjectBinding;
@@ -24,10 +25,12 @@ import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
+import javafx.embed.swing.SwingFXUtils;
 import javafx.event.ActionEvent;
 import javafx.fxml.Initializable;
 import javafx.scene.control.*;
 import javafx.scene.control.cell.TextFieldTreeTableCell;
+import javafx.scene.image.ImageView;
 import javafx.scene.input.MouseButton;
 import javafx.scene.input.MouseEvent;
 import javafx.util.converter.DefaultStringConverter;
@@ -35,7 +38,9 @@ import org.bson.BsonDocument;
 import org.bson.BsonObjectId;
 import org.bson.Document;
 import org.bson.conversions.Bson;
+import org.bson.types.ObjectId;
 
+import java.awt.image.BufferedImage;
 import java.net.URL;
 import java.util.*;
 import java.util.function.Supplier;
@@ -89,12 +94,24 @@ public class SourcesTabController implements Initializable {
     public ToggleButton needsOrdering,stockLow;
     public Label countLabel;
     public ToggleButton expandToggle;
+    public ImageView camImage;
+    public ToggleButton scanEnable;
 
     private ObservableList<Bson> queryList = FXCollections.observableArrayList();
     private ObservableList<Bson> sortingList = FXCollections.observableArrayList();
 
     @Override
     public void initialize(URL location, ResourceBundle resources) {
+        scanEnable.textProperty().bind(new StringBinding() {
+            {
+                bind(scanEnable.selectedProperty());
+            }
+            @Override
+            protected String computeValue() {
+                return scanEnable.isSelected()?"On":"Off";
+            }
+        });
+
         stockLow.setOnAction(event -> {
             if(stockLow.isSelected()) needsOrdering.setSelected(false);
         });
@@ -548,16 +565,24 @@ public class SourcesTabController implements Initializable {
         QueryBuilder queryBuilder=QueryBuilder.start();
         if(genericQueryInput.getText()!=null && genericQueryInput.getText().length()>0){
             QueryBuilder orQuery=QueryBuilder.start();
-            Pattern pattern;
+            Pattern _pattern,pattern;
             if(genericRegExp.isSelected()){
                 try{
-                    pattern=Utility.getPattern(genericQueryInput.getText());
+                    _pattern=Utility.getPattern(genericQueryInput.getText());
                 }catch (PatternSyntaxException e){
-                    pattern=Pattern.compile("(?i)"+ Pattern.quote(genericQueryInput.getText()));
+                    _pattern=Pattern.compile("(?i)"+ Pattern.quote(genericQueryInput.getText()));
                     genericRegExp.setSelected(false);
                 }
             }else{
-                pattern=Pattern.compile("(?i)"+ Pattern.quote(genericQueryInput.getText()));
+                _pattern=Pattern.compile("(?i)"+ Pattern.quote(genericQueryInput.getText()));
+            }
+            pattern=_pattern;
+
+            List<ObjectId> contacts=Contact.COLLECTION.map.values().parallelStream()
+                    .filter(contact -> pattern.matcher(contact.getName()).find()).map(Contact::getId).collect(Collectors.toList());
+            if(contacts.size()>0) {
+                orQuery.or(QueryBuilder.start("sources.supplierId").in(contacts).get());
+                orQuery.or(QueryBuilder.start("manufacturersId").in(contacts).get());
             }
             orQuery.or(QueryBuilder.start("name").regex(pattern).get());
             orQuery.or(QueryBuilder.start("details").regex(pattern).get());
@@ -689,14 +714,18 @@ public class SourcesTabController implements Initializable {
         if(o.getValue() instanceof Source){
             if(o.getParent().getValue() instanceof Item) {
                 Item item=((Item) o.getParent().getValue());
-                if(ButtonType.OK==new Alert(Alert.AlertType.CONFIRMATION,"Remove "+o.getValue()+" ?").showAndWait().orElse(ButtonType.CANCEL)) {
+                Alert alert=new Alert(Alert.AlertType.CONFIRMATION,"Remove "+o.getValue()+" ?");
+                alert.initOwner(mainController.getStage());
+                if(ButtonType.OK==alert.showAndWait().orElse(ButtonType.CANCEL)) {
                     item.sourcesProperty().remove(o);
                     mainController.model.logic.getItemsCollection().replaceOne(
                             new Document("_id", item.getId()), item);
                 }
             }
         }else if(o.getValue() instanceof Item){
-            if(ButtonType.OK==new Alert(Alert.AlertType.CONFIRMATION,"Remove "+o.getValue()+" ?").showAndWait().orElse(ButtonType.CANCEL)) {
+            Alert alert=new Alert(Alert.AlertType.CONFIRMATION,"Remove "+o.getValue()+" ?");
+            alert.initOwner(mainController.getStage());
+            if(ButtonType.OK==alert.showAndWait().orElse(ButtonType.CANCEL)) {
                 mainController.model.logic.getItemsCollection().deleteOne(new Document("_id", ((Item) o.getValue()).getId()));
                 sourcesTree.rootProperty().get().getChildren().remove(o);
             }
@@ -711,5 +740,25 @@ public class SourcesTabController implements Initializable {
         serialQueryInput.setText(null);
         nameQueryInput.setText(null);
         genericQueryInput.setText(null);
+    }
+
+    public void setMainController(MainController mainController){
+        this.mainController=mainController;
+        scanEnable.selectedProperty().bindBidirectional(mainController.scanEnableProperty());
+    }
+
+
+    public void setImage(BufferedImage image){
+        Platform.runLater(()->{
+            camImage.setImage(SwingFXUtils.toFXImage(image,null));
+        });
+    }
+    public void setCode(String code){
+        Platform.runLater(() -> {
+            qrLinkInput.setText(code);
+        });
+    }
+    public void configureCamera(ActionEvent actionEvent) {
+        mainController.configureCameraAsync(actionEvent);
     }
 }
