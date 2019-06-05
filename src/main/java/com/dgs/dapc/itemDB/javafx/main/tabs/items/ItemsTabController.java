@@ -514,6 +514,13 @@ public class ItemsTabController implements Initializable {
         containedInLocationQueryInput.setRegexPredicate();
         containedInLocationQueryInput.setNullString("Deselect Location");
         containedInLocationQueryInput.setBackingList(Location.COLLECTION.readableAndSortableList);
+        containedInLocationQueryInput.setResultModify(locations -> {
+            new ArrayList<>(locations).forEach(loc-> {
+                if(locations.contains(loc)){
+                    locations.removeAll(loc.allChildren());
+                }
+            });
+        });
         containsSourceQueryInput.setRegexPredicate();
         containsSourceQueryInput.setNullString("Deselect Contact");
         containsSourceQueryInput.setBackingList(Contact.COLLECTION.readableAndSortableList);

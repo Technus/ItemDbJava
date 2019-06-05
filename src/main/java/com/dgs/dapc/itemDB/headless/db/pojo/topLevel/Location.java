@@ -103,7 +103,7 @@ public class Location implements INamed, IDetailed, IIdentifiable, IPictured, IC
 
     @BsonRemove
     public List<Location> withAllChildren(){
-        List<Location> children= new ArrayList<>(allChildren());
+        List<Location> children= allChildren();
         children.add(this);
         return children;
     }
@@ -112,7 +112,7 @@ public class Location implements INamed, IDetailed, IIdentifiable, IPictured, IC
     public List<Location> allChildren(){
         List<Location> children=Location.COLLECTION.readableAndSortableList.stream().filter(
                 location -> getId().equals(location.getParentId())).collect(Collectors.toList());
-        children.forEach(child-> children.addAll(child.allChildren()));
+        new ArrayList<>(children).forEach(child-> children.addAll(child.allChildren()));
         return children;
     }
 

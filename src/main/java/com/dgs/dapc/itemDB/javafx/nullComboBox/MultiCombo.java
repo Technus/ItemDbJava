@@ -1,6 +1,8 @@
 package com.dgs.dapc.itemDB.javafx.nullComboBox;
 
 import javafx.application.Platform;
+import javafx.beans.binding.ObjectBinding;
+import javafx.beans.binding.StringBinding;
 import javafx.beans.property.ReadOnlyBooleanProperty;
 import javafx.beans.property.ReadOnlyBooleanWrapper;
 import javafx.beans.property.SimpleObjectProperty;
@@ -10,19 +12,19 @@ import javafx.collections.ListChangeListener;
 import javafx.collections.ObservableList;
 import javafx.geometry.Side;
 import javafx.scene.Node;
-import javafx.scene.control.ContextMenu;
-import javafx.scene.control.Menu;
-import javafx.scene.control.MenuItem;
-import javafx.scene.control.TextField;
+import javafx.scene.control.*;
 import javafx.scene.layout.Region;
 
 import java.util.ArrayList;
+import java.util.List;
 import java.util.function.BiFunction;
+import java.util.function.Consumer;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
 public class MultiCombo<T> extends TextField {
     private volatile boolean isShowingValues;
+    private final SimpleObjectProperty<Consumer<List<T>>> resultModify= new SimpleObjectProperty<>(t -> {});
     private final ContextMenu contextMenu=new ContextMenu();
     private final ObservableList<MenuItem> backingItems= FXCollections.observableArrayList();
     private final SimpleObjectProperty<BiFunction<String,T,Boolean>> filter=new SimpleObjectProperty<>((s, t) -> true);
@@ -31,6 +33,17 @@ public class MultiCombo<T> extends TextField {
     private final ReadOnlyBooleanWrapper nullSelected =new ReadOnlyBooleanWrapper(true);
     private final SimpleObjectProperty<ObservableList<T>> backingList=new SimpleObjectProperty<>();
     private final ObservableList<T> nullableValue =FXCollections.observableArrayList();
+    private final Tooltip tooltip=new Tooltip(){{
+        textProperty().bind(new StringBinding() {
+            {
+                bind(MultiCombo.this.textProperty());
+            }
+            @Override
+            protected String computeValue() {
+                return MultiCombo.this.textProperty().getValueSafe().replaceAll(" *, *","\n");
+            }
+        });
+    }};
     private final ListChangeListener<T> backingListChangeListener = c -> {
         ArrayList<MenuItem> work=new ArrayList<>();
         while(c.next()){
@@ -71,7 +84,15 @@ public class MultiCombo<T> extends TextField {
             isShowingValues=true;
             nullSelected.set(nullableValue.size()==0);
         });
-
+        tooltipProperty().bind(new ObjectBinding<Tooltip>() {
+            {
+                bind(textProperty());
+            }
+            @Override
+            protected Tooltip computeValue() {
+                return textProperty().getValueSafe().length()>0?tooltip:null;
+            }
+        });
         setPromptText("Select");
         setStyle("-fx-control-inner-background: derive(-fx-base,+8%);");
         nullString.set("Deselect");
@@ -218,12 +239,12 @@ public class MultiCombo<T> extends TextField {
         contextMenu.show(MultiCombo.this,Side.RIGHT,0,0);
     }
 
-    private void setVisible(MenuItem item){
-        if(item!=nullItem){
-            if(textProperty().getValueSafe().length()==0){
+    private void setVisible(MenuItem item) {
+        if (item != nullItem) {
+            if (textProperty().getValueSafe().length() == 0) {
                 item.setVisible(true);
-            }else {
-                item.setVisible(filter.get().apply(textProperty().getValueSafe(),item.getUserData()==null?null:(T)item.getUserData()));
+            } else {
+                item.setVisible(filter.get().apply(textProperty().getValueSafe(), item.getUserData() == null ? null : (T) item.getUserData()));
             }
         }
     }
@@ -233,8 +254,10 @@ public class MultiCombo<T> extends TextField {
             nullableValue.clear();
             return;
         }
-        nullableValue.setAll(contextMenu.getItems().stream().skip(1)
+        List<T> list=(contextMenu.getItems().stream().skip(1)
                 .map(menuItem -> (T)menuItem.getUserData()).collect(Collectors.toList()));
+        resultModify.get().accept(list);
+        nullableValue.setAll(list);
         selectAll();
     }
 
@@ -334,5 +357,17 @@ public class MultiCombo<T> extends TextField {
 
     public void setFilter(BiFunction<String, T, Boolean> filter) {
         this.filter.set(filter);
+    }
+
+    public Consumer<List<T>> getResultModify() {
+        return resultModify.get();
+    }
+
+    public SimpleObjectProperty<Consumer<List<T>>> resultModifyProperty() {
+        return resultModify;
+    }
+
+    public void setResultModify(Consumer<List<T>> resultModify) {
+        this.resultModify.set(resultModify);
     }
 }
