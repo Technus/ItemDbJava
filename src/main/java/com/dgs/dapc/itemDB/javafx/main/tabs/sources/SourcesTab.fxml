@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<?import com.dgs.dapc.itemDB.javafx.nullComboBox.NullCombo?>
+<?import com.dgs.dapc.itemDB.javafx.nullComboBox.MultiCombo?>
 <?import javafx.geometry.*?>
 <?import javafx.scene.control.*?>
 <?import javafx.scene.image.ImageView?>
@@ -77,10 +77,10 @@
                            </ToggleButton>
                         </children>
                      </HBox>
-                      <NullCombo fx:id="containsTagQueryInput" maxWidth="1.7976931348623157E308" promptText="Contains Tag" />
-                      <NullCombo fx:id="containedInLocationQueryInput" maxWidth="1.7976931348623157E308" promptText="Contained In Location" />
-                      <NullCombo fx:id="containsDesignationQueryInput" maxWidth="1.7976931348623157E308" promptText="Contains Designation" />
-                      <NullCombo fx:id="containsSourceQueryInput" maxWidth="1.7976931348623157E308" promptText="Contains Source" />
+                      <MultiCombo fx:id="containsTagQueryInput" maxWidth="1.7976931348623157E308" promptText="Contains Tag" />
+                      <MultiCombo fx:id="containedInLocationQueryInput" maxWidth="1.7976931348623157E308" promptText="Contained In Location" />
+                      <MultiCombo fx:id="containsDesignationQueryInput" maxWidth="1.7976931348623157E308" promptText="Contains Designation" />
+                      <MultiCombo fx:id="containsSourceQueryInput" maxWidth="1.7976931348623157E308" promptText="Contains Source" />
                      <Button defaultButton="true" maxWidth="1.7976931348623157E308" mnemonicParsing="false" onAction="#runSimpleQuery" text="Search" />
                   </children>
                   <padding>

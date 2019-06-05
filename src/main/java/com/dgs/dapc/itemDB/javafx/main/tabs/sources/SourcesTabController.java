@@ -9,7 +9,7 @@ import com.dgs.dapc.itemDB.headless.db.pojo.topLevel.*;
 import com.dgs.dapc.itemDB.javafx.main.MainController;
 import com.dgs.dapc.itemDB.javafx.main.editor.itemEditor.ItemEditorController;
 import com.dgs.dapc.itemDB.javafx.main.editor.itemEditor.sourceEditor.SourceEditorController;
-import com.dgs.dapc.itemDB.javafx.nullComboBox.NullCombo;
+import com.dgs.dapc.itemDB.javafx.nullComboBox.MultiCombo;
 import com.mongodb.BasicDBObject;
 import com.mongodb.QueryBuilder;
 import com.mongodb.client.MongoCollection;
@@ -18,6 +18,7 @@ import com.mongodb.client.model.Field;
 import com.mongodb.client.model.UnwindOptions;
 import javafx.application.Platform;
 import javafx.beans.InvalidationListener;
+import javafx.beans.Observable;
 import javafx.beans.binding.BooleanBinding;
 import javafx.beans.binding.ObjectBinding;
 import javafx.beans.binding.StringBinding;
@@ -82,10 +83,10 @@ public class SourcesTabController implements Initializable {
     public ToggleButton serialRegExp;
     public TextField serialQueryInput;
     public TextField nameQueryInput;
-    public NullCombo<Tag> containsTagQueryInput;
-    public NullCombo<Location> containedInLocationQueryInput;
-    public NullCombo<Designation> containsDesignationQueryInput;
-    public NullCombo<Contact> containsSourceQueryInput;
+    public MultiCombo<Tag> containsTagQueryInput;
+    public MultiCombo<Location> containedInLocationQueryInput;
+    public MultiCombo<Designation> containsDesignationQueryInput;
+    public MultiCombo<Contact> containsSourceQueryInput;
     public TextField qrLinkInput;
     public Button newBasedOnButton;
     public Button removeButton;
@@ -429,21 +430,18 @@ public class SourcesTabController implements Initializable {
         containsTagQueryInput.setRegexPredicate();
         containsTagQueryInput.setNullString("Deselect Tag");
         containsTagQueryInput.setBackingList(Tag.COLLECTION.readableAndSortableList);
-        containsTagQueryInput.nullableValueProperty().addListener(new ChangeListener<Tag>() {
-            private TreeTableColumn column;
-
+        containsTagQueryInput.nullableValueProperty().addListener(new InvalidationListener() {
+            private ArrayList<TreeTableColumn> column=new ArrayList<>();
             @Override
-            public void changed(ObservableValue<? extends Tag> observable, Tag oldValue, Tag newValue) {
-                if (newValue==null) {
-                    if(column!=null) {
-                        column.setVisible(false);
-                        column=null;
-                    }
+            public void invalidated(Observable observable) {
+                if (containsTagQueryInput.nullableValueProperty().isEmpty()) {
+                    column.forEach(col->col.setVisible(false));
+                    column.clear();
                 } else {
                     for (TreeTableColumn c :sourcesTagsParentColumn.getColumns()) {
                         if(c.getUserData()==null) continue;
-                        if(newValue==((Supplier<Tag>)c.getUserData()).get()){
-                            column=c;
+                        if(containsTagQueryInput.nullableValueProperty().contains(((Supplier<Tag>)c.getUserData()).get())){
+                            column.add(c);
                             c.setVisible(true);
                         }
                     }
@@ -632,16 +630,17 @@ public class SourcesTabController implements Initializable {
             }
         }
         if(!containsTagQueryInput.isNullSelected()){
-            queryBuilder.and(QueryBuilder.start().put("tags.tag").is(containsTagQueryInput.getNullableValue().getId()).get());
+            queryBuilder.and(QueryBuilder.start().put("tags.tag").in(containsTagQueryInput.nullableValueProperty().stream().map(IIdentifiable::getId).collect(Collectors.toList())).get());
         }
         if(!containedInLocationQueryInput.isNullSelected()){
-            queryBuilder.and(QueryBuilder.start().put("placements.locationId").in(containedInLocationQueryInput.getNullableValue().withAllChildren().stream().map(Location::getId).collect(Collectors.toList())).get());
+            queryBuilder.and(QueryBuilder.start().put("placements.locationId").in(containedInLocationQueryInput.nullableValueProperty().stream()
+                    .flatMap(location -> location.withAllChildren().stream().map(Location::getId)).collect(Collectors.toSet())).get());
         }
         if(!containsDesignationQueryInput.isNullSelected()){
-            queryBuilder.and(QueryBuilder.start().put("placements.designationsId").is(containsDesignationQueryInput.getNullableValue().getId()).get());
+            queryBuilder.and(QueryBuilder.start().put("placements.designationsId").in(containsDesignationQueryInput.nullableValueProperty().stream().map(IIdentifiable::getId).collect(Collectors.toList())).get());
         }
         if(!containsSourceQueryInput.isNullSelected()){
-            queryBuilder.and(QueryBuilder.start().put("placements.sources.supplierId").is(containsSourceQueryInput.getNullableValue().getId()).get());
+            queryBuilder.and(QueryBuilder.start().put("placements.sources.supplierId").in(containsSourceQueryInput.nullableValueProperty().stream().map(IIdentifiable::getId).collect(Collectors.toList())).get());
         }
         queryBuilder.and(Utility.queryForClass(Item.class));
 
@@ -733,10 +732,10 @@ public class SourcesTabController implements Initializable {
     }
 
     public void clearQuery(ActionEvent actionEvent) {
-        containedInLocationQueryInput.setNullableValue(null);
-        containsTagQueryInput.setNullableValue(null);
-        containsDesignationQueryInput.setNullableValue(null);
-        containsSourceQueryInput.setNullableValue(null);
+        containedInLocationQueryInput.nullableValueProperty().clear();
+        containsTagQueryInput.nullableValueProperty().clear();
+        containsDesignationQueryInput.nullableValueProperty().clear();
+        containsSourceQueryInput.nullableValueProperty().clear();
         serialQueryInput.setText(null);
         nameQueryInput.setText(null);
         genericQueryInput.setText(null);
