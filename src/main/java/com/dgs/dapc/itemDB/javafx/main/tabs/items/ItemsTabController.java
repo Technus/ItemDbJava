@@ -766,7 +766,7 @@ public class ItemsTabController implements Initializable {
             queryBuilder.and(QueryBuilder.start().put("placements.designationsId").in(containsDesignationQueryInput.nullableValueProperty().stream().map(IIdentifiable::getId).collect(Collectors.toList())).get());
         }
         if(!containsSourceQueryInput.isNullSelected()){
-            queryBuilder.and(QueryBuilder.start().put("placements.sources.supplierId").in(containsSourceQueryInput.nullableValueProperty().stream().map(IIdentifiable::getId).collect(Collectors.toList())).get());
+            queryBuilder.and(QueryBuilder.start().put("sources.supplierId").in(containsSourceQueryInput.nullableValueProperty().stream().map(IIdentifiable::getId).collect(Collectors.toList())).get());
         }
     }
 

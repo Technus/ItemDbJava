@@ -22,8 +22,6 @@ import javafx.beans.Observable;
 import javafx.beans.binding.BooleanBinding;
 import javafx.beans.binding.ObjectBinding;
 import javafx.beans.binding.StringBinding;
-import javafx.beans.value.ChangeListener;
-import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.embed.swing.SwingFXUtils;
@@ -640,7 +638,7 @@ public class SourcesTabController implements Initializable {
             queryBuilder.and(QueryBuilder.start().put("placements.designationsId").in(containsDesignationQueryInput.nullableValueProperty().stream().map(IIdentifiable::getId).collect(Collectors.toList())).get());
         }
         if(!containsSourceQueryInput.isNullSelected()){
-            queryBuilder.and(QueryBuilder.start().put("placements.sources.supplierId").in(containsSourceQueryInput.nullableValueProperty().stream().map(IIdentifiable::getId).collect(Collectors.toList())).get());
+            queryBuilder.and(QueryBuilder.start().put("sources.supplierId").in(containsSourceQueryInput.nullableValueProperty().stream().map(IIdentifiable::getId).collect(Collectors.toList())).get());
         }
         queryBuilder.and(Utility.queryForClass(Item.class));
 
