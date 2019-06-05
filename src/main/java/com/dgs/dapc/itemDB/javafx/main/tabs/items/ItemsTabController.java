@@ -9,7 +9,7 @@ import com.dgs.dapc.itemDB.javafx.main.MainController;
 import com.dgs.dapc.itemDB.javafx.main.editor.itemEditor.ItemEditorController;
 import com.dgs.dapc.itemDB.javafx.main.editor.itemEditor.placementEditor.PlacementEditorController;
 import com.dgs.dapc.itemDB.javafx.main.tabs.util.UtilTabController;
-import com.dgs.dapc.itemDB.javafx.nullComboBox.NullCombo;
+import com.dgs.dapc.itemDB.javafx.nullComboBox.MultiCombo;
 import com.github.technus.dbAdditions.mongoDB.pojo.Tuple2;
 import com.mongodb.BasicDBObject;
 import com.mongodb.QueryBuilder;
@@ -20,12 +20,11 @@ import com.mongodb.client.model.UnwindOptions;
 import com.sun.javafx.collections.ObservableListWrapper;
 import javafx.application.Platform;
 import javafx.beans.InvalidationListener;
+import javafx.beans.Observable;
 import javafx.beans.binding.BooleanBinding;
 import javafx.beans.binding.DoubleBinding;
 import javafx.beans.binding.ObjectBinding;
 import javafx.beans.binding.StringBinding;
-import javafx.beans.value.ChangeListener;
-import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.embed.swing.SwingFXUtils;
@@ -84,10 +83,10 @@ public class ItemsTabController implements Initializable {
     public ToggleButton nameRegExp;
     public TextField nameQueryInput;
     public TextField serialQueryInput;
-    public NullCombo<Tag> containsTagQueryInput;
-    public NullCombo<Location> containedInLocationQueryInput;
-    public NullCombo<Designation> containsDesignationQueryInput;
-    public NullCombo<Contact> containsSourceQueryInput;
+    public MultiCombo<Tag> containsTagQueryInput;
+    public MultiCombo<Location> containedInLocationQueryInput;
+    public MultiCombo<Designation> containsDesignationQueryInput;
+    public MultiCombo<Contact> containsSourceQueryInput;
     public TextField qrLinkInput;
     public Button newBasedOnButton;
     public ComboBox<UtilTabController.ModeQR> qrModeSelect;
@@ -491,21 +490,18 @@ public class ItemsTabController implements Initializable {
         containsTagQueryInput.setRegexPredicate();
         containsTagQueryInput.setNullString("Deselect Tag");
         containsTagQueryInput.setBackingList(Tag.COLLECTION.readableAndSortableList);
-        containsTagQueryInput.nullableValueProperty().addListener(new ChangeListener<Tag>() {
-            private TreeTableColumn column;
-
+        containsTagQueryInput.nullableValueProperty().addListener(new InvalidationListener() {
+            private ArrayList<TreeTableColumn> column=new ArrayList<>();
             @Override
-            public void changed(ObservableValue<? extends Tag> observable, Tag oldValue, Tag newValue) {
-                if (newValue==null) {
-                    if(column!=null) {
-                        column.setVisible(false);
-                        column=null;
-                    }
+            public void invalidated(Observable observable) {
+                if (containsTagQueryInput.nullableValueProperty().isEmpty()) {
+                    column.forEach(col->col.setVisible(false));
+                    column.clear();
                 } else {
                     for (TreeTableColumn c :itemsTagsParentColumn.getColumns()) {
                         if(c.getUserData()==null) continue;
-                        if(newValue==((Supplier<Tag>)c.getUserData()).get()){
-                            column=c;
+                        if(containsTagQueryInput.nullableValueProperty().contains(((Supplier<Tag>)c.getUserData()).get())){
+                            column.add(c);
                             c.setVisible(true);
                         }
                     }
@@ -753,16 +749,17 @@ public class ItemsTabController implements Initializable {
 
     public void appendContains(QueryBuilder queryBuilder){
         if(!containsTagQueryInput.isNullSelected()){
-            queryBuilder.and(QueryBuilder.start().put("tags.tag").is(containsTagQueryInput.getNullableValue().getId()).get());
+            queryBuilder.and(QueryBuilder.start().put("tags.tag").in(containsTagQueryInput.nullableValueProperty().stream().map(IIdentifiable::getId).collect(Collectors.toList())).get());
         }
         if(!containedInLocationQueryInput.isNullSelected()){
-            queryBuilder.and(QueryBuilder.start().put("placements.locationId").in(containedInLocationQueryInput.getNullableValue().withAllChildren().stream().map(Location::getId).collect(Collectors.toList())).get());
+            queryBuilder.and(QueryBuilder.start().put("placements.locationId").in(containedInLocationQueryInput.nullableValueProperty().stream()
+                    .flatMap(location -> location.withAllChildren().stream().map(Location::getId)).collect(Collectors.toSet())).get());
         }
         if(!containsDesignationQueryInput.isNullSelected()){
-            queryBuilder.and(QueryBuilder.start().put("placements.designationsId").is(containsDesignationQueryInput.getNullableValue().getId()).get());
+            queryBuilder.and(QueryBuilder.start().put("placements.designationsId").in(containsDesignationQueryInput.nullableValueProperty().stream().map(IIdentifiable::getId).collect(Collectors.toList())).get());
         }
         if(!containsSourceQueryInput.isNullSelected()){
-            queryBuilder.and(QueryBuilder.start().put("placements.sources.supplierId").is(containsSourceQueryInput.getNullableValue().getId()).get());
+            queryBuilder.and(QueryBuilder.start().put("placements.sources.supplierId").in(containsSourceQueryInput.nullableValueProperty().stream().map(IIdentifiable::getId).collect(Collectors.toList())).get());
         }
     }
 
@@ -778,8 +775,8 @@ public class ItemsTabController implements Initializable {
         if (o.getValue() instanceof Item) {
             List<TreeItem> placements = new ArrayList<>();
             ((Item) o.getValue()).placementsProperty().forEach(placementTreeItem -> {
-                if ((containedInLocationQueryInput.isNullSelected() || containedInLocationQueryInput.getNullableValue().getId().equals(placementTreeItem.getValue().getLocationId())) &&
-                    (containsDesignationQueryInput.isNullSelected() || placementTreeItem.getValue().getDesignationsId().contains(containsDesignationQueryInput.getNullableValue().getId()))) {
+                if ((containedInLocationQueryInput.isNullSelected() || containedInLocationQueryInput.nullableValueProperty().stream().anyMatch(location -> location.getId().equals(placementTreeItem.getValue().getLocationId()))) &&
+                    (containsDesignationQueryInput.isNullSelected() || placementTreeItem.getValue().getDesignationsId().stream().anyMatch(objectId -> containsDesignationQueryInput.nullableValueProperty().stream().anyMatch(designation -> designation.getId().equals(objectId))))) {
                     placements.add(placementTreeItem);
                 }
             });
@@ -899,22 +896,22 @@ public class ItemsTabController implements Initializable {
                 break;
             }
             case Location.PREFIX: {
-                containedInLocationQueryInput.setNullableValue(Location.COLLECTION.getAndMakeIfMissing(did.id));
+                containedInLocationQueryInput.nullableValueProperty().setAll(Location.COLLECTION.getAndMakeIfMissing(did.id));
                 runSimpleQuery();
                 break;
             }
             case Tag.PREFIX: {
-                containsTagQueryInput.setNullableValue(Tag.COLLECTION.getAndMakeIfMissing(did.id));
+                containsTagQueryInput.nullableValueProperty().setAll(Tag.COLLECTION.getAndMakeIfMissing(did.id));
                 runSimpleQuery();
                 break;
             }
             case Designation.PREFIX: {
-                containsDesignationQueryInput.setNullableValue(Designation.COLLECTION.getAndMakeIfMissing(did.id));
+                containsDesignationQueryInput.nullableValueProperty().setAll(Designation.COLLECTION.getAndMakeIfMissing(did.id));
                 runSimpleQuery();
                 break;
             }
             case Contact.PREFIX:{
-                containsSourceQueryInput.setNullableValue(Contact.COLLECTION.getAndMakeIfMissing(did.id));
+                containsSourceQueryInput.nullableValueProperty().setAll(Contact.COLLECTION.getAndMakeIfMissing(did.id));
                 runSimpleQuery();
                 break;
             }
@@ -924,22 +921,22 @@ public class ItemsTabController implements Initializable {
                 break;
             }
             case UtilTabController.CLEAR_DESIGNATION:{
-                containsDesignationQueryInput.setNullableValue(null);
+                containsDesignationQueryInput.nullableValueProperty().clear();
                 runSimpleQuery();
                 break;
             }
             case UtilTabController.CLEAR_LOCATION:{
-                containedInLocationQueryInput.setNullableValue(null);
+                containedInLocationQueryInput.nullableValueProperty().clear();
                 runSimpleQuery();
                 break;
             }
             case UtilTabController.CLEAR_TAG:{
-                containsTagQueryInput.setNullableValue(null);
+                containsTagQueryInput.nullableValueProperty().clear();
                 runSimpleQuery();
                 break;
             }
             case UtilTabController.CLEAR_CONTACT:{
-                containsSourceQueryInput.setNullableValue(null);
+                containsSourceQueryInput.nullableValueProperty().clear();
                 runSimpleQuery();
                 break;
             }
@@ -1018,10 +1015,10 @@ public class ItemsTabController implements Initializable {
     }
 
     public void clearQuery(ActionEvent actionEvent) {
-        containedInLocationQueryInput.setNullableValue(null);
-        containsTagQueryInput.setNullableValue(null);
-        containsDesignationQueryInput.setNullableValue(null);
-        containsSourceQueryInput.setNullableValue(null);
+        containedInLocationQueryInput.nullableValueProperty().clear();
+        containsTagQueryInput.nullableValueProperty().clear();
+        containsDesignationQueryInput.nullableValueProperty().clear();
+        containsSourceQueryInput.nullableValueProperty().clear();
         serialQueryInput.setText(null);
         nameQueryInput.setText(null);
         genericQueryInput.setText(null);
@@ -1029,7 +1026,10 @@ public class ItemsTabController implements Initializable {
 
     public void editFound(ActionEvent actionEvent) {
         if (mainController != null && queryList.size()>0) {
-            Designation designation=containsDesignationQueryInput.getNullableValue();
+            List<Designation> designation= new ArrayList<>(containsDesignationQueryInput.nullableValueProperty());
+            if(designation.size()==0){
+                designation=null;
+            }
 
             ArrayList<Bson> aggregation = new ArrayList<>();
             aggregation.addAll(queryList);
@@ -1051,7 +1051,7 @@ public class ItemsTabController implements Initializable {
                     boolean foundWithDesignation=false;
                     for (TreeItem<Object> placementTreeItem:itemTreeItem.getChildren()) {
                         if(placementTreeItem.getValue() instanceof Placement){
-                            if(designation!=null && ((Placement) placementTreeItem.getValue()).designationsProperty().contains(designation)){
+                            if(designation!=null && ((Placement) placementTreeItem.getValue()).designationsProperty().stream().anyMatch(designation::contains)){
                                 //any found with designation matching is ok
                                 foundWithDesignation=true;
                             }else if(foundWithDesignation){

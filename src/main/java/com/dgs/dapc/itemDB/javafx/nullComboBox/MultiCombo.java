@@ -56,7 +56,7 @@ public class MultiCombo<T> extends TextField {
                 work.clear();
             }
         }
-        nullableValue.removeAll(nullableValue.filtered(t -> !c.getList().contains(t)));
+        nullableValue.removeAll(nullableValue.parallelStream().filter(t -> !c.getList().contains(t)).collect(Collectors.toList()));
     };
     {
         nullableValue.addListener((ListChangeListener<T>) c -> {
@@ -170,7 +170,7 @@ public class MultiCombo<T> extends TextField {
                 });
                 backingItems.setAll(items);
                 newValue.addListener(backingListChangeListener);
-                nullableValue.removeAll(nullableValue.filtered(t -> !newValue.contains(t)));
+                nullableValue.removeAll(nullableValue.parallelStream().filter(t -> !newValue.contains(t)).collect(Collectors.toList()));
             }else{
                 backingItems.setAll(nullItem);
                 nullableValue.clear();

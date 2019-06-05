@@ -1,29 +1,10 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<?import com.dgs.dapc.itemDB.javafx.nullComboBox.NullCombo?>
-<?import javafx.geometry.Insets?>
-<?import javafx.scene.control.Button?>
-<?import javafx.scene.control.ComboBox?>
-<?import javafx.scene.control.Label?>
-<?import javafx.scene.control.Pagination?>
-<?import javafx.scene.control.ScrollPane?>
-<?import javafx.scene.control.Spinner?>
-<?import javafx.scene.control.SplitPane?>
-<?import javafx.scene.control.TextField?>
-<?import javafx.scene.control.TitledPane?>
-<?import javafx.scene.control.ToggleButton?>
-<?import javafx.scene.control.Tooltip?>
-<?import javafx.scene.control.TreeTableColumn?>
-<?import javafx.scene.control.TreeTableView?>
+<?import com.dgs.dapc.itemDB.javafx.nullComboBox.MultiCombo?>
+<?import javafx.geometry.*?>
+<?import javafx.scene.control.*?>
 <?import javafx.scene.image.ImageView?>
-<?import javafx.scene.layout.BorderPane?>
-<?import javafx.scene.layout.ColumnConstraints?>
-<?import javafx.scene.layout.GridPane?>
-<?import javafx.scene.layout.HBox?>
-<?import javafx.scene.layout.Pane?>
-<?import javafx.scene.layout.RowConstraints?>
-<?import javafx.scene.layout.VBox?>
-
+<?import javafx.scene.layout.*?>
 <SplitPane dividerPositions="0.15" prefHeight="600.0" prefWidth="800.0" xmlns="http://javafx.com/javafx/8.0.172-ea" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.dgs.dapc.itemDB.javafx.main.tabs.items.ItemsTabController">
     <ScrollPane fitToHeight="true" fitToWidth="true" minWidth="-Infinity" prefWidth="300.0" SplitPane.resizableWithParent="false">
         <VBox spacing="12.0">
@@ -97,10 +78,10 @@
                            </ToggleButton>
                         </children>
                      </HBox>
-                     <NullCombo fx:id="containsTagQueryInput" maxWidth="1.7976931348623157E308" promptText="Contains Tag" />
-                     <NullCombo fx:id="containedInLocationQueryInput" maxWidth="1.7976931348623157E308" promptText="Contained In Location" />
-                     <NullCombo fx:id="containsDesignationQueryInput" maxWidth="1.7976931348623157E308" promptText="Contains Designation" />
-                     <NullCombo fx:id="containsSourceQueryInput" maxWidth="1.7976931348623157E308" promptText="Contains Source" />
+                     <MultiCombo fx:id="containsTagQueryInput" maxWidth="1.7976931348623157E308" promptText="Contains Tag" />
+                     <MultiCombo fx:id="containedInLocationQueryInput" maxWidth="1.7976931348623157E308" promptText="Contained In Location" />
+                     <MultiCombo fx:id="containsDesignationQueryInput" maxWidth="1.7976931348623157E308" promptText="Contains Designation" />
+                     <MultiCombo fx:id="containsSourceQueryInput" maxWidth="1.7976931348623157E308" promptText="Contains Source" />
                      <Button defaultButton="true" maxWidth="1.7976931348623157E308" mnemonicParsing="false" onAction="#runSimpleQuery" text="Search" />
                   </children>
                   <padding>

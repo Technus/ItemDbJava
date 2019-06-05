@@ -9,7 +9,6 @@ import javafx.beans.binding.BooleanBinding;
 import javafx.beans.binding.ObjectBinding;
 import javafx.beans.binding.StringBinding;
 import javafx.beans.property.*;
-import javafx.collections.FXCollections;
 import javafx.collections.MapChangeListener;
 import javafx.scene.control.TreeItem;
 import javafx.scene.image.Image;
@@ -104,15 +103,15 @@ public class Location implements INamed, IDetailed, IIdentifiable, IPictured, IC
 
     @BsonRemove
     public List<Location> withAllChildren(){
-        List<Location> children= FXCollections.observableArrayList(allChildren());
+        List<Location> children= new ArrayList<>(allChildren());
         children.add(this);
         return children;
     }
 
     @BsonRemove
     public List<Location> allChildren(){
-        List<Location> children=Location.COLLECTION.readableAndSortableList.filtered(
-                location -> getId().equals(location.getParentId()));
+        List<Location> children=Location.COLLECTION.readableAndSortableList.stream().filter(
+                location -> getId().equals(location.getParentId())).collect(Collectors.toList());
         children.forEach(child-> children.addAll(child.allChildren()));
         return children;
     }

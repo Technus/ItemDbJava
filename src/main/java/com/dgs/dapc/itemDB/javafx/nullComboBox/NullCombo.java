@@ -20,6 +20,7 @@ import javafx.scene.layout.Region;
 import java.util.ArrayList;
 import java.util.function.BiFunction;
 import java.util.regex.Pattern;
+import java.util.stream.Collectors;
 
 public class NullCombo<T> extends TextField {
     private volatile boolean isShowingValue;
@@ -150,7 +151,7 @@ public class NullCombo<T> extends TextField {
         });
 
         backingItems.addListener((ListChangeListener<MenuItem>) c -> {
-            contextMenu.getItems().setAll(backingItems.filtered(MenuItem::isVisible));
+            contextMenu.getItems().setAll(backingItems.parallelStream().filter(MenuItem::isVisible).collect(Collectors.toList()));
         });
         backingList.addListener((observable, oldValue, newValue) -> {
             if(oldValue!=null){
