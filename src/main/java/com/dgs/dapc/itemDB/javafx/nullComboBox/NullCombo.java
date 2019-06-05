@@ -290,11 +290,9 @@ public class NullCombo<T> extends TextField {
     public void setRegexPredicate(){
         filter.set(new BiFunction<String, T, Boolean>() {
             private Pattern pattern = Pattern.compile("");
-            private String string="";
 
             @Override
             public Boolean apply(String s, T t) {
-                string=s;
 
                 try {
                     String regexp;

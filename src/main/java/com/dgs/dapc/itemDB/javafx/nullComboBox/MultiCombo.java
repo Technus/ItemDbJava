@@ -1,7 +1,6 @@
 package com.dgs.dapc.itemDB.javafx.nullComboBox;
 
 import javafx.application.Platform;
-import javafx.beans.binding.BooleanBinding;
 import javafx.beans.property.ReadOnlyBooleanProperty;
 import javafx.beans.property.ReadOnlyBooleanWrapper;
 import javafx.beans.property.SimpleObjectProperty;
@@ -18,12 +17,12 @@ import javafx.scene.control.TextField;
 import javafx.scene.layout.Region;
 
 import java.util.ArrayList;
-import java.util.List;
 import java.util.function.BiFunction;
 import java.util.regex.Pattern;
+import java.util.stream.Collectors;
 
 public class MultiCombo<T> extends TextField {
-    private volatile boolean isShowingValue;
+    private volatile boolean isShowingValues;
     private final ContextMenu contextMenu=new ContextMenu();
     private final ObservableList<MenuItem> backingItems= FXCollections.observableArrayList();
     private final SimpleObjectProperty<BiFunction<String,T,Boolean>> filter=new SimpleObjectProperty<>((s, t) -> true);
@@ -31,7 +30,8 @@ public class MultiCombo<T> extends TextField {
     private final MenuItem nullItem=new MenuItem();
     private final ReadOnlyBooleanWrapper nullSelected =new ReadOnlyBooleanWrapper(true);
     private final SimpleObjectProperty<ObservableList<T>> backingList=new SimpleObjectProperty<>();
-    private final ListChangeListener<T> changeListener= c -> {
+    private final ObservableList<T> nullableValue =FXCollections.observableArrayList();
+    private final ListChangeListener<T> backingListChangeListener = c -> {
         ArrayList<MenuItem> work=new ArrayList<>();
         while(c.next()){
             if(c.wasRemoved() && c.getRemoved().size()>0){
@@ -56,13 +56,22 @@ public class MultiCombo<T> extends TextField {
                 work.clear();
             }
         }
-        if(!c.getList().contains(getNullableValue())){
-            setNullableValue(null);
-        }
+        nullableValue.removeAll(nullableValue.filtered(t -> !c.getList().contains(t)));
     };
-    private final ObservableList<T> nullableValue =FXCollections.observableArrayList();
-
     {
+        nullableValue.addListener((ListChangeListener<T>) c -> {
+            StringBuilder stringBuilder=new StringBuilder();
+            c.getList().forEach(t ->{
+                stringBuilder.append(t.toString()).append(", ");
+            });
+            if(stringBuilder.length()>0){
+                stringBuilder.setLength(stringBuilder.length()-2);
+            }
+            setText(stringBuilder.toString());
+            isShowingValues=true;
+            nullSelected.set(nullableValue.size()==0);
+        });
+
         setPromptText("Select");
         setStyle("-fx-control-inner-background: derive(-fx-base,+8%);");
         nullString.set("Deselect");
@@ -82,9 +91,9 @@ public class MultiCombo<T> extends TextField {
         contextMenu.setOnAction(event -> {
             if(event.getTarget() instanceof MenuItem){
                 if(event.getTarget()==nullItem){
-                    setNullableValue(null);
+                    nullableValue.clear();
                 }else {
-                    setNullableValue((T)((MenuItem) event.getTarget()).getUserData());
+                    nullableValue.setAll((T)((MenuItem) event.getTarget()).getUserData());
                 }
                 Platform.runLater(this::showWithAll);
             }
@@ -99,16 +108,16 @@ public class MultiCombo<T> extends TextField {
                 } catch (Exception ignored) {
                 }
             }
-            isShowingValue=false;
+            isShowingValues =false;
         });
-        setNullableValue(null);
+        nullableValue.clear();
 
         setOnKeyTyped(event -> {
             if(event.getCharacter().charAt(0)=='\r'|| event.getCharacter().charAt(0)=='\n'){
-                if(isShowingValue){
+                if(isShowingValues){
                     return;
                 }else if (textProperty().getValueSafe().length()==0) {
-                    setNullableValue(null);
+                    nullableValue.clear();
                 }else{
                     commitEdit();
                 }
@@ -117,7 +126,7 @@ public class MultiCombo<T> extends TextField {
         });
         setOnMouseClicked(event -> {
             if(!contextMenu.isShowing()) {
-                if(textProperty().getValueSafe().length()==0 || isShowingValue){
+                if(textProperty().getValueSafe().length()==0 || isShowingValues){
                     showWithAll();
                 }else {
                     contextMenu.show(MultiCombo.this,Side.RIGHT,0,0);
@@ -127,7 +136,7 @@ public class MultiCombo<T> extends TextField {
         });
         focusedProperty().addListener((observable, oldValue, newValue) -> {
             if(newValue){
-                if(!contextMenu.isShowing() && !isShowingValue) {
+                if(!contextMenu.isShowing() && !isShowingValues) {
                     if(textProperty().getValueSafe().length()==0 ){
                         showWithAll();
                     }else {
@@ -136,7 +145,7 @@ public class MultiCombo<T> extends TextField {
                 }
                 selectAll();
             }else{
-                if(!isShowingValue) {
+                if(!isShowingValues) {
                     commitEdit();
                 }
                 //contextMenu.hide();
@@ -148,7 +157,7 @@ public class MultiCombo<T> extends TextField {
         });
         backingList.addListener((observable, oldValue, newValue) -> {
             if(oldValue!=null){
-                oldValue.removeListener(changeListener);
+                oldValue.removeListener(backingListChangeListener);
             }
             if(newValue!=null){
                 ArrayList<MenuItem> items=new ArrayList<>();
@@ -160,13 +169,11 @@ public class MultiCombo<T> extends TextField {
                     items.add(item);
                 });
                 backingItems.setAll(items);
-                newValue.addListener(changeListener);
-                if(!newValue.contains(getNullableValue())){
-                    setNullableValue(null);
-                }
+                newValue.addListener(backingListChangeListener);
+                nullableValue.removeAll(nullableValue.filtered(t -> !newValue.contains(t)));
             }else{
                 backingItems.setAll(nullItem);
-                setNullableValue(null);
+                nullableValue.clear();
             }
         });
 
@@ -181,15 +188,15 @@ public class MultiCombo<T> extends TextField {
         nullString.addListener((observable, oldValue, newValue) -> {
             nullItem.setText(newValue);
         });
-        nullSelected.bind(new BooleanBinding() {
-            {
-                bind(nullableValue);
-            }
-            @Override
-            protected boolean computeValue() {
-                return getNullableValue() == null;
-            }
-        });
+        //nullSelected.bind(new BooleanBinding() {
+        //    {
+        //        bind(nullableValue);
+        //    }
+        //    @Override
+        //    protected boolean computeValue() {
+        //        return nullableValue.size()==0;
+        //    }
+        //});
     }
 
     private void showWithAll(){
@@ -223,16 +230,11 @@ public class MultiCombo<T> extends TextField {
 
     private void commitEdit(){
         if(getText()==null || getText().length()==0){
-            setNullableValue(null);
+            nullableValue.clear();
             return;
         }
-        Object newVal=contextMenu.getItems().stream()
-                .skip(1).findFirst().orElse(nullItem).getUserData();
-        if(newVal==null){
-            setNullableValue(null);
-        }else {
-            setNullableValue((T)newVal);
-        }
+        nullableValue.setAll(contextMenu.getItems().stream().skip(1)
+                .map(menuItem -> (T)menuItem.getUserData()).collect(Collectors.toList()));
         selectAll();
     }
 
@@ -277,18 +279,16 @@ public class MultiCombo<T> extends TextField {
             contextMenu.hide();
         }
         if(backingList.get()!=null){
-            backingList.get().removeListener(changeListener);
+            backingList.get().removeListener(backingListChangeListener);
         }
     }
 
     public void setRegexPredicate(){
         filter.set(new BiFunction<String, T, Boolean>() {
             private Pattern pattern = Pattern.compile("");
-            private String string="";
 
             @Override
             public Boolean apply(String s, T t) {
-                string=s;
 
                 try {
                     String regexp;
