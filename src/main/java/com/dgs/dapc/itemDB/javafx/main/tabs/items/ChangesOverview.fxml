@@ -10,22 +10,28 @@
 <?import javafx.scene.layout.BorderPane?>
 <?import javafx.scene.layout.VBox?>
 
-<BorderPane prefHeight="600.0" prefWidth="800.0" xmlns="http://javafx.com/javafx/8.0.172-ea" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.dgs.dapc.itemDB.javafx.main.tabs.items.ChangesOverviewController">
+<BorderPane prefHeight="600.0" prefWidth="1250.0" xmlns="http://javafx.com/javafx/8.0.172-ea" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.dgs.dapc.itemDB.javafx.main.tabs.items.ChangesOverviewController">
    <center>
       <TableView fx:id="placementsTable" prefHeight="200.0" prefWidth="200.0" tableMenuButtonVisible="true" BorderPane.alignment="CENTER">
         <columns>
-          <TableColumn fx:id="itemNameColumn" prefWidth="75.0" text="Item Name" />
+          <TableColumn fx:id="itemNameColumn" prefWidth="150.0" text="Item Name" />
             <TableColumn fx:id="manufacturerColumn" prefWidth="88.0" text="Manufacturer" />
-          <TableColumn fx:id="designationsColumn" prefWidth="89.0" text="Designations" />
+          <TableColumn fx:id="designationsColumn" prefWidth="100.0" text="Designations" />
             <TableColumn prefWidth="208.0" text="Count">
                <columns>
-                  <TableColumn fx:id="quantityColumn" prefWidth="75.0" text="Qty." />
-                  <TableColumn fx:id="minimalColumn" prefWidth="75.0" text="Min." />
-                  <TableColumn fx:id="purchasedColumn" prefWidth="75.0" text="Pur." />
+                  <TableColumn fx:id="quantityColumn" prefWidth="50.0" text="Qty." />
+                  <TableColumn fx:id="minimalColumn" prefWidth="50.0" text="Min." />
+                  <TableColumn fx:id="purchasedColumn" prefWidth="50.0" text="Pur." />
                </columns>
             </TableColumn>
-            <TableColumn fx:id="serialColumn" prefWidth="75.0" text="Serial No." />
-            <TableColumn fx:id="detailsColumn" prefWidth="75.0" text="Details" />
+            <TableColumn prefWidth="75.0" text="Placement">
+               <columns>
+                  <TableColumn fx:id="locationColumn" prefWidth="150.0" text="Location" />
+                  <TableColumn fx:id="rowColColumn" prefWidth="75.0" text="Row, Col, ..." />
+               </columns>
+            </TableColumn>
+            <TableColumn fx:id="serialColumn" prefWidth="100.0" text="Serial No." />
+            <TableColumn fx:id="detailsColumn" prefWidth="250.0" text="Details" />
         </columns>
       </TableView>
    </center>

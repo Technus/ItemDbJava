@@ -36,6 +36,8 @@ public class ChangesOverviewController implements IWindowInitialize {
     public TableColumn<Tuple2<Item,Placement>,Double> purchasedColumn;
     public TableColumn<Tuple2<Item,Placement>,String> serialColumn;
     public TableColumn<Tuple2<Item,Placement>,String> detailsColumn;
+    public TableColumn<Tuple2<Item,Placement>,String> locationColumn;
+    public TableColumn<Tuple2<Item,Placement>,String> rowColColumn;
 
     private MainController mainController;
 
@@ -63,6 +65,8 @@ public class ChangesOverviewController implements IWindowInitialize {
         purchasedColumn.setCellValueFactory(param -> param.getValue().getY().orderedProperty().asObject());
         serialColumn.setCellValueFactory(param -> param.getValue().getY().serialProperty());
         detailsColumn.setCellValueFactory(param -> param.getValue().getY().detailsProperty());
+        locationColumn.setCellValueFactory(param -> param.getValue().getY().locationNameProperty());
+        rowColColumn.setCellValueFactory(param -> param.getValue().getY().coordinatesProperty().toStringProperty());
 
         //placementsTable.setRowFactory(param -> {
         //    TableRow<Tuple2<Item,Placement>> row=new TableRow<>();
