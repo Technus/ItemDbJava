@@ -95,12 +95,54 @@ public class SourcesTabController implements Initializable {
     public ToggleButton expandToggle;
     public ImageView camImage;
     public ToggleButton scanEnable;
+    public ToggleButton containedInLocationMultiple;
+    public ToggleButton containedInLocationRegExp;
+    public ToggleButton containsDesignationMultiple;
+    public ToggleButton containsDesignationRegExp;
+    public ToggleButton containsSourceMultiple;
+    public ToggleButton containsSourceRegExp;
+    public ToggleButton containsTagMultiple;
+    public ToggleButton containsTagRegExp;
 
     private ObservableList<Bson> queryList = FXCollections.observableArrayList();
     private ObservableList<Bson> sortingList = FXCollections.observableArrayList();
 
     @Override
     public void initialize(URL location, ResourceBundle resources) {
+        containedInLocationQueryInput.selectManyProperty().bind(containedInLocationMultiple.selectedProperty());
+        containsDesignationQueryInput.selectManyProperty().bind(containsDesignationMultiple.selectedProperty());
+        containsSourceQueryInput.selectManyProperty().bind(containsSourceMultiple.selectedProperty());
+        containsTagQueryInput.selectManyProperty().bind(containsTagMultiple.selectedProperty());
+
+        containedInLocationRegExp.selectedProperty().addListener((observable, oldValue, newValue) -> {
+            if (newValue) {
+                containedInLocationQueryInput.setRegexPredicate();
+            }else {
+                containedInLocationQueryInput.setPredicate();
+            }
+        });
+        containsDesignationRegExp.selectedProperty().addListener((observable, oldValue, newValue) -> {
+            if (newValue) {
+                containsDesignationQueryInput.setRegexPredicate();
+            }else {
+                containsDesignationQueryInput.setPredicate();
+            }
+        });
+        containsSourceRegExp.selectedProperty().addListener((observable, oldValue, newValue) -> {
+            if (newValue) {
+                containsSourceQueryInput.setRegexPredicate();
+            }else {
+                containsSourceQueryInput.setPredicate();
+            }
+        });
+        containsTagRegExp.selectedProperty().addListener((observable, oldValue, newValue) -> {
+            if (newValue) {
+                containsTagQueryInput.setRegexPredicate();
+            }else {
+                containsTagQueryInput.setPredicate();
+            }
+        });
+
         scanEnable.textProperty().bind(new StringBinding() {
             {
                 bind(scanEnable.selectedProperty());

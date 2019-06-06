@@ -2,25 +2,10 @@
 
 <?import com.dgs.dapc.itemDB.javafx.nullComboBox.NullCombo?>
 <?import javafx.geometry.Insets?>
-<?import javafx.scene.control.Button?>
-<?import javafx.scene.control.Label?>
-<?import javafx.scene.control.ScrollPane?>
-<?import javafx.scene.control.Spinner?>
-<?import javafx.scene.control.TableColumn?>
-<?import javafx.scene.control.TableView?>
-<?import javafx.scene.control.TextArea?>
-<?import javafx.scene.control.TextField?>
-<?import javafx.scene.control.TitledPane?>
-<?import javafx.scene.control.ToggleButton?>
+<?import javafx.scene.control.*?>
 <?import javafx.scene.effect.Glow?>
 <?import javafx.scene.image.ImageView?>
-<?import javafx.scene.layout.BorderPane?>
-<?import javafx.scene.layout.ColumnConstraints?>
-<?import javafx.scene.layout.GridPane?>
-<?import javafx.scene.layout.HBox?>
-<?import javafx.scene.layout.RowConstraints?>
-<?import javafx.scene.layout.VBox?>
-
+<?import javafx.scene.layout.*?>
 <BorderPane xmlns="http://javafx.com/javafx/8.0.172-ea" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.dgs.dapc.itemDB.javafx.main.editor.itemEditor.placementEditor.PlacementEditorController">
    <left>
       <VBox prefWidth="300.0" spacing="4.0" BorderPane.alignment="CENTER">
@@ -55,7 +40,16 @@
             <TextField fx:id="serialInput" promptText="Serial Number" />
             <Button maxWidth="1.7976931348623157E308" mnemonicParsing="false" onAction="#setImage" text="Set Image From File" />
             <TextField fx:id="imageInput" promptText="Image URL" />
-            <NullCombo fx:id="locationSelect" maxWidth="1.7976931348623157E308" promptText="Select Location" />
+            <HBox spacing="4.0">
+               <children>
+                  <NullCombo fx:id="locationSelect" maxWidth="1.7976931348623157E308" promptText="Select Location" HBox.hgrow="SOMETIMES" />
+                  <ToggleButton fx:id="locationRegexp" mnemonicParsing="false" HBox.hgrow="ALWAYS" styleClass="icon-button-regexp">
+                     <tooltip>
+                        <Tooltip text="Use RegExp" />
+                     </tooltip>
+                  </ToggleButton>
+               </children>
+            </HBox>
             <TextField fx:id="coordinatesInput" promptText="Coordinates ex.: 4, 5" />
             <GridPane hgap="4.0" minHeight="-Infinity" VBox.vgrow="NEVER">
               <columnConstraints>
@@ -106,7 +100,16 @@
                         <Button fx:id="designationAdd" maxWidth="1.7976931348623157E308" minWidth="-Infinity" mnemonicParsing="false" onAction="#designationAdd" text="Add" HBox.hgrow="ALWAYS" />
                      </children>
                   </HBox>
-                  <NullCombo fx:id="designationSelect" maxWidth="1.7976931348623157E308" promptText="Select Designation" />
+                  <HBox spacing="4.0">
+                     <children>
+                        <NullCombo fx:id="designationSelect" maxWidth="1.7976931348623157E308" promptText="Select Designation" HBox.hgrow="SOMETIMES" />
+                        <ToggleButton fx:id="designationRegexp" mnemonicParsing="false" HBox.hgrow="ALWAYS" styleClass="icon-button-regexp">
+                           <tooltip>
+                              <Tooltip text="Use RegExp" />
+                           </tooltip>
+                        </ToggleButton>
+                     </children>
+                  </HBox>
                   <ScrollPane fitToHeight="true" fitToWidth="true" VBox.vgrow="ALWAYS">
                      <content>
                         <TableView fx:id="designationsList" prefHeight="200.0" prefWidth="200.0" tableMenuButtonVisible="true">

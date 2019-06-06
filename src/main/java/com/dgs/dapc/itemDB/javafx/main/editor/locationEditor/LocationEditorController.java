@@ -31,6 +31,7 @@ public class LocationEditorController implements IWindowInitialize {
     public ScrollPane imageScroll;
     public BorderPane imageBorder;
     public ToggleButton pinToggle;
+    public ToggleButton locationRegexp;
 
     private Location location,parent;
 
@@ -125,6 +126,13 @@ public class LocationEditorController implements IWindowInitialize {
         stage.setOnCloseRequest(event -> mainController.editors.remove(this));
         pinToggle.setSelected(stage.isAlwaysOnTop());
         pinToggle.selectedProperty().addListener((observable, oldValue, newValue) -> stage.setAlwaysOnTop(newValue));
+        locationRegexp.selectedProperty().addListener((observable, oldValue, newValue) -> {
+            if(newValue){
+                parentSelect.setRegexPredicate();
+            }else {
+                parentSelect.setPredicate();
+            }
+        });
     }
 
     @Override

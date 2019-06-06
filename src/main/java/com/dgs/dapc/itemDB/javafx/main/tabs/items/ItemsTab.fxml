@@ -1,10 +1,29 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
 <?import com.dgs.dapc.itemDB.javafx.nullComboBox.MultiCombo?>
-<?import javafx.geometry.*?>
-<?import javafx.scene.control.*?>
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.ComboBox?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.Pagination?>
+<?import javafx.scene.control.ScrollPane?>
+<?import javafx.scene.control.Spinner?>
+<?import javafx.scene.control.SplitPane?>
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.control.TitledPane?>
+<?import javafx.scene.control.ToggleButton?>
+<?import javafx.scene.control.Tooltip?>
+<?import javafx.scene.control.TreeTableColumn?>
+<?import javafx.scene.control.TreeTableView?>
 <?import javafx.scene.image.ImageView?>
-<?import javafx.scene.layout.*?>
+<?import javafx.scene.layout.BorderPane?>
+<?import javafx.scene.layout.ColumnConstraints?>
+<?import javafx.scene.layout.GridPane?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.Pane?>
+<?import javafx.scene.layout.RowConstraints?>
+<?import javafx.scene.layout.VBox?>
+
 <SplitPane dividerPositions="0.15" prefHeight="600.0" prefWidth="800.0" xmlns="http://javafx.com/javafx/8.0.172-ea" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.dgs.dapc.itemDB.javafx.main.tabs.items.ItemsTabController">
     <ScrollPane fitToHeight="true" fitToWidth="true" minWidth="-Infinity" prefWidth="300.0" SplitPane.resizableWithParent="false">
         <VBox spacing="12.0">
@@ -50,8 +69,8 @@
                      </HBox>
                      <HBox spacing="4.0">
                         <children>
-                           <TextField fx:id="genericQueryInput" maxWidth="1.7976931348623157E308" onAction="#runSimpleQuery" promptText="General Search" HBox.hgrow="ALWAYS" />
-                           <ToggleButton fx:id="genericRegExp" maxHeight="1.7976931348623157E308" minWidth="-Infinity" mnemonicParsing="false" text="RegExp" HBox.hgrow="SOMETIMES">
+                           <TextField fx:id="genericQueryInput" maxWidth="1.7976931348623157E308" onAction="#runSimpleQuery" promptText="General Search" HBox.hgrow="SOMETIMES" />
+                           <ToggleButton fx:id="genericRegExp" maxHeight="1.7976931348623157E308" minWidth="-Infinity" mnemonicParsing="false" HBox.hgrow="ALWAYS" styleClass="icon-button-regexp">
                               <tooltip>
                                  <Tooltip text="Use RegExp" />
                               </tooltip>
@@ -60,8 +79,8 @@
                      </HBox>
                      <HBox spacing="4.0">
                         <children>
-                           <TextField fx:id="nameQueryInput" maxWidth="1.7976931348623157E308" onAction="#runSimpleQuery" promptText="Name" HBox.hgrow="ALWAYS" />
-                           <ToggleButton fx:id="nameRegExp" maxHeight="1.7976931348623157E308" minWidth="-Infinity" mnemonicParsing="false" text="RegExp" HBox.hgrow="SOMETIMES">
+                           <TextField fx:id="nameQueryInput" maxWidth="1.7976931348623157E308" onAction="#runSimpleQuery" promptText="Name" HBox.hgrow="SOMETIMES" />
+                           <ToggleButton fx:id="nameRegExp" maxHeight="1.7976931348623157E308" minWidth="-Infinity" mnemonicParsing="false" styleClass="icon-button-regexp" HBox.hgrow="ALWAYS">
                               <tooltip>
                                  <Tooltip text="Use RegExp" />
                               </tooltip>
@@ -70,18 +89,74 @@
                      </HBox>
                      <HBox spacing="4.0">
                         <children>
-                           <TextField fx:id="serialQueryInput" maxWidth="1.7976931348623157E308" onAction="#runSimpleQuery" promptText="Serial" HBox.hgrow="ALWAYS" />
-                           <ToggleButton fx:id="serialRegExp" maxHeight="1.7976931348623157E308" minWidth="-Infinity" mnemonicParsing="false" text="RegExp" HBox.hgrow="SOMETIMES">
+                           <TextField fx:id="serialQueryInput" maxWidth="1.7976931348623157E308" onAction="#runSimpleQuery" promptText="Serial" HBox.hgrow="SOMETIMES" />
+                           <ToggleButton fx:id="serialRegExp" maxHeight="1.7976931348623157E308" minWidth="-Infinity" mnemonicParsing="false" styleClass="icon-button-regexp" HBox.hgrow="ALWAYS">
                               <tooltip>
                                  <Tooltip text="Use RegExp" />
                               </tooltip>
                            </ToggleButton>
                         </children>
                      </HBox>
-                     <MultiCombo fx:id="containsTagQueryInput" maxWidth="1.7976931348623157E308" promptText="Contains Tag" />
-                     <MultiCombo fx:id="containedInLocationQueryInput" maxWidth="1.7976931348623157E308" promptText="Contained In Location" />
-                     <MultiCombo fx:id="containsDesignationQueryInput" maxWidth="1.7976931348623157E308" promptText="Contains Designation" />
-                     <MultiCombo fx:id="containsSourceQueryInput" maxWidth="1.7976931348623157E308" promptText="Contains Source" />
+                     <HBox maxWidth="1.7976931348623157E308" spacing="4.0">
+                        <children>
+                           <MultiCombo fx:id="containsTagQueryInput" maxWidth="1.7976931348623157E308" promptText="Contains Tag" HBox.hgrow="SOMETIMES" />
+                           <ToggleButton fx:id="containsTagMultiple" mnemonicParsing="false" styleClass="icon-button-multiple" HBox.hgrow="ALWAYS">
+                             <tooltip>
+                               <Tooltip text="Multiple selection" />
+                             </tooltip>
+                           </ToggleButton>
+                           <ToggleButton fx:id="containsTagRegExp" mnemonicParsing="false" styleClass="icon-button-regexp" HBox.hgrow="ALWAYS">
+                             <tooltip>
+                               <Tooltip text="Use RegExp" />
+                             </tooltip>
+                           </ToggleButton>
+                        </children>
+                     </HBox>
+                     <HBox maxWidth="1.7976931348623157E308" spacing="4.0">
+                        <children>
+                           <MultiCombo fx:id="containedInLocationQueryInput" maxWidth="1.7976931348623157E308" promptText="Contained In Location" HBox.hgrow="SOMETIMES" />
+                          <ToggleButton fx:id="containedInLocationMultiple" mnemonicParsing="false" styleClass="icon-button-multiple" HBox.hgrow="ALWAYS">
+                            <tooltip>
+                              <Tooltip text="Multiple selection" />
+                            </tooltip>
+                          </ToggleButton>
+                          <ToggleButton fx:id="containedInLocationRegExp" mnemonicParsing="false" styleClass="icon-button-regexp" HBox.hgrow="ALWAYS">
+                            <tooltip>
+                              <Tooltip text="Use RegExp" />
+                            </tooltip>
+                          </ToggleButton>
+                        </children>
+                     </HBox>
+                     <HBox maxWidth="1.7976931348623157E308" spacing="4.0">
+                        <children>
+                           <MultiCombo fx:id="containsDesignationQueryInput" maxWidth="1.7976931348623157E308" promptText="Contains Designation" HBox.hgrow="SOMETIMES" />
+                          <ToggleButton fx:id="containsDesignationMultiple" mnemonicParsing="false" styleClass="icon-button-multiple" HBox.hgrow="ALWAYS">
+                            <tooltip>
+                              <Tooltip text="Multiple selection" />
+                            </tooltip>
+                          </ToggleButton>
+                          <ToggleButton fx:id="containsDesignationRegExp" mnemonicParsing="false" styleClass="icon-button-regexp" HBox.hgrow="ALWAYS">
+                            <tooltip>
+                              <Tooltip text="Use RegExp" />
+                            </tooltip>
+                          </ToggleButton>
+                        </children>
+                     </HBox>
+                     <HBox maxWidth="1.7976931348623157E308" spacing="4.0">
+                        <children>
+                           <MultiCombo fx:id="containsSourceQueryInput" maxWidth="1.7976931348623157E308" promptText="Contains Source" HBox.hgrow="SOMETIMES" />
+                          <ToggleButton fx:id="containsSourceMultiple" mnemonicParsing="false" styleClass="icon-button-multiple" HBox.hgrow="ALWAYS">
+                            <tooltip>
+                              <Tooltip text="Multiple selection" />
+                            </tooltip>
+                          </ToggleButton>
+                          <ToggleButton fx:id="containsSourceRegExp" mnemonicParsing="false" styleClass="icon-button-regexp" HBox.hgrow="ALWAYS">
+                            <tooltip>
+                              <Tooltip text="Use RegExp" />
+                            </tooltip>
+                          </ToggleButton>
+                        </children>
+                     </HBox>
                      <Button defaultButton="true" maxWidth="1.7976931348623157E308" mnemonicParsing="false" onAction="#runSimpleQuery" text="Search" />
                   </children>
                   <padding>
@@ -100,7 +175,7 @@
                         </children>
                      </HBox>
                      <Button fx:id="removeButton" maxWidth="1.7976931348623157E308" mnemonicParsing="false" onAction="#removeSelected" text="Remove Selected" />
-                     <Button disable="false" maxWidth="1.7976931348623157E308" mnemonicParsing="false" onAction="#editFound" text="Edit Found" />
+                     <Button maxWidth="1.7976931348623157E308" mnemonicParsing="false" onAction="#editFound" text="Edit Found" />
                   </children>
                   <padding>
                      <Insets bottom="2.0" left="2.0" right="2.0" top="2.0" />

@@ -1,26 +1,10 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
 <?import com.dgs.dapc.itemDB.javafx.nullComboBox.NullCombo?>
-<?import javafx.geometry.Insets?>
-<?import javafx.scene.control.Button?>
-<?import javafx.scene.control.ScrollPane?>
-<?import javafx.scene.control.SplitPane?>
-<?import javafx.scene.control.TableColumn?>
-<?import javafx.scene.control.TableView?>
-<?import javafx.scene.control.TextArea?>
-<?import javafx.scene.control.TextField?>
-<?import javafx.scene.control.TitledPane?>
-<?import javafx.scene.control.ToggleButton?>
-<?import javafx.scene.control.TreeTableColumn?>
-<?import javafx.scene.control.TreeTableView?>
+<?import javafx.geometry.*?>
+<?import javafx.scene.control.*?>
 <?import javafx.scene.image.ImageView?>
-<?import javafx.scene.layout.BorderPane?>
-<?import javafx.scene.layout.ColumnConstraints?>
-<?import javafx.scene.layout.GridPane?>
-<?import javafx.scene.layout.HBox?>
-<?import javafx.scene.layout.RowConstraints?>
-<?import javafx.scene.layout.VBox?>
-
+<?import javafx.scene.layout.*?>
 <BorderPane maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" prefHeight="750.0" prefWidth="1000.0" xmlns="http://javafx.com/javafx/8.0.172-ea" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.dgs.dapc.itemDB.javafx.main.editor.itemEditor.ItemEditorController">
    <left>
       <ScrollPane fitToHeight="true" fitToWidth="true" prefWidth="300.0" BorderPane.alignment="CENTER">
@@ -88,6 +72,11 @@
                         <HBox spacing="4.0">
                            <children>
                               <NullCombo fx:id="manufacturerSelect" maxWidth="1.7976931348623157E308" promptText="Select Manufacturer" HBox.hgrow="SOMETIMES" />
+                              <ToggleButton fx:id="manufacturersRegexp" mnemonicParsing="false" HBox.hgrow="ALWAYS" styleClass="icon-button-regexp">
+                                 <tooltip>
+                                    <Tooltip text="Use RegExp" />
+                                 </tooltip>
+                              </ToggleButton>
                            </children>
                         </HBox>
                         <ScrollPane fitToHeight="true" fitToWidth="true">
@@ -128,7 +117,16 @@
                               <Button fx:id="tagAdd" maxWidth="1.7976931348623157E308" minWidth="-Infinity" mnemonicParsing="false" onAction="#tagAdd" text="Add" HBox.hgrow="ALWAYS" />
                            </children>
                         </HBox>
-                        <NullCombo fx:id="tagSelect" maxWidth="1.7976931348623157E308" promptText="Select Tag" />
+                        <HBox spacing="4.0">
+                           <children>
+                              <NullCombo fx:id="tagSelect" maxWidth="1.7976931348623157E308" promptText="Select Tag" HBox.hgrow="SOMETIMES" />
+                              <ToggleButton fx:id="tagsRegexp" mnemonicParsing="false" HBox.hgrow="ALWAYS" styleClass="icon-button-regexp">
+                                 <tooltip>
+                                    <Tooltip text="Use RegExp" />
+                                 </tooltip>
+                              </ToggleButton>
+                           </children>
+                        </HBox>
                         <ScrollPane fitToHeight="true" fitToWidth="true" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" VBox.vgrow="ALWAYS">
                            <content>
                               <TableView fx:id="tagsList" editable="true" prefWidth="150.0" tableMenuButtonVisible="true">

@@ -71,6 +71,8 @@ public class ItemEditorController implements IWindowInitialize {
     public TreeTableColumn<Source, String> sourcesDetailsColumn;
     public TreeTableColumn<Source, String> sourcesContactColumn;
     public ToggleButton pinToggle;
+    public ToggleButton manufacturersRegexp;
+    public ToggleButton tagsRegexp;
 
     private MainController mainController;
     public Button saveButton;
@@ -640,6 +642,20 @@ public class ItemEditorController implements IWindowInitialize {
         stage.setOnCloseRequest(event -> mainController.editors.remove(this));
         pinToggle.setSelected(stage.isAlwaysOnTop());
         pinToggle.selectedProperty().addListener((observable, oldValue, newValue) -> stage.setAlwaysOnTop(newValue));
+        manufacturersRegexp.selectedProperty().addListener((observable, oldValue, newValue) -> {
+            if(newValue){
+                manufacturerSelect.setRegexPredicate();
+            }else {
+                manufacturerSelect.setPredicate();
+            }
+        });
+        tagsRegexp.selectedProperty().addListener((observable, oldValue, newValue) -> {
+            if(newValue){
+                tagSelect.setRegexPredicate();
+            }else {
+                tagSelect.setPredicate();
+            }
+        });
     }
 
     @Override

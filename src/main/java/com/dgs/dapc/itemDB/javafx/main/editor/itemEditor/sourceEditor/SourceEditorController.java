@@ -20,6 +20,7 @@ public class SourceEditorController implements IWindowInitialize {
     public UrlCombo sourceURL;
     public TextArea detailsInput;
     public ToggleButton pinToggle;
+    public ToggleButton supplierRegexp;
 
     private MainController mainController;
     public Button saveButton;
@@ -127,6 +128,13 @@ public class SourceEditorController implements IWindowInitialize {
         stage.setOnCloseRequest(event -> mainController.editors.remove(this));
         pinToggle.setSelected(stage.isAlwaysOnTop());
         pinToggle.selectedProperty().addListener((observable, oldValue, newValue) -> stage.setAlwaysOnTop(newValue));
+        supplierRegexp.selectedProperty().addListener((observable, oldValue, newValue) -> {
+            if(newValue){
+                supplierSelect.setRegexPredicate();
+            }else {
+                supplierSelect.setPredicate();
+            }
+        });
     }
 
     @Override

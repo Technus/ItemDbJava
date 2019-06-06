@@ -3,10 +3,7 @@ package com.dgs.dapc.itemDB.javafx.nullComboBox;
 import javafx.application.Platform;
 import javafx.beans.binding.ObjectBinding;
 import javafx.beans.binding.StringBinding;
-import javafx.beans.property.ReadOnlyBooleanProperty;
-import javafx.beans.property.ReadOnlyBooleanWrapper;
-import javafx.beans.property.SimpleObjectProperty;
-import javafx.beans.property.SimpleStringProperty;
+import javafx.beans.property.*;
 import javafx.collections.FXCollections;
 import javafx.collections.ListChangeListener;
 import javafx.collections.ObservableList;
@@ -24,6 +21,7 @@ import java.util.stream.Collectors;
 
 public class MultiCombo<T> extends TextField {
     private volatile boolean isShowingValues;
+    private final SimpleBooleanProperty selectMany=new SimpleBooleanProperty(true);
     private final SimpleObjectProperty<Consumer<List<T>>> resultModify= new SimpleObjectProperty<>(t -> {});
     private final ContextMenu contextMenu=new ContextMenu();
     private final ObservableList<MenuItem> backingItems= FXCollections.observableArrayList();
@@ -257,7 +255,13 @@ public class MultiCombo<T> extends TextField {
         List<T> list=(contextMenu.getItems().stream().skip(1)
                 .map(menuItem -> (T)menuItem.getUserData()).collect(Collectors.toList()));
         resultModify.get().accept(list);
-        nullableValue.setAll(list);
+        if(selectMany.get()){
+            nullableValue.setAll(list);
+        }else if(list.size()>0){
+            nullableValue.setAll(list.get(0));
+        }else{
+            nullableValue.clear();
+        }
         selectAll();
     }
 
@@ -329,18 +333,18 @@ public class MultiCombo<T> extends TextField {
             }
         });
     }
-    {
-        setRegexPredicate();
-    }
     public void setPredicate(){
         filter.set((s,t)->{
             if(t==null){
                 return false;
             }
-            String vString=s.toLowerCase();
+            String sString=s.toLowerCase();
             String tString=t.toString().toLowerCase();
-            return tString.startsWith(vString) || tString.endsWith(vString);
+            return tString.startsWith(sString) || tString.endsWith(sString);
         });
+    }
+    {
+        setPredicate();
     }
 
     public ObservableList<T> nullableValueProperty() {
@@ -369,5 +373,17 @@ public class MultiCombo<T> extends TextField {
 
     public void setResultModify(Consumer<List<T>> resultModify) {
         this.resultModify.set(resultModify);
+    }
+
+    public boolean isSelectMany() {
+        return selectMany.get();
+    }
+
+    public SimpleBooleanProperty selectManyProperty() {
+        return selectMany;
+    }
+
+    public void setSelectMany(boolean selectMany) {
+        this.selectMany.set(selectMany);
     }
 }

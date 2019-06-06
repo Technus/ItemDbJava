@@ -33,7 +33,16 @@
                      </children>
                   </HBox>
                   <TextField fx:id="nameInput" promptText="Name" VBox.vgrow="NEVER" />
-                  <NullCombo fx:id="parentSelect" maxWidth="1.7976931348623157E308" promptText="Parent Location" />
+                  <HBox spacing="4.0">
+                     <children>
+                        <NullCombo fx:id="parentSelect" maxWidth="1.7976931348623157E308" promptText="Parent Location" HBox.hgrow="SOMETIMES" />
+                        <ToggleButton fx:id="locationRegexp" mnemonicParsing="false" HBox.hgrow="ALWAYS" styleClass="icon-button-regexp">
+                           <tooltip>
+                              <Tooltip text="Use RegExp" />
+                           </tooltip>
+                        </ToggleButton>
+                     </children>
+                  </HBox>
                   <TextField fx:id="coordinateLimitsInput" promptText="Coordinate Limits ex.: 4, 5" />
                   <Button maxWidth="1.7976931348623157E308" mnemonicParsing="false" onAction="#setImage" text="Set Image From File" />
                   <TextField fx:id="imageInput" promptText="Image URL" />

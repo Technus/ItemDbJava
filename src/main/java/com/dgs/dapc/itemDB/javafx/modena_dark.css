@@ -80,7 +80,23 @@
 
 }
 
+.icon-button-regexp {
+    -size: 29;
+    -fx-min-height: -size;
+    -fx-min-width: -size;
+    -fx-max-height: -size;
+    -fx-max-width: -size;
+    -fx-shape: "M 0,0 V 64 H 64 V 0 Z M 3,3 61,3 V 61 H 3 Z m 34.650391,4.7382812 2.818359,12.6445308 -10.710938,-8.617187 -3.785156,6.603516 13.044922,4.1875 -9.74414,7.328125 5.396484,5.234375 6.925781,-11.273438 6.763672,11.033203 5.396484,-5.234375 L 44.09375,22.396484 56.896484,18.369141 53.111328,11.765625 42.320312,20.382812 45.220703,7.7382812 Z M 11.783203,40.029297 V 52.044922 H 23.798828 V 40.029297 Z";
+}
 
+.icon-button-multiple {
+    -size: 29;
+    -fx-min-height: -size;
+    -fx-min-width: -size;
+    -fx-max-height: -size;
+    -fx-max-width: -size;
+    -fx-shape: "M 0,0 V 64 H 64 V 0 Z M 3,3 61,3 V 61 H 3 Z M 8,26 H 56 V 38 H 8 Z M 8,8 H 56 V 20 H 8 Z M 8,44 H 56 V 56 H 8 Z";
+}
 
 .toggle-button:selected {
     -fx-base: -fx-accent;

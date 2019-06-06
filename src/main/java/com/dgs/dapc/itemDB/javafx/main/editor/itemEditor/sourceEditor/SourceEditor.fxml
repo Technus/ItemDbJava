@@ -3,18 +3,9 @@
 <?import com.dgs.dapc.itemDB.javafx.nullComboBox.NullCombo?>
 <?import com.dgs.dapc.itemDB.javafx.urlTextField.UrlCombo?>
 <?import javafx.geometry.Insets?>
-<?import javafx.scene.control.Button?>
-<?import javafx.scene.control.ScrollPane?>
-<?import javafx.scene.control.TextArea?>
-<?import javafx.scene.control.TextField?>
-<?import javafx.scene.control.ToggleButton?>
+<?import javafx.scene.control.*?>
 <?import javafx.scene.effect.Glow?>
-<?import javafx.scene.layout.ColumnConstraints?>
-<?import javafx.scene.layout.GridPane?>
-<?import javafx.scene.layout.HBox?>
-<?import javafx.scene.layout.RowConstraints?>
-<?import javafx.scene.layout.VBox?>
-
+<?import javafx.scene.layout.*?>
 <ScrollPane fitToHeight="true" fitToWidth="true" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" prefHeight="400.0" prefWidth="300.0" xmlns="http://javafx.com/javafx/8.0.172-ea" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.dgs.dapc.itemDB.javafx.main.editor.itemEditor.sourceEditor.SourceEditorController">
    <content>
       <VBox prefWidth="300.0" spacing="4.0">
@@ -42,7 +33,16 @@
                   <Glow level="1.0" />
                </effect></TextField>
             <TextField fx:id="nameInput" promptText="Optional Name" VBox.vgrow="NEVER" />
-            <NullCombo fx:id="supplierSelect" maxWidth="1.7976931348623157E308" promptText="Select Supplier" />
+            <HBox spacing="4.0">
+               <children>
+                  <NullCombo fx:id="supplierSelect" maxWidth="1.7976931348623157E308" promptText="Select Supplier" HBox.hgrow="SOMETIMES" />
+                  <ToggleButton fx:id="supplierRegexp" mnemonicParsing="false" HBox.hgrow="ALWAYS" styleClass="icon-button-regexp">
+                     <tooltip>
+                        <Tooltip text="Use RegExp" />
+                     </tooltip>
+                  </ToggleButton>
+               </children>
+            </HBox>
             <UrlCombo fx:id="sourceURL" maxWidth="1.7976931348623157E308" promptText="Source URL" />
             <TextArea fx:id="detailsInput" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" prefHeight="337.0" prefWidth="133.0" promptText="Details/Description/Notes" VBox.vgrow="ALWAYS" />
          </children>

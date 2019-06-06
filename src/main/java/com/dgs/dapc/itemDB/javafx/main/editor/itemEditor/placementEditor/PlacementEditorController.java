@@ -55,6 +55,8 @@ public class PlacementEditorController implements IWindowInitialize {
     public BorderPane imageBorder;
     public ImageView imageView;
     public ToggleButton pinToggle;
+    public ToggleButton locationRegexp;
+    public ToggleButton designationRegexp;
 
     private Placement placement,parent;
     private Item item;
@@ -317,6 +319,20 @@ public class PlacementEditorController implements IWindowInitialize {
         stage.setOnCloseRequest(event -> mainController.editors.remove(this));
         pinToggle.setSelected(stage.isAlwaysOnTop());
         pinToggle.selectedProperty().addListener((observable, oldValue, newValue) -> stage.setAlwaysOnTop(newValue));
+        designationRegexp.selectedProperty().addListener((observable, oldValue, newValue) -> {
+            if(newValue){
+                designationSelect.setRegexPredicate();
+            }else {
+                designationSelect.setPredicate();
+            }
+        });
+        locationRegexp.selectedProperty().addListener((observable, oldValue, newValue) -> {
+            if(newValue){
+                locationSelect.setRegexPredicate();
+            }else {
+                locationSelect.setPredicate();
+            }
+        });
     }
 
     @Override
