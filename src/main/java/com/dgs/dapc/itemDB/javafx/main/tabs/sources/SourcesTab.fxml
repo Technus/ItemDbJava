@@ -214,15 +214,15 @@
                           <RowConstraints fillHeight="false" valignment="CENTER" vgrow="NEVER" />
                         </rowConstraints>
                         <children>
-                           <Spinner fx:id="spinnerPerPage" editable="true" maxWidth="1.7976931348623157E308" minWidth="0.0" styleClass="split-arrows-horizontal" />
-                           <Spinner fx:id="spinnerPage" editable="true" maxWidth="1.7976931348623157E308" minWidth="0.0" styleClass="split-arrows-horizontal" GridPane.rowIndex="1" />
-                           <Label text="Page" GridPane.columnIndex="1" GridPane.rowIndex="1" />
-                           <Label text="Per Page" GridPane.columnIndex="1" />
                            <Pagination fx:id="pagination" maxPageIndicatorCount="32" maxWidth="1.7976931348623157E308" minWidth="0.0" style="-fx-page-information-visible: false;" GridPane.columnSpan="2147483647" GridPane.rowIndex="2">
                               <GridPane.margin>
                                  <Insets bottom="-16.0" top="-18.0" />
                               </GridPane.margin>
                            </Pagination>
+                           <Spinner fx:id="spinnerPerPage" editable="true" maxWidth="1.7976931348623157E308" minWidth="0.0" styleClass="split-arrows-horizontal" />
+                           <Spinner fx:id="spinnerPage" editable="true" maxWidth="1.7976931348623157E308" minWidth="0.0" styleClass="split-arrows-horizontal" GridPane.rowIndex="1" />
+                           <Label text="Page" GridPane.columnIndex="1" GridPane.rowIndex="1" />
+                           <Label text="Per Page" GridPane.columnIndex="1" />
                           <Label fx:id="countLabel" text="Label" GridPane.columnSpan="2147483647" GridPane.halignment="CENTER" GridPane.rowIndex="3" />
                         </children>
                         <padding>

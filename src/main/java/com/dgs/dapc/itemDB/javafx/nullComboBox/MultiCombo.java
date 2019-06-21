@@ -150,6 +150,15 @@ public class MultiCombo<T> extends TextField {
                 }else {
                     contextMenu.show(MultiCombo.this,Side.RIGHT,0,0);
                 }
+            }
+        });
+        setOnTouchPressed(event -> {
+            if(!contextMenu.isShowing()) {
+                if(textProperty().getValueSafe().length()==0 || isShowingValues){
+                    showWithAll();
+                }else {
+                    contextMenu.show(MultiCombo.this,Side.RIGHT,0,0);
+                }
                 selectAll();
             }
         });

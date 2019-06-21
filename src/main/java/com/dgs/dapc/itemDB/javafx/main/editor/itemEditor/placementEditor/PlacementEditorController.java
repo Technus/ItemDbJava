@@ -11,6 +11,7 @@ import com.dgs.dapc.itemDB.javafx.main.MainController;
 import com.dgs.dapc.itemDB.javafx.main.editor.designationEditor.DesignationEditorController;
 import com.dgs.dapc.itemDB.javafx.nullComboBox.NullCombo;
 import com.dgs.dapc.itemDB.javafx.qr.ShowQRController;
+import com.dgs.dapc.itemDB.javafx.spinnerValueFactory.DoubleInfinitySpinnerValueFactory;
 import com.mongodb.BasicDBObject;
 import com.mongodb.QueryBuilder;
 import javafx.application.Platform;
@@ -159,8 +160,8 @@ public class PlacementEditorController implements IWindowInitialize {
             locationSelect.nullableValueProperty().addListener((observable, oldValue, newValue) -> placement.setLocation(newValue));
 
             {
-                SpinnerValueFactory.DoubleSpinnerValueFactory doubleSpinnerValueFactory = new SpinnerValueFactory.
-                        DoubleSpinnerValueFactory(-Double.MAX_VALUE, Double.MAX_VALUE, this.placement.getCount());
+                DoubleInfinitySpinnerValueFactory doubleSpinnerValueFactory =
+                        new DoubleInfinitySpinnerValueFactory(Double.NEGATIVE_INFINITY, Double.POSITIVE_INFINITY, this.placement.getCount());
                 doubleSpinnerValueFactory.setConverter(THE_DOUBLE_CONVERTER);
                 quantitySpinner.setValueFactory(doubleSpinnerValueFactory);
             }

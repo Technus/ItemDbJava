@@ -206,6 +206,12 @@ public class Utility {
                 if (object == null) {
                     return null;
                 }
+                if(object==Double.POSITIVE_INFINITY){
+                    return "+";
+                }
+                if(object==Double.NEGATIVE_INFINITY){
+                    return "-";
+                }
                 if (object.longValue() == object) {
                     return Long.toString(object.longValue());
                 }
@@ -214,12 +220,18 @@ public class Utility {
 
             @Override
             public Double fromString(String string) {
-                try {
-                    return string == null ? null : Double.parseDouble(string);
-                }catch (NumberFormatException e){
-                    //e.printStackTrace();
-                    return defaultValue.get();
+                if(string!=null) {
+                    if ("+".equals(string)) {
+                        return Double.POSITIVE_INFINITY;
+                    }
+                    if ("-".equals(string)) {
+                        return Double.NEGATIVE_INFINITY;
+                    }
+                    try {
+                        return Double.parseDouble(string);
+                    } catch (NumberFormatException ignored) {}
                 }
+                return defaultValue.get();
             }
         };
     }

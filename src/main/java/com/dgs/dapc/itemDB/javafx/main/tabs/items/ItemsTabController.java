@@ -1135,9 +1135,10 @@ public class ItemsTabController implements Initializable {
 
     public void setImage(BufferedImage image){
         Platform.runLater(()->{
-            camImage.setImage(SwingFXUtils.toFXImage(image,null));
+            camImage.setImage(image == null ? null : SwingFXUtils.toFXImage(image, null));
         });
     }
+
     public void setCode(String code){
         Platform.runLater(() -> {
             qrLinkInput.setText(code);

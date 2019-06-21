@@ -7,6 +7,7 @@ import com.dgs.dapc.itemDB.headless.db.pojo.child.Placement;
 import com.dgs.dapc.itemDB.headless.db.pojo.child.Source;
 import com.dgs.dapc.itemDB.headless.db.pojo.topLevel.Contact;
 import com.dgs.dapc.itemDB.headless.db.pojo.topLevel.Item;
+import com.dgs.dapc.itemDB.headless.db.pojo.topLevel.Location;
 import com.dgs.dapc.itemDB.headless.db.pojo.topLevel.Tag;
 import com.dgs.dapc.itemDB.javafx.IWindowInitialize;
 import com.dgs.dapc.itemDB.javafx.main.MainController;
@@ -15,6 +16,7 @@ import com.dgs.dapc.itemDB.javafx.main.editor.itemEditor.placementEditor.Placeme
 import com.dgs.dapc.itemDB.javafx.main.editor.itemEditor.sourceEditor.SourceEditorController;
 import com.dgs.dapc.itemDB.javafx.main.editor.itemEditor.tagValueEditor.TagValueEditorController;
 import com.dgs.dapc.itemDB.javafx.nullComboBox.NullCombo;
+import com.dgs.dapc.itemDB.javafx.nullComboBox.NullComboTreeTableCell;
 import com.dgs.dapc.itemDB.javafx.qr.ShowQRController;
 import javafx.application.Platform;
 import javafx.beans.binding.BooleanBinding;
@@ -28,6 +30,7 @@ import javafx.scene.image.ImageView;
 import javafx.scene.input.*;
 import javafx.scene.layout.BorderPane;
 import javafx.stage.Stage;
+import javafx.util.StringConverter;
 import javafx.util.converter.DefaultStringConverter;
 import org.bson.BsonDocument;
 import org.bson.BsonObjectId;
@@ -56,7 +59,7 @@ public class ItemEditorController implements IWindowInitialize {
 
     public TreeTableView<Placement> placementsTree;
     public TreeTableColumn<Placement, String> placementsNameColumn;
-    public TreeTableColumn<Placement, String> placementsLocationColumn;
+    public TreeTableColumn<Placement, Location> placementsLocationColumn;
     public TreeTableColumn<Placement, String> placementsCoordinatesColumn;
     public TreeTableColumn<Placement, Double> placementsQuantityColumn;
     public TreeTableColumn<Placement, Double> placementsMinimalColumn;
@@ -293,13 +296,31 @@ public class ItemEditorController implements IWindowInitialize {
                 event.consume();
             });
 
-            placementsNameColumn.setOnEditStart(event -> {
+            placementsNameColumn.setOnEditCommit(event -> {
                 event.getRowValue().getValue().setName(event.getNewValue());
             });
             placementsNameColumn.setCellFactory(TextFieldTreeTableCell.forTreeTableColumn());
             placementsNameColumn.setCellValueFactory(param -> param.getValue().getValue().nameProperty());
 
-            placementsLocationColumn.setCellValueFactory(param -> param.getValue().getValue().locationNameProperty());
+            placementsLocationColumn.setOnEditCommit(event -> {
+                event.getRowValue().getValue().setLocation(event.getNewValue());
+            });
+            placementsLocationColumn.setCellFactory(NullComboTreeTableCell.forColumn((locationNullCombo, locationStringConverter) -> {
+                locationNullCombo.setBackingList(Location.COLLECTION.readableAndSortableList);
+                locationNullCombo.setNullString("Deselect Location");
+            }, new StringConverter<Location>() {
+                @Override
+                public String toString(Location object) {
+                    return object.toString();
+                }
+
+                @Override
+                public Location fromString(String string) {
+                    return null;
+                }
+            }));
+            placementsLocationColumn.setCellValueFactory(param -> param.getValue().getValue().locationProperty());
+
             placementsCoordinatesColumn.setCellValueFactory(param -> param.getValue().getValue().coordinatesProperty().toStringProperty());
 
             placementsQuantityColumn.setOnEditCommit(event -> {
@@ -322,12 +343,32 @@ public class ItemEditorController implements IWindowInitialize {
             });
             placementsPurchasedColumn.setCellValueFactory(param -> param.getValue().getValue().orderedProperty().asObject());
             placementsPurchasedColumn.setCellFactory(MAKE_COUNT_TREE);
+
             placementsSerialColumn.setOnEditCommit(event -> {
                 event.getRowValue().getValue().setSerial(event.getNewValue());
             });
             placementsSerialColumn.setCellFactory(TextFieldTreeTableCell.forTreeTableColumn());
             placementsSerialColumn.setCellValueFactory(param -> param.getValue().getValue().serialProperty());
+
+            //placementsDesignationsColumn.setOnEditCommit(event -> {
+            //    event.getRowValue().getValue().setDesignations();
+            //});
+            //placementsDesignationsColumn.setCellFactory(MultiComboTreeTableCell.forColumn((locationNullCombo, locationStringConverter) -> {
+            //    locationNullCombo.setBackingList(Designation.COLLECTION.readableAndSortableList);
+            //    locationNullCombo.setNullString("Deselect Designation");
+            //}, new StringConverter<ObservableList<Designation>>() {
+            //    @Override
+            //    public String toString(ObservableList<Designation> object) {
+            //        return null;
+            //    }
+            //
+            //    @Override
+            //    public ObservableList<Designation> fromString(String string) {
+            //        return null;
+            //    }
+            //}));
             placementsDesignationsColumn.setCellValueFactory(param -> param.getValue().getValue().designationsProperty().toStringProperty());
+
             placementsDetailsColumn.setOnEditCommit(event -> {
                 event.getRowValue().getValue().setDetails(event.getNewValue());
             });

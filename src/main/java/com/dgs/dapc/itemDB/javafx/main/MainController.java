@@ -23,6 +23,8 @@ import com.mongodb.client.model.UnwindOptions;
 import javafx.application.HostServices;
 import javafx.application.Platform;
 import javafx.beans.property.SimpleBooleanProperty;
+import javafx.beans.value.ChangeListener;
+import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
 import javafx.collections.ListChangeListener;
 import javafx.collections.ObservableList;
@@ -57,6 +59,7 @@ import static com.mongodb.client.model.Projections.exclude;
 import static com.mongodb.client.model.Sorts.descending;
 
 public class MainController implements Initializable,AutoCloseable {
+    private Webcam webcam;
     public HostServices hostServices;
     public MainModel model;
     public TabPane tabs;
@@ -336,6 +339,28 @@ public class MainController implements Initializable,AutoCloseable {
     }
 
     private final SimpleBooleanProperty scanEnable=new SimpleBooleanProperty();
+    {
+        scanEnable.addListener(new ChangeListener<Boolean>() {
+            @Override
+            public void changed(ObservableValue<? extends Boolean> observable, Boolean oldValue, Boolean newValue) {
+                if (webcam == null) {
+                    if(newValue){
+                        setDefaultWebCamAsync();
+                    }
+                } else {
+                    if (newValue) {
+                        if (!webcam.isOpen() && !webcam.open(true)) {
+                            webcam.removeWebcamListener(webcamListener);
+                            webcam = null;
+                            scanEnable.set(false);
+                        }
+                    } else {
+                        webcam.close();
+                    }
+                }
+            }
+        });
+    }
 
     public boolean isScanEnable() {
         return scanEnable.get();
@@ -359,58 +384,52 @@ public class MainController implements Initializable,AutoCloseable {
 
         @Override
         public void webcamClosed(WebcamEvent we) {
-
+            lastCode=null;
+            itemsController.setImage(null);
+            sourcesController.setImage(null);
         }
 
         @Override
         public void webcamDisposed(WebcamEvent we) {
-
+            lastCode=null;
+            itemsController.setImage(null);
+            sourcesController.setImage(null);
         }
 
         @Override
         public void webcamImageObtained(WebcamEvent we) {
-            if(lastCode!=null){
+            if (lastCode != null) {
                 return;
             }
-            BufferedImage image=we.getImage();
-            if(scanEnable.get()) {
-                Utility.ScanResult codeResult = Utility.readQRCode(image);
-                if (itemsTab.isSelected()) {
-                    itemsController.setImage(image);
-                } else if (sourcesTab.isSelected()) {
-                    sourcesController.setImage(image);
-                }
-                if(codeResult.code.size()>0){
-                    String code=codeResult.code.get(0);
-                    if (lastCode == null && code != null) {
-                        lastCode = code;
-                        Toolkit.getDefaultToolkit().beep();
-                        if (itemsTab.isSelected()) {
-                            itemsController.setCode(code);
-                        } else if (sourcesTab.isSelected()) {
-                            sourcesController.setCode(code);
-                        }
-                        new Thread(() -> {
-                            try {
-                                Thread.sleep(1000);
-                                lastCode = null;
-                            } catch (InterruptedException e) {
-                                e.printStackTrace();
-                            }
-                        }).start();
+            BufferedImage image = we.getImage();
+            Utility.ScanResult codeResult = Utility.readQRCode(image);
+            if (itemsTab.isSelected()) {
+                itemsController.setImage(image);
+            } else if (sourcesTab.isSelected()) {
+                sourcesController.setImage(image);
+            }
+            if (codeResult.code.size() > 0) {
+                String code = codeResult.code.get(0);
+                if (lastCode == null && code != null) {
+                    lastCode = code;
+                    Toolkit.getDefaultToolkit().beep();
+                    if (itemsTab.isSelected()) {
+                        itemsController.setCode(code);
+                    } else if (sourcesTab.isSelected()) {
+                        sourcesController.setCode(code);
                     }
-                }
-            }else{
-                if (itemsTab.isSelected()) {
-                    itemsController.setImage(image);
-                } else if (sourcesTab.isSelected()) {
-                    sourcesController.setImage(image);
+                    new Thread(() -> {
+                        try {
+                            Thread.sleep(1000);
+                            lastCode = null;
+                        } catch (InterruptedException e) {
+                            e.printStackTrace();
+                        }
+                    }).start();
                 }
             }
         }
     };
-
-    private Webcam webcam;
 
     {
         setDefaultWebCamAsync();
@@ -420,9 +439,12 @@ public class MainController implements Initializable,AutoCloseable {
         try {
             webcam=Webcam.getDefault(5000);
             webcam.addWebcamListener(webcamListener);
-            if(!webcam.open(true)){
-                webcam.removeWebcamListener(webcamListener);
-                webcam=null;
+            if(scanEnable.get()){
+                if(!webcam.open(true)){
+                    webcam.removeWebcamListener(webcamListener);
+                    webcam=null;
+                    scanEnable.set(false);
+                }
             }
         } catch (TimeoutException| WebcamException e) {
             webcam=null;
@@ -433,9 +455,12 @@ public class MainController implements Initializable,AutoCloseable {
         try{
             webcam=webCam;
             webcam.addWebcamListener(webcamListener);
-            if(!webcam.open(true)){
-                webcam.removeWebcamListener(webcamListener);
-                webcam=null;
+            if(scanEnable.get()) {
+                if (!webcam.open(true)) {
+                    webcam.removeWebcamListener(webcamListener);
+                    webcam = null;
+                    scanEnable.set(false);
+                }
             }
         }catch (WebcamException e){
             webcam=null;

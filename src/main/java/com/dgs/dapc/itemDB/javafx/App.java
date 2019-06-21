@@ -20,7 +20,6 @@ import java.util.Locale;
 public class App extends Application {
     /* todo:
     - druk
-    - zestawy
     - location tab!
     - logging?
      */

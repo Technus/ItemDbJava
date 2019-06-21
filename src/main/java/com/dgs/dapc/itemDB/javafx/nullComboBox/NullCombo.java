@@ -129,6 +129,15 @@ public class NullCombo<T> extends TextField {
                 }else {
                     contextMenu.show(NullCombo.this,Side.RIGHT,0,0);
                 }
+            }
+        });
+        setOnTouchPressed(event -> {
+            if(!contextMenu.isShowing()) {
+                if(textProperty().getValueSafe().length()==0 || isShowingValue){
+                    showWithAll();
+                }else {
+                    contextMenu.show(NullCombo.this,Side.RIGHT,0,0);
+                }
                 selectAll();
             }
         });
