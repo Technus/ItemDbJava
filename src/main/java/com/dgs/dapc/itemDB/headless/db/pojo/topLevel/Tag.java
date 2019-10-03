@@ -27,10 +27,17 @@ import java.time.LocalTime;
 import java.util.Currency;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.Map;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+
+import static com.dgs.dapc.itemDB.Utility.unescape_perl_string;
 
 @BsonDiscriminator("Tag")
 public class Tag implements INamed, IDetailed, IIdentifiable, ICloneable<Tag>,ISettable<Tag>,IExists {
     private final SimpleBooleanProperty exists=new SimpleBooleanProperty();
+
+    public static final Pattern ENTRY_PATTERN=Pattern.compile("(\".*\").*=?.*(\".*\")?");
     public static final char PREFIX='T';
     public static final ObservableBoundMapList<Tag> COLLECTION =new ObservableBoundMapList<>(Tag::make);
     public static final ObservableList<Class> TYPES_LIST = FXCollections.observableArrayList();
@@ -54,6 +61,19 @@ public class Tag implements INamed, IDetailed, IIdentifiable, ICloneable<Tag>,IS
         }
     };
     static {
+        CONVERTERS.put(Map.Entry.class, new StringConverter<Map.Entry<String,String>>() {
+            @Override
+            public String toString(Map.Entry<String,String> object) {
+                return object.getKey()+'\0'+object.getValue();//naive impl
+            }
+
+            @Override
+            public Map.Entry<String,String> fromString(String string) {
+                return null;//naive impl
+            }
+        });
+        TYPES_LIST.add(Map.Entry.class);
+
         CONVERTERS.put(Void.class, new StringConverter<Void>() {
             @Override
             public String toString(Void object) {
@@ -66,7 +86,6 @@ public class Tag implements INamed, IDetailed, IIdentifiable, ICloneable<Tag>,IS
             }
         });
         TYPES_LIST.add(Void.class);
-
         CONVERTERS.put(BigDecimal.class,new BigDecimalStringConverter());
         TYPES_LIST.add(BigDecimal.class);
         CONVERTERS.put(Decimal128.class, new StringConverter<Decimal128>() {
@@ -198,15 +217,42 @@ public class Tag implements INamed, IDetailed, IIdentifiable, ICloneable<Tag>,IS
     private final SimpleStringProperty details=new SimpleStringProperty();
     private final SimpleObjectProperty<Class> type =new SimpleObjectProperty<>();
     private final SimpleObjectProperty<Class> converter =new SimpleObjectProperty<>();
+
     private final ReadOnlyObjectWrapper<StringConverter> stringConverter =new ReadOnlyObjectWrapper<>();
     {
         stringConverter.bind(new ObjectBinding<StringConverter>() {
             {
                 bind(converter);
+                bind(details);
             }
 
             @Override
             protected StringConverter computeValue() {
+                if(converter.get()==Map.Entry.class){
+                    Map<String,String> acceptableValues =new HashMap<>();
+                    Matcher matcher=ENTRY_PATTERN.matcher(details.get());
+                    while (matcher.find()){
+                        if(matcher.groupCount()==2){
+                            acceptableValues.put(matcher.group(1), unescape_perl_string(matcher.group(2)));
+                        }else {
+                            acceptableValues.put(matcher.group(1),"");
+                        }
+                    }
+                    return new StringConverter<Map.Entry<String,String>>() {
+                        @Override
+                        public String toString(Map.Entry<String,String> object) {
+                            return object.getKey();
+                        }
+
+                        @Override
+                        public Map.Entry<String,String> fromString(String string) {
+                            return acceptableValues.entrySet().stream()
+                                    .filter(entry->entry.getKey().equals(string))
+                                    .findFirst()
+                                    .orElse(null);
+                        }
+                    };
+                }
                 return CONVERTERS.getOrDefault(converter.get(),NULL_CONVERTER);
             }
         });

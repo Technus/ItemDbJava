@@ -32,17 +32,17 @@ public class DesignationsTabController implements Initializable {
         designationsTable.setRowFactory( tv -> {
             TableRow<Designation> row = new TableRow<>();
             row.addEventFilter(MouseEvent.MOUSE_PRESSED, (MouseEvent e) -> {
-                if (e.getClickCount() == 2 && e.getButton()==MouseButton.PRIMARY)
+                if (e.getClickCount() == 1 && e.getButton()==MouseButton.SECONDARY)
                     e.consume();
             });
-            row.setOnMouseClicked(event -> {
-                if (event.getClickCount() == 2 && event.getButton()== MouseButton.PRIMARY && !row.isEmpty()) {
+            row.setOnMouseClicked(e -> {
+                if (e.getClickCount() == 1 && e.getButton()==MouseButton.SECONDARY && !row.isEmpty()) {
                     Designation rowData = row.getItem();
                     Utility.Window<DesignationEditorController> window=Utility.loadFXML(DesignationEditorController.class.getResource("DesignationEditor.fxml"),"Designation Editor: "+rowData.getId().toHexString(),mainController.getStage());
                     window.controller.setMainController(mainController);
                     window.controller.setDesignation(rowData);
                     window.stage.show();
-                    event.consume();
+                    e.consume();
                 }
             });
             return row;

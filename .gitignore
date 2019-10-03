@@ -10,3 +10,4 @@ out/
 itemDB.iml
 *.tsv
 *.xlsx
+Initializer_.json

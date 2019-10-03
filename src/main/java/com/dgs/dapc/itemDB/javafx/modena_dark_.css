@@ -1,0 +1,196 @@
+/*
+ * This is an adjustment of the original modena.css for a consistent dark theme.
+ * Original modena.css here: https://gist.github.com/maxd/63691840fc372f22f470.
+ */
+
+/* Redefine base colors */
+.root {
+    -fx-bg-darkBlue:rgb(0,8,48);
+
+    -fx-bg-deepRed:rgb(256,16,16);
+    -fx-bg-red:rgb(64,16,16);
+    -fx-bg-orange:rgb(64,40,8);
+    -fx-bg-yellow:rgb(64,64,0);
+    -fx-bg-green:rgb(0,64,16);
+    -fx-bg-blue:rgb(0,16,96);
+    -fx-bg-cyan:rgb(0,64,64);
+    -fx-bg-magenta:rgb(64,16,64);
+    -fx-bg-white:rgb(64,64,64);
+
+    -fx-mg-deepRed:rgb(256,16,16);
+    -fx-mg-red:rgb(92,32,32);
+    -fx-mg-orange:rgb(92,62,24);
+    -fx-mg-yellow:rgb(92,92,16);
+    -fx-mg-green:rgb(16,92,32);
+    -fx-mg-blue:rgb(16,32,128);
+    -fx-mg-cyan:rgb(16,92,92);
+    -fx-mg-magenta:rgb(92,32,92);
+    -fx-mg-white:rgb(92,92,92);
+
+    -fx-fg-deepRed:rgb(256,64,64);
+    -fx-fg-red:rgb(128,64,64);
+    -fx-fg-orange:rgb(128,96,48);
+    -fx-fg-yellow:rgb(128,128,32);
+    -fx-fg-green:rgb(32,128,64);
+    -fx-fg-blue:rgb(32,64,192);
+    -fx-fg-cyan:rgb(32,128,128);
+    -fx-fg-magenta:rgb(128,64,128);
+    -fx-fg-white:rgb(128,128,128);
+
+    -fx-text-blue:rgb(64,128,255);
+
+    /*-fx-base: rgb(0, 33, 64);*/
+    -fx-base: rgb(40, 48, 64);
+    -fx-background: derive(-fx-base,-75%);
+
+    /* make controls (buttons, thumb, etc.) slightly lighter */
+    -fx-color: derive(-fx-base,+40%);
+    -fx-hover-base: -fx-base;
+    -fx-pressed-base: derive(-fx-base,-75%);
+
+    /* text fields and table rows background */
+    -fx-control-inner-background: derive(-fx-base,-10%);
+    /* version of -fx-control-inner-background for alternative rows */
+    -fx-control-inner-background-alt: derive(-fx-base,-80%);
+
+    /* text colors depending on background's brightness */
+    -fx-light-text-color: rgb(245, 250, 255);
+    -fx-mid-text-color: rgb(70, 72, 75);
+    -fx-dark-text-color: rgb(10, 11, 12);
+    /*-fx-light-text-color: rgb(151, 197, 230);
+    -fx-mid-text-color: rgb(42, 72, 102);
+    -fx-dark-text-color: rgb(0, 11, 26);*/
+
+    /* A bright blue for highlighting/accenting objects.  For example: selected
+     * text; selected items in menus, lists, trees, and tables; progress bars */
+    -fx-accent: rgb(0, 50, 115);
+
+    /* color of non-focused yet selected elements */
+    -fx-selection-bar-non-focused: rgb(0, 36, 77);
+    -fx-text-box-border:-fx-color;
+    -fx-box-border:-fx-color;
+
+    -fx-outer-border:derive(-fx-color,-50%);
+
+    -fx-mark-color: derive(-fx-color,+80%);
+
+    -fx-mark-highlight-color: derive(-fx-color,+120%);
+
+}
+
+.icon-button-regexp {
+    -size: 25;
+    -fx-min-height: -size;
+    -fx-min-width: -size;
+    -fx-max-height: -size;
+    -fx-max-width: -size;
+    -fx-shape: "M 0,0 V 64 H 64 V 0 Z M 3,3 61,3 V 61 H 3 Z m 34.650391,4.7382812 2.818359,12.6445308 -10.710938,-8.617187 -3.785156,6.603516 13.044922,4.1875 -9.74414,7.328125 5.396484,5.234375 6.925781,-11.273438 6.763672,11.033203 5.396484,-5.234375 L 44.09375,22.396484 56.896484,18.369141 53.111328,11.765625 42.320312,20.382812 45.220703,7.7382812 Z M 11.783203,40.029297 V 52.044922 H 23.798828 V 40.029297 Z";
+}
+
+.icon-button-multiple {
+    -size: 25;
+    -fx-min-height: -size;
+    -fx-min-width: -size;
+    -fx-max-height: -size;
+    -fx-max-width: -size;
+    -fx-shape: "M 0,0 V 64 H 64 V 0 Z M 3,3 61,3 V 61 H 3 Z M 8,26 H 56 V 38 H 8 Z M 8,8 H 56 V 20 H 8 Z M 8,44 H 56 V 56 H 8 Z";
+}
+
+.toggle-button:selected {
+    -fx-base: -fx-accent;
+}
+
+{
+    -fx-prompt-text-fill: rgb(90, 120, 175) !important;
+}
+
+.pagination > .pagination-control > .control-box > .number-button,
+.pagination > .pagination-control > .control-box > .bullet-button,
+.pagination > .pagination-control > .control-box > .left-arrow-button,
+.pagination > .pagination-control > .control-box > .right-arrow-button {
+    -fx-min-width: 20;
+}
+
+.button:default {
+    -fx-base: -fx-accent;
+}
+
+/* focused cell (keyboard navigation) */
+.table-view:focused:row-selection > .virtual-flow > .clipped-container > .sheet > .table-row-cell:focused{
+    -fx-background-insets: -1 0 0 0, 0 0 1 0, 1 1 2 1, 2 2 3 2;
+    -fx-background-color: rgb(15, 68, 131), -fx-background, -fx-cell-focus-inner-border, -fx-background;
+}
+
+.table-view:focused:cell-selection > .virtual-flow > .clipped-container > .sheet > .table-row-cell > .table-cell:focused{
+     -fx-background-insets: 0 ,0 1 1 0,1 2 2 1,2 3 3 2;
+     -fx-background-color: rgb(15, 68, 131),-fx-background,-fx-cell-focus-inner-border,-fx-background;
+ }
+
+.tree-table-view:cell-selection > .virtual-flow > .clipped-container > .sheet > .tree-table-row-cell > .tree-table-cell {
+    -fx-background-insets: 0;
+}
+
+.tree-table-view:focused:cell-selection > .virtual-flow > .clipped-container > .sheet > .tree-table-row-cell > .tree-table-cell:focused {
+      -fx-background-color: -fx-background, -fx-cell-focus-inner-border, -fx-background;
+      -fx-background-insets: 0, 1 2 1 1, 2 3 2 2;
+}
+
+
+.progress-indicator > .determinate-indicator > .percentage {
+     -fx-fill: -fx-light-text-color;
+ }
+
+/* Fix derived prompt color for text fields */
+.text-input {
+    -fx-prompt-text-fill: derive(-fx-control-inner-background, +50%);
+}
+
+/* Keep prompt invisible when focused (above color fix overrides it) */
+.text-input:focused {
+    -fx-prompt-text-fill: transparent;
+}
+
+/* Fix scroll bar buttons arrows colors */
+.scroll-bar > .increment-button > .increment-arrow,
+.scroll-bar > .decrement-button > .decrement-arrow {
+    -fx-background-color: derive(rgb(150, 210, 230),-40%);
+}
+
+.scroll-bar > .increment-button:hover > .increment-arrow,
+.scroll-bar > .decrement-button:hover > .decrement-arrow {
+    -fx-background-color: derive(rgb(150, 210, 230),-20%);
+}
+
+.scroll-bar > .increment-button:pressed > .increment-arrow,
+.scroll-bar > .decrement-button:pressed > .decrement-arrow {
+    -fx-background-color: rgb(150, 210, 230);
+}
+
+.tab-pane *.tab-header-background {
+    -fx-background-color: -fx-outer-border, -fx-inner-border, -fx-control-inner-background;
+    -fx-effect: innershadow(two-pass-box , rgba(0,0,0,0) , 4, 0 , 0 , 0);
+}
+
+.progress-bar > .bar {
+    -fx-background-insets: 3 3 3 3;
+}
+
+.tooltip {
+     -fx-background: derive(-fx-base,-75%);
+     -fx-text-fill: -fx-light-text-color;
+     -fx-background-color: -fx-accent,-fx-base;
+     -fx-background-radius: 12px,12px;
+     -fx-background-insets: -2,0;
+     -fx-padding: 0.667em 0.75em 0.667em 0.75em; /* 10px */
+     -fx-effect: innershadow( two-pass-box , rgba(0,0,0,0.5) , 15, 0 , 0 , 5 );
+ }
+
+.axis {
+    AXIS_COLOR: derive(-fx-color,+30%);
+}
+.chart-vertical-grid-lines {
+     -fx-stroke: derive(-fx-color,+15%);
+ }
+.chart-horizontal-grid-lines {
+    -fx-stroke: derive(-fx-color,+15%);
+}

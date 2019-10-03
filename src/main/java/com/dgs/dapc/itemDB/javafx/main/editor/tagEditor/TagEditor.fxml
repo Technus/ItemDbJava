@@ -2,9 +2,18 @@
 
 <?import com.dgs.dapc.itemDB.javafx.nullComboBox.NullCombo?>
 <?import javafx.geometry.Insets?>
-<?import javafx.scene.control.*?>
-<?import javafx.scene.layout.*?>
-<ScrollPane fitToHeight="true" fitToWidth="true" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" prefHeight="400.0" prefWidth="300.0" xmlns="http://javafx.com/javafx/8.0.172-ea" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.dgs.dapc.itemDB.javafx.main.editor.tagEditor.TagEditorController">
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.ScrollPane?>
+<?import javafx.scene.control.TextArea?>
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.control.ToggleButton?>
+<?import javafx.scene.layout.ColumnConstraints?>
+<?import javafx.scene.layout.GridPane?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.RowConstraints?>
+<?import javafx.scene.layout.VBox?>
+
+<ScrollPane fitToHeight="true" fitToWidth="true" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" prefHeight="400.0" prefWidth="300.0" xmlns="http://javafx.com/javafx/8.0.111" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.dgs.dapc.itemDB.javafx.main.editor.tagEditor.TagEditorController">
    <content>
       <VBox prefWidth="300.0" spacing="4.0">
          <children>
@@ -32,7 +41,7 @@
             <TextField fx:id="nameInput" promptText="Name" VBox.vgrow="NEVER" />
             <NullCombo fx:id="typeSelect" maxWidth="1.7976931348623157E308" promptText="Select Data Type" />
             <NullCombo fx:id="converterSelect" maxWidth="1.7976931348623157E308" promptText="Select String Converter" />
-            <TextArea fx:id="detailsInput" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" prefHeight="337.0" prefWidth="133.0" promptText="Details/Description/Notes" VBox.vgrow="ALWAYS" />
+            <TextArea fx:id="detailsInput" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" prefHeight="337.0" prefWidth="133.0" promptText="Details/Description/Notes/List&#x000D;with Entries in description Like:&#x000D;&quot;Name&quot;=&quot;Comment&quot;&#x000D;while comment can use escape sequences or&#x000D;&quot;Name&quot;&#x000D;one per line" VBox.vgrow="ALWAYS" />
          </children>
          <padding>
             <Insets bottom="2.0" left="2.0" right="2.0" top="2.0" />

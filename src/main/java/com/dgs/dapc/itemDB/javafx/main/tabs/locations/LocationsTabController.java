@@ -41,17 +41,17 @@ public class LocationsTabController implements Initializable {
         locationsTree.setRowFactory(tv -> {
             TreeTableRow<Location> row = new TreeTableRow<>();
             row.addEventFilter(MouseEvent.MOUSE_PRESSED, (MouseEvent e) -> {
-                if (e.getClickCount() == 2 && e.getButton()==MouseButton.PRIMARY)
+                if (e.getClickCount() == 1 && e.getButton()==MouseButton.SECONDARY)
                     e.consume();
             });
-            row.setOnMouseClicked(event -> {
-                if (event.getClickCount() == 2 && event.getButton()== MouseButton.PRIMARY && !row.isEmpty()) {
+            row.setOnMouseClicked(e -> {
+                if (e.getClickCount() == 1 && e.getButton()==MouseButton.SECONDARY && !row.isEmpty()) {
                     Location rowData = row.getItem();
                     Utility.Window<LocationEditorController> window=Utility.loadFXML(LocationEditorController.class.getResource("LocationEditor.fxml"),"Location Editor: "+rowData.getId().toHexString(),mainController.getStage());
                     window.controller.setMainController(mainController);
                     window.controller.setLocation(rowData);
                     window.stage.show();
-                    event.consume();
+                    e.consume();
                 }
             });
             return row;

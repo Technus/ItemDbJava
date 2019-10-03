@@ -159,17 +159,17 @@ public class ItemEditorController implements IWindowInitialize {
             manufacturersList.setRowFactory( tv -> {
                 TableRow<Contact> row = new TableRow<>();
                 row.addEventFilter(MouseEvent.MOUSE_PRESSED, (MouseEvent e) -> {
-                    if (e.getClickCount() == 2 && e.getButton()==MouseButton.PRIMARY)
+                    if (e.getClickCount() == 1 && e.getButton()==MouseButton.SECONDARY)
                         e.consume();
                 });
-                row.setOnMouseClicked(event -> {
-                    if (event.getClickCount() == 2 && event.getButton()== MouseButton.PRIMARY && !row.isEmpty()) {
+                row.setOnMouseClicked(e -> {
+                    if (e.getClickCount() == 1 && e.getButton()==MouseButton.SECONDARY && !row.isEmpty()) {
                         Contact rowData = row.getItem();
                         Utility.Window<ContactEditorController> window=Utility.loadFXML(ContactEditorController.class.getResource("ContactEditor.fxml"),"Contact Editor: "+rowData.getId().toHexString(),getStage());
                         window.controller.setMainController(mainController);
                         window.controller.setContact(rowData);
                         window.stage.show();
-                        event.consume();
+                        e.consume();
                     }
                 });
                 return row;
@@ -196,17 +196,17 @@ public class ItemEditorController implements IWindowInitialize {
             tagsList.setRowFactory(tv -> {
                 TableRow<TagValue> row = new TableRow<>();
                 row.addEventFilter(MouseEvent.MOUSE_PRESSED, (MouseEvent e) -> {
-                    if (e.getClickCount() == 2 && e.getButton()==MouseButton.PRIMARY)
+                    if (e.getClickCount() == 1 && e.getButton()==MouseButton.SECONDARY)
                         e.consume();
                 });
-                row.setOnMouseClicked(event -> {
-                    if (event.getClickCount() == 2 && event.getButton()== MouseButton.PRIMARY && !row.isEmpty()) {
+                row.setOnMouseClicked(e -> {
+                    if (e.getClickCount() == 1 && e.getButton()==MouseButton.SECONDARY && !row.isEmpty()) {
                         TagValue rowData = row.getItem();
                         Utility.Window<TagValueEditorController> window = Utility.loadFXML(TagValueEditorController.class.getResource("TagValueEditor.fxml"), "Tag Value Editor",getStage());
                         window.controller.setMainController(mainController);
                         window.controller.setItemTagValue(this.item,rowData,true);
                         window.stage.show();
-                        event.consume();
+                        e.consume();
                     }
                 });
                 return row;
@@ -228,17 +228,17 @@ public class ItemEditorController implements IWindowInitialize {
             placementsTree.setRowFactory(tv -> {
                 TreeTableRow<Placement> row = new TreeTableRow<>();
                 row.addEventFilter(MouseEvent.MOUSE_PRESSED, (MouseEvent e) -> {
-                    if (e.getClickCount() == 2 && e.getButton()==MouseButton.PRIMARY)
+                    if (e.getClickCount() == 1 && e.getButton()==MouseButton.SECONDARY)
                         e.consume();
                 });
-                row.setOnMouseClicked(event -> {
-                    if (event.getClickCount() == 2 &&event.getButton()== MouseButton.PRIMARY && !row.isEmpty()) {
+                row.setOnMouseClicked(e -> {
+                    if (e.getClickCount() == 1 && e.getButton()==MouseButton.SECONDARY && !row.isEmpty()) {
                         Placement rowData = row.getItem();
                         Utility.Window<PlacementEditorController> window = Utility.loadFXML(PlacementEditorController.class.getResource("PlacementEditor.fxml"), "Placement / Product / Position Editor: " + rowData.getId().toHexString(),getStage());
                         window.controller.setMainController(mainController);
                         window.controller.setItemPlacement(this.item,rowData,true);
                         window.stage.show();
-                        event.consume();
+                        e.consume();
                     }
                 });
                 row.setOnDragDetected(event -> {
@@ -380,17 +380,17 @@ public class ItemEditorController implements IWindowInitialize {
             sourcesTree.setRowFactory(tv -> {
                 TreeTableRow<Source> row = new TreeTableRow<>();
                 row.addEventFilter(MouseEvent.MOUSE_PRESSED, (MouseEvent e) -> {
-                    if (e.getClickCount() == 2 && e.getButton()==MouseButton.PRIMARY)
+                    if (e.getClickCount() == 1 && e.getButton()==MouseButton.SECONDARY)
                         e.consume();
                 });
-                row.setOnMouseClicked(event -> {
-                    if (event.getClickCount() == 2 &&event.getButton()== MouseButton.PRIMARY && !row.isEmpty()) {
+                row.setOnMouseClicked(e -> {
+                    if (e.getClickCount() == 1 && e.getButton()==MouseButton.SECONDARY && !row.isEmpty()) {
                         Source rowData = row.getItem();
                         Utility.Window<SourceEditorController> window = Utility.loadFXML(SourceEditorController.class.getResource("SourceEditor.fxml"), "Source Editor",getStage());
                         window.controller.setMainController(mainController);
                         window.controller.setItemSource(this.item,rowData,true);
                         window.stage.show();
-                        event.consume();
+                        e.consume();
                     }
                 });
                 return row;

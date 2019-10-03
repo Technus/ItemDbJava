@@ -35,17 +35,17 @@ public class ContactsTabController implements Initializable {
         contactsTable.setRowFactory( tv -> {
             TableRow<Contact> row = new TableRow<>();
             row.addEventFilter(MouseEvent.MOUSE_PRESSED, (MouseEvent e) -> {
-                if (e.getClickCount() == 2  && e.getButton()==MouseButton.PRIMARY)
+                if (e.getClickCount() == 1 && e.getButton()==MouseButton.SECONDARY)
                     e.consume();
             });
-            row.setOnMouseClicked(event -> {
-                if (event.getClickCount() == 2 && event.getButton()== MouseButton.PRIMARY && !row.isEmpty()) {
+            row.setOnMouseClicked(e -> {
+                if (e.getClickCount() == 1 && e.getButton()==MouseButton.SECONDARY && !row.isEmpty()) {
                     Contact rowData = row.getItem();
                     Utility.Window<ContactEditorController> window=Utility.loadFXML(ContactEditorController.class.getResource("ContactEditor.fxml"),"Contact Editor: "+rowData.getId().toHexString(),mainController.getStage());
                     window.controller.setMainController(mainController);
                     window.controller.setContact(rowData);
                     window.stage.show();
-                    event.consume();
+                    e.consume();
                 }
             });
             return row;

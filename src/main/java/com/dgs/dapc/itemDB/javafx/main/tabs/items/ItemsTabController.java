@@ -270,13 +270,13 @@ public class ItemsTabController implements Initializable {
                 }
             });
             row.addEventFilter(MouseEvent.MOUSE_PRESSED, (MouseEvent e) -> {
-                if (e.getClickCount() == 2 && e.getButton()==MouseButton.PRIMARY)
+                if (e.getClickCount() == 1 && e.getButton()==MouseButton.SECONDARY)
                     e.consume();
             });
-            row.setOnMouseClicked(event -> {
-                if (event.getClickCount() == 2 && event.getButton() == MouseButton.PRIMARY && !row.isEmpty()) {
+            row.setOnMouseClicked(e -> {
+                if (e.getClickCount() == 1 && e.getButton()==MouseButton.SECONDARY && !row.isEmpty()) {
                     openEditor(row.getTreeItem());
-                    event.consume();
+                    e.consume();
                 }
             });
 
@@ -680,17 +680,22 @@ public class ItemsTabController implements Initializable {
     }
 
     public void reloadAll() {
-        queryList.setAll(Aggregates.match(Utility.queryForClass(Item.class)));
+        queryList.setAll(match(Utility.queryForClass(Item.class)));
     }
 
     public void runSimpleQuery(){
         QueryBuilder queryBuilder=QueryBuilder.start();
+        queryBuilder.and(Utility.queryForClass(Item.class));
         if(genericQueryInput.getText()!=null && genericQueryInput.getText().length()>0){
             QueryBuilder orQuery=QueryBuilder.start();
             Pattern _pattern,pattern;
             if(genericRegExp.isSelected()){
                 try{
-                    _pattern=Utility.getPattern(genericQueryInput.getText());
+                    if(genericQueryInput.getText().startsWith("(?")){
+                        _pattern=Utility.getPattern(genericQueryInput.getText());
+                    }else {
+                        _pattern=Utility.getPattern("(?i)"+ genericQueryInput.getText());
+                    }
                 }catch (PatternSyntaxException e){
                     _pattern=Pattern.compile("(?i)"+ Pattern.quote(genericQueryInput.getText()));
                     genericRegExp.setSelected(false);
@@ -727,7 +732,11 @@ public class ItemsTabController implements Initializable {
             Pattern pattern;
             if(nameRegExp.isSelected()){
                 try{
-                    pattern=Utility.getPattern(nameQueryInput.getText());
+                    if(nameQueryInput.getText().startsWith("(?")){
+                        pattern=Utility.getPattern(nameQueryInput.getText());
+                    }else {
+                        pattern=Utility.getPattern("(?i)"+nameQueryInput.getText());
+                    }
                 }catch (PatternSyntaxException e){
                     pattern=Pattern.compile("(?i)"+ Pattern.quote(nameQueryInput.getText()));
                     nameRegExp.setSelected(false);
@@ -743,7 +752,11 @@ public class ItemsTabController implements Initializable {
         if(serialQueryInput.getText()!=null && serialQueryInput.getText().length()>0){
             if(serialRegExp.isSelected()){
                 try {
-                    queryBuilder.and(QueryBuilder.start("placements.serial").regex(Utility.getPattern(serialQueryInput.getText())).get());
+                    if(serialQueryInput.getText().startsWith("(?")){
+                        queryBuilder.and(QueryBuilder.start("placements.serial").regex(Utility.getPattern(serialQueryInput.getText())).get());
+                    }else {
+                        queryBuilder.and(QueryBuilder.start("placements.serial").regex(Utility.getPattern("(?i)"+serialQueryInput.getText())).get());
+                    }
                 }catch (PatternSyntaxException e){
                     queryBuilder.and(QueryBuilder.start("placements.serial").regex(Pattern.compile("(?i)"+ Pattern.quote(serialQueryInput.getText()))).get());
                     serialRegExp.setSelected(false);
@@ -753,7 +766,6 @@ public class ItemsTabController implements Initializable {
             }
         }
         appendContains(queryBuilder);
-        queryBuilder.and(Utility.queryForClass(Item.class));
 
         List<Bson> query=new ArrayList<>();
 

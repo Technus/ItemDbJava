@@ -117,7 +117,11 @@ public class App extends Application {
         try {
             setUserAgentStylesheet(STYLESHEET_MODENA);
             Thread.sleep(10);
-            StyleManager.getInstance().addUserAgentStylesheet(App.class.getResource("modena_dark.css").toString());
+            if(args.length>1){
+                StyleManager.getInstance().addUserAgentStylesheet(App.class.getResource("modena_dark_.css").toString());
+            }else {
+                StyleManager.getInstance().addUserAgentStylesheet(App.class.getResource("modena_dark.css").toString());
+            }
             Thread.sleep(10);
             launch(App.class,args);
         } catch (Exception e) {

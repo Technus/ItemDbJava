@@ -91,7 +91,7 @@ public class MultiCombo<T> extends TextField {
                 return textProperty().getValueSafe().length()>0?tooltip:null;
             }
         });
-        setPromptText("Select");
+        setPromptText("Select Many");
         setStyle("-fx-control-inner-background: derive(-fx-base,+8%);");
         nullString.set("Deselect");
         nullItem.setStyle("-fx-text-fill:-fx-prompt-text-fill;");

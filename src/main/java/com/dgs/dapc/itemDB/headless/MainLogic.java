@@ -27,7 +27,6 @@ import org.bson.BsonDocument;
 import org.bson.Document;
 import org.bson.codecs.configuration.CodecRegistries;
 import org.bson.codecs.configuration.CodecRegistry;
-import org.bson.codecs.pojo.Convention;
 import org.bson.codecs.pojo.PojoCodecProvider;
 import org.bson.json.JsonWriterSettings;
 import org.bson.types.ObjectId;
@@ -35,7 +34,6 @@ import org.bson.types.ObjectId;
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
@@ -193,13 +191,9 @@ public class MainLogic implements AutoCloseable {
         NullableConvention nullableConvention=new NullableConvention();
         OptionalConvention optionalConvention=new OptionalConvention();
 
-        ArrayList<Convention> conventions=new ArrayList<>(SafePOJO.CONVENTIONS);
-        conventions.add(nullableConvention);
-        conventions.add(optionalConvention);
-
         CodecRegistry codecRegistry=CodecRegistries.fromRegistries(MongoClient.getDefaultCodecRegistry(),
                 CodecRegistries.fromCodecs(TagValueCodec.INSTANCE, ClassCodec.INSTANCE, FilePathCodec.INSTANCE),
-                CodecRegistries.fromProviders(PojoCodecProvider.builder().conventions(conventions).register(
+                CodecRegistries.fromProviders(PojoCodecProvider.builder().conventions(SafePOJO.CONVENTIONS).register(
                         Contact.class,Designation.class,Item.class,Location.class,Tag.class//just to load discriminators
                 ).automatic(true).build()));
 

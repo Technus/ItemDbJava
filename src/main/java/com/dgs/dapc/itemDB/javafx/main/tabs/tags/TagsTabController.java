@@ -34,17 +34,17 @@ public class TagsTabController implements Initializable {
         tagsTable.setRowFactory( tv -> {
             TableRow<Tag> row = new TableRow<>();
             row.addEventFilter(MouseEvent.MOUSE_PRESSED, (MouseEvent e) -> {
-                if (e.getClickCount() == 2 && e.getButton()==MouseButton.PRIMARY)
+                if (e.getClickCount() == 1 && e.getButton()==MouseButton.SECONDARY)
                     e.consume();
             });
-            row.setOnMouseClicked(event -> {
-                if (event.getClickCount() == 2 && event.getButton()== MouseButton.PRIMARY && !row.isEmpty()) {
+            row.setOnMouseClicked(e -> {
+                if (e.getClickCount() == 1 && e.getButton()==MouseButton.SECONDARY && !row.isEmpty()) {
                     Tag rowData = row.getItem();
                     Utility.Window<TagEditorController> window=Utility.loadFXML(TagEditorController.class.getResource("TagEditor.fxml"),"Tag Editor: "+rowData.getId().toHexString(),mainController.getStage());
                     window.controller.setMainController(mainController);
                     window.controller.setTag(rowData);
                     window.stage.show();
-                    event.consume();
+                    e.consume();
                 }
             });
             return row;

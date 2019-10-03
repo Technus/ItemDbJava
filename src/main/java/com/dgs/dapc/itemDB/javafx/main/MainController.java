@@ -36,6 +36,7 @@ import javafx.scene.control.TabPane;
 import javafx.scene.control.TreeItem;
 import javafx.scene.control.TreeTableColumn;
 import javafx.scene.control.cell.TextFieldTreeTableCell;
+import javafx.scene.input.MouseButton;
 import javafx.stage.Window;
 import javafx.util.Callback;
 import org.bson.BsonNull;
@@ -186,8 +187,8 @@ public class MainController implements Initializable,AutoCloseable {
         });
         column.setCellFactory(param -> {
             TextFieldTreeTableCell<Object,String> cell=new TextFieldTreeTableCell<>();
-            cell.setOnMouseClicked(event -> {
-                if (event.getClickCount() == 2 && !cell.isEmpty()) {
+            cell.setOnMouseClicked(e -> {
+                if (e.getClickCount() == 1 && e.getButton()== MouseButton.SECONDARY && !cell.isEmpty()) {
                     Object rowData = cell.getTreeTableRow().getTreeItem().getValue();
                     if (rowData instanceof Item) {
                         TagValue tagValue = ((Item) rowData).tagsProperty().map.get(me.getId());
@@ -195,7 +196,7 @@ public class MainController implements Initializable,AutoCloseable {
                             Utility.Window<TagValueEditorController> window = Utility.loadFXML(TagValueEditorController.class.getResource("TagValueEditor.fxml"), "TagValue Editor",getStage());
                             window.controller.setMainController(this);
                             window.controller.setItemTagValue((Item)rowData,tagValue,false);
-                            event.consume();
+                            e.consume();
                             window.stage.show();
                         }
                     }
